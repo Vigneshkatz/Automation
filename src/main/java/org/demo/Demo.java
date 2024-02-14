@@ -1,40 +1,26 @@
-//package org.demo;
-//
-//import io.appium.java_client.android.AndroidDriver;
-//import io.appium.java_client.android.options.UiAutomator2Options;
-//import io.appium.java_client.service.local.AppiumDriverLocalService;
-//import io.appium.java_client.service.local.AppiumServiceBuilder;
-//import org.testng.Assert;
-//import org.testng.annotations.Test;
-//
-//import java.io.File;
-//import java.net.MalformedURLException;
-//import java.net.URL;
-//import java.rmi.server.UID;
-//
-//public class Demo {
-//    @Test
-//    public void app() throws MalformedURLException, InterruptedException {
-//        AppiumDriverLocalService serviceBuilder = new AppiumServiceBuilder().
-//                withAppiumJS(new File("//usr//local//lib//node_modules//appium//lib//main.js"))
-//                .withIPAddress("http://0.0.0.0:1").usingPort(4723).build();
-//        serviceBuilder.start();
-//
-//        serviceBuilder.stop();
-//
-//
-//
-//        System.out.printf("Service started");
-//        UiAutomator2Options options = new UiAutomator2Options();
-//        options.setDeviceName("Pixel_3a");
-//        options.setApp("/Users/Vignesh/Desktop/Automation/src/resources/ApiDemos-debug.apk");
-//        Assert.assertTrue(true);
-//        try {
-//            AndroidDriver androidDriver = new AndroidDriver(new URL("http://127.0.0.1:4723/"),options);
-//            androidDriver.getBatteryInfo();
-//            androidDriver.quit();
-//        } catch (MalformedURLException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//}
+package org.demo;
+
+import io.appium.java_client.android.AndroidDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+
+import java.net.URL;
+
+public class Demo {
+
+    public static void main(String[] args) {
+    {
+        System.setProperty("webdriver.chrome.driver", "chromedriver");
+        DesiredCapabilities caps = new DesiredCapabilities();
+        caps.setCapability("platformName", "Android");
+        caps.setCapability("deviceName", "Pixel_3a_API_34_extension_level_7_x86_64");
+        caps.setCapability("browserName", "Chrome");
+
+        try {
+            AndroidDriver driver = new AndroidDriver(new URL("http://localhost:4723/wd/hub"), caps);
+            driver.get("https://www.google.com");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    }
+}

@@ -10,10 +10,11 @@ public class Main {
         DesiredCapabilities caps = new DesiredCapabilities();
         caps.setCapability("deviceName", "realme RMX1971");
         caps.setCapability("platformName", "Android");
-        caps.setCapability("app", "/Users/Vignesh/Desktop/Automation/src/resources/ApiDemos-debug.apk");
+        caps.setCapability("app", "//home//katziio//Desktop//Automation//src//resources//ApiDemos-debug.apk");
 
         try {
-            AndroidDriver driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), caps);            Thread.sleep(100000);
+            AndroidDriver driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), caps);
+            Thread.sleep(100000);
             driver.quit();
         } catch (MalformedURLException e) {
             System.out.println("Invalid Appium Server URL: " + e.getMessage());
