@@ -43,7 +43,7 @@ public class Main {
         caps.setCapability("automationName", "UiAutomator2");
         caps.setCapability("autoGrantPermissions", "true");
         caps.setCapability("enforceAppInstall", "true");
-        caps.setCapability("app", "/Users/Vignesh/Desktop/Automation/src/main/resources/Smytten-169-debug.apk");
+        caps.setCapability("app", "/Users/Vignesh/Desktop/Automation/src/main/resources/Smytten-169-debug (1).apk");
 
         try {
             System.out.println("Starting Appium session...");
@@ -68,7 +68,8 @@ public class Main {
         int yCoordinate = 565;
         touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
         Thread.sleep(2000);
-        wait.until(ExpectedConditions.elementToBeClickable(AppiumBy.id("com.app.smytten.debug:id/et_mobile")));
+        touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
+        driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
         driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile")).click();
         Thread.sleep(2000);
         driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile")).sendKeys("9500752205");
