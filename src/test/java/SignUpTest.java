@@ -41,7 +41,6 @@ public class SignUpTest {
         Assert.assertNotEquals(driver, null);
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         Assert.assertNotEquals(wait, null);
-
     }
 
     @After
@@ -52,7 +51,7 @@ public class SignUpTest {
     }
 
     @Test
-    public void SignUp() throws InterruptedException {
+    public void signUp() throws InterruptedException {
         TouchAction touchAction = new TouchAction(driver);
         Assert.assertNotEquals(touchAction, null);
 
@@ -72,8 +71,8 @@ public class SignUpTest {
         Assert.assertNotEquals(proceedBtn, null);
         System.out.println("Proceed button text: " + proceedBtn.getText());
         proceedBtn.click();
-        Thread.sleep(2000);
-//        select male
+        Thread.sleep(5000);
+//        select gender
         String maleElementId = "com.app.smytten.debug:id/tv_male";
         String femaleElementId = "com.app.smytten.debug:id/tv_female";
         String selectedGenderId = (RANDOMNUMBER == 0) ? maleElementId : femaleElementId;
@@ -87,25 +86,27 @@ public class SignUpTest {
         Thread.sleep(1000);
         WebElement selectMonth = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@resource-id='android:id/title' and @text='March']"));
         selectMonth.click();
-        touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
-//        Choose year
+
         WebElement chooseYear = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/year_spinner"));
         chooseYear.click();
         Thread.sleep(1000);
         WebElement selectYear = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@resource-id='android:id/title' and @text='2009']"));
         selectYear.click();
-        touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
-//        apply referal code
+
         WebElement referralInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_referral"));
         referralInput.click();
         referralInput.sendKeys(GROUPINVITECODE);
+
         WebElement referralApply = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_referral_apply"));
         referralApply.click();
         WebElement referralSuccessTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_refer_success"));
+
         System.out.println(referralSuccessTitle.getText());
         WebElement referralSuccessPaymentTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_payment_title"));
-        System.out.println(referralSuccessPaymentTitle);
+
+        System.out.println(referralSuccessPaymentTitle.getText());
         Thread.sleep(1000);
+
         WebElement confirmBtn = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/signup_manual"));
         confirmBtn.click();
         Thread.sleep(5000);

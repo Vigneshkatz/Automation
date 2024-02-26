@@ -1,0 +1,97 @@
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.TouchAction;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.touch.offset.PointOption;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+
+import static org.junit.Assert.assertTrue;
+
+public class LandingPageTest {
+    private AndroidDriver driver;
+    private WebDriverWait wait;
+    @Before
+    public void setUp() throws MalformedURLException, InterruptedException {
+        DesiredCapabilities caps = new DesiredCapabilities();
+        caps.setCapability("deviceName", "OnePlus LE2111");
+        caps.setCapability("platformName", "Android");
+        caps.setCapability("platformVersion", "13");
+        caps.setCapability("automationName", "UiAutomator2");
+        caps.setCapability("autoGrantPermissions", true);
+        caps.setCapability("enforceAppInstall", true);
+        caps.setCapability("app", "/Users/Vignesh/Desktop/Automation/src/main/resources/Smytten-169-debug (1).apk");
+        driver = new AndroidDriver(new URL("http://127.0.0.1:4723/"), caps);
+        Assert.assertNotEquals(driver, null);
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        Assert.assertNotEquals(wait, null);
+        Thread.sleep(5000);
+    }
+
+    @After
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+
+    @Test
+    public void initialLandingPageText() throws InterruptedException{
+        Thread.sleep(2000);
+        WebElement startCta = driver.findElement(AppiumBy.className("android.widget.TextView"));
+        String expectedCtaText = "Get started";
+        assertTrue(startCta.getText().equalsIgnoreCase("Get started"));
+
+    }
+
+    @Test
+    public void mainLandingPageText() throws InterruptedException{
+        TouchAction touchAction = new TouchAction(driver);
+        Assert.assertNotEquals(touchAction, null);
+        int xCoordinate = 355;
+        int yCoordinate = 565;
+        touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
+        Thread.sleep(2000);
+        touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
+        WebElement enterMobileNumberLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/label"));
+        WebElement defaultMobilePrefix = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text='+91']"));
+        WebElement mobileNumberInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
+        WebElement otpCta = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/proceed"));
+        WebElement termsAndConditionLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_policy"));
+        WebElement termsAndConditionCheckbox = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cb_check"));
+        WebElement emailLogin = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text='E-mail based log in is no longer available.\nPlease click here to add your mobile number.']"));
+        String mobileNumberLabelExpectedText = "Please enter Mobile Number";
+        String expectedMobilePrefix = "+91";
+        String mobileNUmberPlaceholderText = "Mobile Number";
+        String otpCtaText = "Send OTP";
+        String termsAndConditionText = "By continuing you agree to Smytten's Privacy Policy & Terms of Service.";
+        String emailLoginText = "E-mail based log in is no longer available.\n" +
+                "Please click here to add your mobile number.";
+
+        String actualMobileNumberLabelExpectedText = enterMobileNumberLabel.getText();
+        assertTrue(actualMobileNumberLabelExpectedText.equalsIgnoreCase(mobileNumberLabelExpectedText));
+
+        String actualExpectedMobilePrefix = defaultMobilePrefix.getText();
+        assertTrue(expectedMobilePrefix.equalsIgnoreCase( actualExpectedMobilePrefix.trim()));
+
+        String actualMobileNumberPlaceholderText = mobileNumberInput.getText();
+        assertTrue(mobileNUmberPlaceholderText.equalsIgnoreCase(actualMobileNumberPlaceholderText));
+
+        String actualOtpCtaText = otpCta.getText();
+        assertTrue(otpCtaText.equalsIgnoreCase(actualOtpCtaText));
+
+        String actualTermsAndConditionText = termsAndConditionLabel.getText();
+        assertTrue(termsAndConditionText.equalsIgnoreCase(actualTermsAndConditionText));
+
+        String actualEmailLoginText = emailLogin.getText();
+        assertTrue(emailLoginText.trim().equalsIgnoreCase(actualEmailLoginText.trim()));
+    }
+}
