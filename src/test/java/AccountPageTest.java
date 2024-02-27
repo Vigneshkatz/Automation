@@ -202,7 +202,8 @@ public class AccountPageTest {
     }
 
     @Test
-    public void openNotification() throws InterruptedException {
+    public void copyOtp() throws InterruptedException {
+        String decodedOtp = null;
         Thread.sleep(2000);
         driver.openNotifications ();
         Thread.sleep(2000);
@@ -230,12 +231,9 @@ public class AccountPageTest {
             System.out.println("copied otp");
             String otp = ((AndroidDriver) driver).getClipboard(ClipboardContentType.PLAINTEXT);
             System.out.println(otp);
-            System.out.println(((AndroidDriver) driver).getClipboard(ClipboardContentType.URL));
-            System.out.println(((AndroidDriver) driver).getClipboard(ClipboardContentType.IMAGE));
-            System.out.println(((AndroidDriver) driver).getClipboard(ClipboardContentType.URL));
             byte[] decodedBytes = Base64.getDecoder().decode(otp);
             String decodedText = new String(decodedBytes);
-            System.out.println(decodedText);
+            System.out.println(decodedOtp);
             try {
                 clearNotification = driver.findElement(AppiumBy.id("com.android.systemui:id/clear_all_port"));
                 clearNotification.click();
