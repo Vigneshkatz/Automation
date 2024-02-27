@@ -15,12 +15,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Base64;
+import java.util.EventListener;
 
 import static org.junit.Assert.assertTrue;
 
 public class LoginTest {
     public static final String MOBILE_NUMBER = "5111111111";
-    public static final String OTP = "1234";
+    public static final String VALID_OTP = "1234";
+    public static final String INVALID_OTP = "1111";
+    public static final String INVALID_OTP_MESSAGE = "OTP does not match. Please enter the correct OTP.";
+
+    public static final int OTP_MAX_LIMIT = 6;
+
+    public static final String OTP_MAX_LIMIT_MESSAGE = "You have already made maximum number of attempt to verify OTP. Please try again after some time.";
     private AndroidDriver driver;
     private WebDriverWait wait;
 
@@ -81,9 +88,6 @@ public class LoginTest {
             WebElement mobileNumberLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile"));
             WebElement mobileNumberEditCta = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile_ed"));
             WebElement otpEnterInput = driver.findElement(AppiumBy.className("android.widget.EditText"));
-//            WebElement otpNotReceiveLabel = driver.findElement(AppiumBy.className("com.app.smytten.debug:id/tv_otp"));
-//            WebElement otpResendTimer = driver.findElement(AppiumBy.className("com.app.smytten.debug:id/tv_otp_timer"));
-//            WebElement contactUsEmail = driver.findElement(AppiumBy.className("com.app.smytten.debug:id/btn_email"));
             String otpLabelText = "Enter OTP sent via SMS";
             String mobileNumberLabelText = "+91-" + MOBILE_NUMBER;
             String mobileNumberEditCtaText = "Edit";
@@ -93,16 +97,11 @@ public class LoginTest {
             assertTrue(otpLabelText.trim().equalsIgnoreCase(otpLabel.getText().trim()));
             assertTrue(mobileNumberLabelText.trim().equalsIgnoreCase(mobileNumberLabel.getText().trim()));
             assertTrue(mobileNumberEditCtaText.trim().equalsIgnoreCase(mobileNumberEditCta.getText().trim()));
-//            assertTrue(otpNotReceivedLabelText.trim().equalsIgnoreCase(otpNotReceiveLabel.getText().trim()));
-//            assertTrue(contactUsEmailLabelText.trim().equalsIgnoreCase(contactUsEmail.getText().trim()));
-//            Thread.sleep(60000);
-//            assertTrue(otpResendText.trim().equalsIgnoreCase(otpResendTimer.getText().trim()));\
-//            String otpXPath = "//android.widget.FrameLayout[@resource-id='com.app.smytten.debug:id/otp_view']";
             otpEnterInput.click();
-
-            Process process = Runtime.getRuntime().exec("adb shell input text " + OTP);
-            process.waitFor(); // Wait for the process to finish
-            System.out.println("OTP typed successfully.");
+//            enter otp
+            Process process = Runtime.getRuntime().exec("adb shell input text " + VALID_OTP);
+            process.waitFor();
+            System.out.println("OTP typed successfully."+ VALID_OTP);
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -118,78 +117,44 @@ public class LoginTest {
         int xCoordinate = 355;
         int yCoordinate = 565;
         touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
-        Thread.sleep(2000);
-        touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
+        Thread.sleep(5000);
         WebElement mobileInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
         Assert.assertNotEquals(mobileInput, null);
         System.out.println("Mobile input text: " + mobileInput.getText());
         mobileInput.click();
         Thread.sleep(2000);
-        mobileInput.sendKeys("8610496028");
+        mobileInput.sendKeys(MOBILE_NUMBER);
         Thread.sleep(1000);
 
         WebElement proceedBtn = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/proceed"));
         Assert.assertNotEquals(proceedBtn, null);
         System.out.println("Proceed button text: " + proceedBtn.getText());
         proceedBtn.click();
-    }
-
-    @Test
-    public void loginBeta() throws InterruptedException {
-        String mobileNumber = "9345690376";
-        TouchAction touchAction = new TouchAction(driver);
-        Assert.assertNotEquals(touchAction, null);
-
-        int xCoordinate = 355;
-        int yCoordinate = 565;
-        touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
-        Thread.sleep(2000);
         Thread.sleep(5000);
-        WebElement mobileInput = driver.findElement(AppiumBy.id("com.app.smytten.beta:id/et_mobile"));
-        Assert.assertNotEquals(mobileInput, null);
-        System.out.println("Mobile input text: " + mobileInput.getText());
-        mobileInput.click();
-        Thread.sleep(2000);
-        mobileInput.sendKeys(mobileNumber);
-        Thread.sleep(1000);
+        try {
+            WebElement otpContainer = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cl_otp_container"));
+            Assert.assertNotEquals(otpContainer, null);
+            WebElement otpLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_otp_label"));
+            WebElement mobileNumberLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile"));
+            WebElement mobileNumberEditCta = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile_ed"));
+            WebElement otpEnterInput = driver.findElement(AppiumBy.className("android.widget.EditText"));
+            String otpLabelText = "Enter OTP sent via SMS";
+            String mobileNumberLabelText = "+91-" + MOBILE_NUMBER;
+            String mobileNumberEditCtaText = "Edit";
+            assertTrue(otpLabelText.trim().equalsIgnoreCase(otpLabel.getText().trim()));
+            assertTrue(mobileNumberLabelText.trim().equalsIgnoreCase(mobileNumberLabel.getText().trim()));
+            assertTrue(mobileNumberEditCtaText.trim().equalsIgnoreCase(mobileNumberEditCta.getText().trim()));
+            otpEnterInput.click();
+//            enter otp
+            Process process = Runtime.getRuntime().exec("adb shell input text " + INVALID_OTP);
+            process.waitFor();
+            WebElement otpToastMessage = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/snackbar_text"));
+            System.out.println(otpToastMessage.getText());
+            assertTrue("InValid Otp Message",otpToastMessage.getText().equals(INVALID_OTP_MESSAGE));
+            System.out.println("OTP typed successfully."+ INVALID_OTP);
 
-
-        WebElement proceedBtn = driver.findElement(AppiumBy.id("com.app.smytten.beta:id/proceed"));
-        Assert.assertNotEquals(proceedBtn, null);
-        System.out.println("Proceed button text: " + proceedBtn.getText());
-        proceedBtn.click();
-        Thread.sleep(5000);
-        //        if beta build
-        WebElement otpContainer = driver.findElement(AppiumBy.id("com.app.smytten.beta:id/cl_otp_container"));
-        Assert.assertNotEquals(otpContainer, null);
-        WebElement otpLabel = driver.findElement(AppiumBy.id("com.app.smytten.beta:id/tv_otp_label"));
-        WebElement mobileNumberLabel = driver.findElement(AppiumBy.id("com.app.smytten.beta:id/tv_mobile"));
-        WebElement mobileNumberEditCta = driver.findElement(AppiumBy.id("com.app.smytten.beta:id/tv_mobile_ed"));
-        WebElement otpEnterInput = driver.findElement(AppiumBy.xpath("(//android.widget.FrameLayout[@resource-id=\"com.app.smytten.beta:id/otp_view\"])[1]/android.widget.LinearLayout"));
-//        WebElement otpNotReceiveLabel =  driver.findElement(AppiumBy.xpath("(//android.widget.FrameLayout[@resource-id=\"com.app.smytten.beta:id/otp_view\"])[1]/android.widget.LinearLayout"));
-        Thread.sleep(2000);
-        WebElement otpResendTimer = driver.findElement(AppiumBy.id("com.app.smytten.beta:id/tv_otp_timer"));
-        WebElement contactUsEmail = driver.findElement(AppiumBy.id("com.app.smytten.beta:id/btn_email"));
-        String otpLabelText = "Enter OTP sent via SMS";
-        String mobileNumberLabelText = "+91-" + mobileNumber;
-        String mobileNumberEditCtaText = "Edit";
-//        String otpNotReceivedLabelText = "Didn’t receive the OTP?";
-        String otpResendText = "Resend";
-        String contactUsEmailLabelText = "Having trouble signing in? Write to us! -> ";
-        assertTrue(otpLabelText.trim().equalsIgnoreCase(otpLabel.getText().trim()));
-        assertTrue(mobileNumberLabelText.trim().equalsIgnoreCase(mobileNumberLabel.getText().trim()));
-        assertTrue(mobileNumberEditCtaText.trim().equalsIgnoreCase(mobileNumberEditCta.getText().trim()));
-//        assertTrue(otpNotReceivedLabelText.trim().equalsIgnoreCase(otpNotReceiveLabel.getText().trim()));
-        assertTrue(contactUsEmailLabelText.trim().equalsIgnoreCase(contactUsEmail.getText().trim()));
-//        Thread.sleep(60000);
-//        assertTrue(otpResendText.trim().equalsIgnoreCase(otpResendTimer.getText().trim()));
-        for (int i = 2; i <= 5; i++) {
-            String xpath = "(//android.widget.FrameLayout[@resource-id=\"com.app.smytten.beta:id/otp_view\"])[" + (i) + "]/android.widget.TextView";
-            driver.findElement(AppiumBy.xpath(xpath)).click();
-            System.out.println(xpath);
-            if (driver.findElement(AppiumBy.xpath(xpath)) != null) {
-                driver.findElement(AppiumBy.xpath("(//android.widget.FrameLayout[@resource-id=\"com.app.smytten.beta:id/otp_view\"])[1]/android.widget.LinearLayout")).sendKeys("1");
-            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         Thread.sleep(3000);
     }
@@ -239,6 +204,65 @@ public class LoginTest {
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    @Test
+    public void otpMaxLimitCheck()throws InterruptedException {
+        TouchAction touchAction = new TouchAction(driver);
+        Assert.assertNotEquals(touchAction, null);
+
+        int xCoordinate = 355;
+        int yCoordinate = 565;
+        touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
+        Thread.sleep(5000);
+        WebElement mobileInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
+        Assert.assertNotEquals(mobileInput, null);
+        System.out.println("Mobile input text: " + MOBILE_NUMBER);
+        mobileInput.click();
+        Thread.sleep(2000);
+        mobileInput.sendKeys(MOBILE_NUMBER);
+        Thread.sleep(1000);
+
+        WebElement proceedBtn = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/proceed"));
+        Assert.assertNotEquals(proceedBtn, null);
+        System.out.println("Proceed button text: " + proceedBtn.getText());
+        proceedBtn.click();
+        Thread.sleep(5000);
+        try {
+            WebElement otpContainer = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cl_otp_container"));
+            Assert.assertNotEquals(otpContainer, null);
+            WebElement otpLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_otp_label"));
+            WebElement mobileNumberLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile"));
+            WebElement mobileNumberEditCta = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile_ed"));
+            WebElement otpEnterInput = driver.findElement(AppiumBy.className("android.widget.EditText"));
+            String otpLabelText = "Enter OTP sent via SMS";
+            String mobileNumberLabelText = "+91-" + MOBILE_NUMBER;
+            String mobileNumberEditCtaText = "Edit";
+            assertTrue(otpLabelText.trim().equalsIgnoreCase(otpLabel.getText().trim()));
+            assertTrue(mobileNumberLabelText.trim().equalsIgnoreCase(mobileNumberLabel.getText().trim()));
+            assertTrue(mobileNumberEditCtaText.trim().equalsIgnoreCase(mobileNumberEditCta.getText().trim()));
+            for (int i = 1; i<=OTP_MAX_LIMIT ; i++) {
+                otpEnterInput.click();
+                Process process = Runtime.getRuntime().exec("adb shell input text " + INVALID_OTP);
+                process.waitFor();
+                WebElement otpToastMessage = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/snackbar_text"));
+                String otpToastText = otpToastMessage.getText();
+                System.out.println("OTP typed successfully." + INVALID_OTP);
+                System.out.println(otpToastText);
+                if(i == (OTP_MAX_LIMIT))
+                {
+                    assertTrue("InValid Otp Message", otpToastText.equals(OTP_MAX_LIMIT_MESSAGE));
+                }else {
+                    assertTrue("InValid Otp Message", otpToastText.equals(INVALID_OTP_MESSAGE));
+                }
+                Thread.sleep(1000);
+
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        Thread.sleep(3000);
     }
 
 }
