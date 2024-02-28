@@ -2,20 +2,21 @@ import io.appium.java_client.AppiumBy;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.touch.offset.PointOption;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.*;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.AssertJUnit.*;
+
 
 public class LuxeMemberShipTest {
     public static final String MOBILE_NUMBER = "5111111111";
@@ -34,7 +35,7 @@ public class LuxeMemberShipTest {
     private AndroidDriver driver;
     private WebDriverWait wait;
     private static TouchAction touchAction;
-    @Before
+    @BeforeTest
     public void setUp() throws MalformedURLException, InterruptedException {
         startAppiumServer();
         DesiredCapabilities caps = new DesiredCapabilities();
@@ -57,7 +58,7 @@ public class LuxeMemberShipTest {
         touchAction = new TouchAction(driver);
     }
 
-    @After
+    @AfterTest
     public void tearDown() {
         if (driver != null) {
             driver.quit();

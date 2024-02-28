@@ -17,8 +17,8 @@ import java.util.Base64;
 
 import java.util.UUID;
 
-import static org.testng.assertNotEquals;
-import static org.testng.assertNotNull;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.assertTrue;
 
 public class AccountPageTest {

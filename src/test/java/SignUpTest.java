@@ -15,7 +15,7 @@ import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-import static org.testng.assertNotEquals;
+import static org.testng.Assert.assertNotEquals;
 
 public class SignUpTest {
     private static final long LIMIT = 10000000000L;

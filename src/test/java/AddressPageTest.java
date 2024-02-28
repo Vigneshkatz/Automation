@@ -20,10 +20,8 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-import static org.testng.assertEquals;
-import static org.testng.assertNotEquals;
-import static org.testng.AssertJUnit.assertNotNull;
-import static org.testng.AssertJUnit.fail;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.AssertJUnit.*;
 
 
 public class AddressPageTest {
@@ -235,6 +233,7 @@ public class AddressPageTest {
             fail("something missing in empty address page" + e.getMessage());
         }
     }
+
 
     public void gotoAddressPage() throws InterruptedException {
         WebElement menu = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/rv_menu"));
