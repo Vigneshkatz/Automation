@@ -16,6 +16,7 @@ import java.net.URL;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.EventListener;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -36,6 +37,7 @@ public class LoginTest {
 
     @Before
     public void setUp() throws MalformedURLException, InterruptedException {
+        startAppiumServer();
         DesiredCapabilities caps = new DesiredCapabilities();
 //        oneplus
         caps.setCapability("deviceName", "OnePlus LE2111");
@@ -59,6 +61,24 @@ public class LoginTest {
     public void tearDown() {
         if (driver != null) {
             driver.quit();
+        }
+        stopAppiumServer();
+    }
+    private void startAppiumServer() {
+        try {
+            Runtime.getRuntime().exec("appium");
+            TimeUnit.SECONDS.sleep(10); // Wait for Appium server to start (adjust as necessary)
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stopAppiumServer() {
+        try {
+            Runtime.getRuntime().exec("pkill -9 node");
+            TimeUnit.SECONDS.sleep(5);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

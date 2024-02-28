@@ -17,6 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 public class SignUpTest {
     private static final long LIMIT = 10000000000L;
@@ -28,11 +29,16 @@ public class SignUpTest {
     private WebDriverWait wait;
 
     @Before
-    public void setUp() throws MalformedURLException {
+    public void setUp() throws MalformedURLException, InterruptedException {
+        startAppiumServer();
         DesiredCapabilities caps = new DesiredCapabilities();
+//        oneplus
         caps.setCapability("deviceName", "OnePlus LE2111");
+        caps.setCapability("platformVersion", "14");
         caps.setCapability("platformName", "Android");
-        caps.setCapability("platformVersion", "13");
+//        realme
+//        caps.setCapability("deviceName", "realme RMX1971");
+//        caps.setCapability("platformVersion", "11");
         caps.setCapability("automationName", "UiAutomator2");
         caps.setCapability("autoGrantPermissions", true);
         caps.setCapability("enforceAppInstall", true);
@@ -41,12 +47,31 @@ public class SignUpTest {
         Assert.assertNotEquals(driver, null);
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         Assert.assertNotEquals(wait, null);
+        Thread.sleep(5000);
     }
 
     @After
     public void tearDown() {
         if (driver != null) {
             driver.quit();
+        }
+        stopAppiumServer();
+    }
+    private void startAppiumServer() {
+        try {
+            Runtime.getRuntime().exec("appium");
+            TimeUnit.SECONDS.sleep(10); // Wait for Appium server to start (adjust as necessary)
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stopAppiumServer() {
+        try {
+            Runtime.getRuntime().exec("pkill -9 node");
+            TimeUnit.SECONDS.sleep(5);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
