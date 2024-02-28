@@ -2,22 +2,20 @@ import io.appium.java_client.AppiumBy;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.touch.offset.PointOption;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
-import javax.swing.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+
+import static org.testng.assertNotEquals;
 
 public class SignUpTest {
     private static final long LIMIT = 10000000000L;
@@ -28,7 +26,7 @@ public class SignUpTest {
     private AndroidDriver driver;
     private WebDriverWait wait;
 
-    @Before
+    @BeforeTest
     public void setUp() throws MalformedURLException, InterruptedException {
         startAppiumServer();
         DesiredCapabilities caps = new DesiredCapabilities();
@@ -44,13 +42,13 @@ public class SignUpTest {
         caps.setCapability("enforceAppInstall", true);
         caps.setCapability("app", "/Users/Vignesh/Desktop/Automation/src/main/resources/Smytten-169-debug (1).apk");
         driver = new AndroidDriver(new URL("http://127.0.0.1:4723/"), caps);
-        Assert.assertNotEquals(driver, null);
+        assertNotEquals(driver, null);
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        Assert.assertNotEquals(wait, null);
+        assertNotEquals(wait, null);
         Thread.sleep(5000);
     }
 
-    @After
+    @AfterTest
     public void tearDown() {
         if (driver != null) {
             driver.quit();
@@ -78,7 +76,7 @@ public class SignUpTest {
     @Test
     public void signUp() throws InterruptedException {
         TouchAction touchAction = new TouchAction(driver);
-        Assert.assertNotEquals(touchAction, null);
+        assertNotEquals(touchAction, null);
 
         int xCoordinate = 355;
         int yCoordinate = 565;
@@ -86,14 +84,14 @@ public class SignUpTest {
         Thread.sleep(2000);
         touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
         WebElement mobileInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
-        Assert.assertNotEquals(mobileInput, null);
+        assertNotEquals(mobileInput, null);
         System.out.println("Mobile input text: " + mobileInput.getText());
         mobileInput.click();
         Thread.sleep(2000);
-        mobileInput.sendKeys(String.valueOf(getId()));
+        mobileInput.sendKeys(String.valueOf(getNumber()));
         Thread.sleep(1000);
         WebElement proceedBtn = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/proceed"));
-        Assert.assertNotEquals(proceedBtn, null);
+        assertNotEquals(proceedBtn, null);
         System.out.println("Proceed button text: " + proceedBtn.getText());
         proceedBtn.click();
         Thread.sleep(5000);
@@ -137,7 +135,7 @@ public class SignUpTest {
         Thread.sleep(5000);
     }
 
-    private static long getId(){
+    private static long getNumber(){
 
         long id = System.currentTimeMillis() % LIMIT;
         if ( id <= last ) {

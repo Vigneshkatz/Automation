@@ -2,25 +2,25 @@ import io.appium.java_client.AppiumBy;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.touch.offset.PointOption;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.AssertJUnit.assertTrue;
 
 public class LandingPageTest {
     private AndroidDriver driver;
     private WebDriverWait wait;
-    @Before
+    @BeforeTest
     public void setUp() throws MalformedURLException, InterruptedException {
         startAppiumServer();
         DesiredCapabilities caps = new DesiredCapabilities();
@@ -36,13 +36,13 @@ public class LandingPageTest {
         caps.setCapability("enforceAppInstall", true);
         caps.setCapability("app", "/Users/Vignesh/Desktop/Automation/src/main/resources/Smytten-169-debug (1).apk");
         driver = new AndroidDriver(new URL("http://127.0.0.1:4723/"), caps);
-        Assert.assertNotEquals(driver, null);
+        assertNotEquals(driver, null);
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        Assert.assertNotEquals(wait, null);
+        assertNotEquals(wait, null);
         Thread.sleep(5000);
     }
 
-    @After
+    @AfterTest
     public void tearDown() {
         if (driver != null) {
             driver.quit();
@@ -79,7 +79,7 @@ public class LandingPageTest {
     @Test
     public void mainLandingPageText() throws InterruptedException{
         TouchAction touchAction = new TouchAction(driver);
-        Assert.assertNotEquals(touchAction, null);
+        assertNotEquals(touchAction, null);
         int xCoordinate = 355;
         int yCoordinate = 565;
         touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();

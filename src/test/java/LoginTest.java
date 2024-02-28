@@ -3,22 +3,22 @@ import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.clipboard.ClipboardContentType;
 import io.appium.java_client.touch.offset.PointOption;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Base64;
-import java.util.EventListener;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.AssertJUnit.*;
+
 
 public class LoginTest {
     public static final String MOBILE_NUMBER = "5111111111";
@@ -35,7 +35,7 @@ public class LoginTest {
     private AndroidDriver driver;
     private WebDriverWait wait;
 
-    @Before
+    @BeforeTest
     public void setUp() throws MalformedURLException, InterruptedException {
         startAppiumServer();
         DesiredCapabilities caps = new DesiredCapabilities();
@@ -51,13 +51,13 @@ public class LoginTest {
         caps.setCapability("enforceAppInstall", true);
         caps.setCapability("app", "/Users/Vignesh/Desktop/Automation/src/main/resources/Smytten-169-debug (1).apk");
         driver = new AndroidDriver(new URL("http://127.0.0.1:4723/"), caps);
-        Assert.assertNotEquals(driver, null);
+        assertNotEquals(driver, null);
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        Assert.assertNotEquals(wait, null);
+        assertNotEquals(wait, null);
         Thread.sleep(5000);
     }
 
-    @After
+    @AfterTest
     public void tearDown() {
         if (driver != null) {
             driver.quit();
@@ -85,14 +85,14 @@ public class LoginTest {
     @Test
     public void loginWithCrtOTP() throws InterruptedException {
         TouchAction touchAction = new TouchAction(driver);
-        Assert.assertNotEquals(touchAction, null);
+        assertNotEquals(touchAction, null);
 
         int xCoordinate = 355;
         int yCoordinate = 565;
         touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
         Thread.sleep(5000);
         WebElement mobileInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
-        Assert.assertNotEquals(mobileInput, null);
+        assertNotEquals(mobileInput, null);
         System.out.println("Mobile input text: " + mobileInput.getText());
         mobileInput.click();
         Thread.sleep(2000);
@@ -100,13 +100,13 @@ public class LoginTest {
         Thread.sleep(1000);
 
         WebElement proceedBtn = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/proceed"));
-        Assert.assertNotEquals(proceedBtn, null);
+        assertNotEquals(proceedBtn, null);
         System.out.println("Proceed button text: " + proceedBtn.getText());
         proceedBtn.click();
         Thread.sleep(5000);
         try {
             WebElement otpContainer = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cl_otp_container"));
-            Assert.assertNotEquals(otpContainer, null);
+            assertNotEquals(otpContainer, null);
             WebElement otpLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_otp_label"));
             WebElement mobileNumberLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile"));
             WebElement mobileNumberEditCta = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile_ed"));
@@ -136,14 +136,14 @@ public class LoginTest {
     @Test
     public void loginWithWrongOTP() throws InterruptedException {
         TouchAction touchAction = new TouchAction(driver);
-        Assert.assertNotEquals(touchAction, null);
+        assertNotEquals(touchAction, null);
 
         int xCoordinate = 355;
         int yCoordinate = 565;
         touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
         Thread.sleep(5000);
         WebElement mobileInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
-        Assert.assertNotEquals(mobileInput, null);
+        assertNotEquals(mobileInput, null);
         System.out.println("Mobile input text: " + mobileInput.getText());
         mobileInput.click();
         Thread.sleep(2000);
@@ -151,13 +151,13 @@ public class LoginTest {
         Thread.sleep(1000);
 
         WebElement proceedBtn = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/proceed"));
-        Assert.assertNotEquals(proceedBtn, null);
+        assertNotEquals(proceedBtn, null);
         System.out.println("Proceed button text: " + proceedBtn.getText());
         proceedBtn.click();
         Thread.sleep(5000);
         try {
             WebElement otpContainer = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cl_otp_container"));
-            Assert.assertNotEquals(otpContainer, null);
+            assertNotEquals(otpContainer, null);
             WebElement otpLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_otp_label"));
             WebElement mobileNumberLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile"));
             WebElement mobileNumberEditCta = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile_ed"));
@@ -235,14 +235,14 @@ public class LoginTest {
     @Test
     public void otpMaxLimitCheck()throws InterruptedException {
         TouchAction touchAction = new TouchAction(driver);
-        Assert.assertNotEquals(touchAction, null);
+        assertNotEquals(touchAction, null);
 
         int xCoordinate = 355;
         int yCoordinate = 565;
         touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
         Thread.sleep(5000);
         WebElement mobileInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
-        Assert.assertNotEquals(mobileInput, null);
+        assertNotEquals(mobileInput, null);
         System.out.println("Mobile input text: " + MOBILE_NUMBER);
         mobileInput.click();
         Thread.sleep(2000);
@@ -250,13 +250,13 @@ public class LoginTest {
         Thread.sleep(1000);
 
         WebElement proceedBtn = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/proceed"));
-        Assert.assertNotEquals(proceedBtn, null);
+        assertNotEquals(proceedBtn, null);
         System.out.println("Proceed button text: " + proceedBtn.getText());
         proceedBtn.click();
         Thread.sleep(5000);
         try {
             WebElement otpContainer = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cl_otp_container"));
-            Assert.assertNotEquals(otpContainer, null);
+            assertNotEquals(otpContainer, null);
             WebElement otpLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_otp_label"));
             WebElement mobileNumberLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile"));
             WebElement mobileNumberEditCta = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile_ed"));
@@ -295,14 +295,14 @@ public class LoginTest {
     @Test
     public void resentOtp() throws InterruptedException {
         TouchAction touchAction = new TouchAction(driver);
-        Assert.assertNotEquals(touchAction, null);
+        assertNotEquals(touchAction, null);
 
         int xCoordinate = 355;
         int yCoordinate = 565;
         touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
         Thread.sleep(5000);
         WebElement mobileInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
-        Assert.assertNotEquals(mobileInput, null);
+        assertNotEquals(mobileInput, null);
         System.out.println("Mobile input text: " + MOBILE_NUMBER);
         mobileInput.click();
         Thread.sleep(2000);
@@ -310,13 +310,13 @@ public class LoginTest {
         Thread.sleep(1000);
 
         WebElement proceedBtn = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/proceed"));
-        Assert.assertNotEquals(proceedBtn, null);
+        assertNotEquals(proceedBtn, null);
         System.out.println("Proceed button text: " + proceedBtn.getText());
         proceedBtn.click();
         Thread.sleep(5000);
         try {
             WebElement otpContainer = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cl_otp_container"));
-            Assert.assertNotEquals(otpContainer, null);
+            assertNotEquals(otpContainer, null);
             WebElement otpLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_otp_label"));
             WebElement mobileNumberLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile"));
             WebElement mobileNumberEditCta = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile_ed"));
@@ -354,7 +354,7 @@ public class LoginTest {
     @Test
     public void openTermsAndPolicy() throws InterruptedException{
         TouchAction touchAction = new TouchAction(driver);
-        Assert.assertNotEquals(touchAction, null);
+        assertNotEquals(touchAction, null);
 
         int xCoordinate = 355;
         int yCoordinate = 565;

@@ -3,29 +3,28 @@ import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.clipboard.ClipboardContentType;
 import io.appium.java_client.touch.offset.PointOption;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Base64;
-import java.util.Locale;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertTrue;
+import java.util.UUID;
+
+import static org.testng.assertNotEquals;
+import static org.testng.assertNotNull;
+import static org.testng.AssertJUnit.assertTrue;
 
 public class AccountPageTest {
     private AndroidDriver driver;
     private WebDriverWait wait;
-    @Before
+    @BeforeTest
     public void setUp() throws MalformedURLException, InterruptedException {
         DesiredCapabilities caps = new DesiredCapabilities();
 //        oneplus
@@ -41,13 +40,13 @@ public class AccountPageTest {
         caps.setCapability("enforceAppInstall", true);
         caps.setCapability("app", "/Users/Vignesh/Desktop/Automation/src/main/resources/Smytten-169-debug (1).apk");
         driver = new AndroidDriver(new URL("http://127.0.0.1:4723/"), caps);
-        Assert.assertNotEquals(driver, null);
+        assertNotNull(driver);
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        Assert.assertNotEquals(wait, null);
+        assertNotNull(wait);
         Thread.sleep(5000);
     }
 
-    @After
+    @AfterTest
     public void tearDown() {
         if (driver != null) {
             driver.quit();
@@ -105,7 +104,7 @@ public class AccountPageTest {
         if(popUp!= null)
         {
             TouchAction touchAction = new TouchAction(driver);
-            Assert.assertNotEquals(touchAction, null);
+            assertNotEquals(touchAction, null);
 
             int xCoordinate = 355;
             int yCoordinate = 565;
@@ -121,14 +120,14 @@ public class AccountPageTest {
     @Test
     public void login() throws InterruptedException {
         TouchAction touchAction = new TouchAction(driver);
-        Assert.assertNotEquals(touchAction, null);
+        assertNotEquals(touchAction, null);
 
         int xCoordinate = 355;
         int yCoordinate = 565;
         touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
         Thread.sleep(2000);
         WebElement mobileInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
-        Assert.assertNotEquals(mobileInput, null);
+        assertNotEquals(mobileInput, null);
         System.out.println("Mobile input text: " + mobileInput.getText());
         mobileInput.click();
         Thread.sleep(2000);
@@ -137,7 +136,7 @@ public class AccountPageTest {
         Thread.sleep(1000);
 
         WebElement proceedBtn = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/proceed"));
-        Assert.assertNotEquals(proceedBtn, null);
+        assertNotEquals(proceedBtn, null);
         System.out.println("Proceed button text: " + proceedBtn.getText());
         proceedBtn.click();
     }
