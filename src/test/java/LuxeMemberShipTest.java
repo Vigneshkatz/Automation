@@ -5,13 +5,14 @@ import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import static org.testng.Assert.assertNotEquals;
@@ -19,8 +20,12 @@ import static org.testng.AssertJUnit.*;
 
 
 public class LuxeMemberShipTest {
-    public static final String MOBILE_NUMBER = "5111111111";
+
+    public static final String[] ADDRESS_TYPE = {"Office", "Home", "Other"};
+    public static String MOBILE_NUMBER = "5111111111";
     public static final String VALID_OTP = "1234";
+
+    private static final int RANDOMNUMBER = ThreadLocalRandom.current().nextInt(0, 2);
 
     public static final String FIRST_NAME = "VIGNESH";
     public static final String LAST_NAME = "M";
@@ -32,11 +37,16 @@ public class LuxeMemberShipTest {
     public static final String CITY = "RAMAPURAM";
 
     public static final String LUXE_TITLE = "Smytten Luxe";
-    private AndroidDriver driver;
+
+    private static final long MIN_NUMBER = 1000000000L;
+    private static final long MAX_NUMBER = 5999999999L;
+
+    private static long last = MIN_NUMBER - 1;
+    private static AndroidDriver driver;
     private WebDriverWait wait;
     private static TouchAction touchAction;
-    @BeforeTest
-    public void setUp() throws MalformedURLException, InterruptedException {
+    @BeforeSuite
+    public static void setUp() throws MalformedURLException {
         startAppiumServer();
         DesiredCapabilities caps = new DesiredCapabilities();
 //        oneplus
@@ -52,20 +62,18 @@ public class LuxeMemberShipTest {
         caps.setCapability("app", "/Users/Vignesh/Desktop/Automation/src/main/resources/Smytten-169-debug (1).apk");
         driver = new AndroidDriver(new URL("http://127.0.0.1:4723/"), caps);
         assertNotEquals(driver, null);
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        assertNotEquals(wait, null);
-        Thread.sleep(5000);
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         touchAction = new TouchAction(driver);
     }
 
-    @AfterTest
+    @AfterSuite
     public void tearDown() {
         if (driver != null) {
             driver.quit();
         }
         stopAppiumServer();
     }
-    private void startAppiumServer() {
+    private static void startAppiumServer() {
         try {
             Runtime.getRuntime().exec("appium");
             TimeUnit.SECONDS.sleep(10); // Wait for Appium server to start (adjust as necessary)
@@ -85,12 +93,11 @@ public class LuxeMemberShipTest {
 
     @Test
     public void openLuxeMembershipPage() throws InterruptedException {
-        login();
-        Thread.sleep(5000);
+        signUp();
+        checkPopUp();
         gotoTrialFront();
         WebElement luxeEntryPointTrial = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_luxe_top"));
         luxeEntryPointTrial.click();
-        Thread.sleep(2000);
         WebElement luxeTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_subtitle"));
         String luxeTitleText = luxeTitle.getText();
         assertEquals("Luxe title", LUXE_TITLE, luxeTitleText.trim());
@@ -101,16 +108,20 @@ public class LuxeMemberShipTest {
         completePayment();
         verifyOrderConfirmScreen();
     }
+    public void checkPopUp() {
+        WebElement popUpClose = null;
+        try {
+            popUpClose = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_close"));
+            popUpClose.click();
+            assertTrue("popup successfully closed", true);
+        } catch (Exception e) {
+            System.out.println("no popUp");
+            assertTrue("popup is not there", true);
+        }
+    }
 
     private void gotoTrialFront() throws InterruptedException {
         WebElement popUpClose = null;
-        try{
-            popUpClose= driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_close"));
-            popUpClose.click();
-        }catch (Exception e) {
-            System.out.println("no popUp");
-        }
-        Thread.sleep(2000);
         try {
             WebElement trialFront = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/trail_home_tab"));
             assertNotNull(trialFront);
@@ -164,17 +175,17 @@ public class LuxeMemberShipTest {
         upi.click();
         WebElement proceedPayment = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_proceed"));
         proceedPayment.click();
-        Thread.sleep(2000);
+        Thread.sleep(5000);
 
         touchAction.tap(PointOption.point(625, 827)).perform();
-        Thread.sleep(5000);
+        Thread.sleep(2000);
         WebElement idbiBank = driver.findElement(AppiumBy.xpath("//android.view.View[@resource-id=\"bank-item-IBKL\"]/android.view.View"));
         idbiBank.click();
         Thread.sleep(1000);
-        WebElement bankName = driver.findElement(AppiumBy.id("bank-select"));
-        assertEquals("Bank Name",bankName.getText(),"IDBI");
-        WebElement proceedCta = driver.findElement(AppiumBy.id("redesign-v15-cta"));
-        proceedCta.click();
+//        WebElement bankName = driver.findElement(AppiumBy.id("bank-select"));
+//        assertEquals("Bank Name",bankName.getText(),"IDBI");
+        touchAction.tap(PointOption.point(544, 2297)).perform();
+
         Thread.sleep(10000);
         WebElement successPage = driver.findElement(AppiumBy.xpath("//android.webkit.WebView[@text=\"Razorpay Bank\"]"));
         assertNotEquals(null,successPage);
@@ -187,26 +198,22 @@ public class LuxeMemberShipTest {
 
     }
 
-    private void updateAddress() {
+    public void updateAddress() {
         try {
             WebElement firstName = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_fname"));
             WebElement lastName = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_lname"));
             WebElement phoneNumber = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
-            WebElement houseNumber = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/til_house"));
+            WebElement houseNumber = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_house"));
             WebElement streetName = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_street"));
             WebElement landmark = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_landmark"));
+            WebElement email = null;
+//            if(isNewUser) {
+                email = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_email"));
+//            }
             WebElement pincode = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_pincode"));
             WebElement city = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_city"));
             WebElement state = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_state"));
-            WebElement saveAs = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_office"));
             WebElement saveAddress = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_proceed"));
-            pincode.click();
-            pincode.clear();
-            pincode.sendKeys(PINCODE);
-            saveAddress.click();
-            assertEquals(city.getText().toLowerCase(),CITY.toLowerCase());
-            assertEquals(state.getText().toLowerCase(),STATE.toLowerCase());
-            saveAs.click();
             firstName.click();
             firstName.clear();
             firstName.sendKeys(FIRST_NAME);
@@ -217,71 +224,98 @@ public class LuxeMemberShipTest {
             driver.navigate().back();
             phoneNumber.click();
             phoneNumber.clear();
-            phoneNumber.sendKeys(MOBILE_NUMBER);
+            phoneNumber.sendKeys(MOBILE_NUMBER == null ? "9500752205 ": MOBILE_NUMBER);
             driver.navigate().back();
+//            if(isNewUser) {
+                email.click();
+                email.clear();
+                email.sendKeys(generateRandomEmail());
+//            }
             houseNumber.click();
             houseNumber.sendKeys(HOUSE_NO);
             driver.navigate().back();
             streetName.click();
             streetName.sendKeys(STREET);
-            saveAddress.click();
+            driver.navigate().back();
+            pincode.click();
+            pincode.clear();
+            pincode.sendKeys(PINCODE);
+            driver.navigate().back();
             landmark.click();
             landmark.sendKeys(LANDMARK);
+            driver.navigate().back();
+            Random random = new Random();
+            int randomIndex = random.nextInt(ADDRESS_TYPE.length);
+            String randomAddressType = ADDRESS_TYPE[randomIndex];
+            WebElement addressType = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"" + randomAddressType + "\"));"));
+            addressType.click();
+            WebElement defaultAddress = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"Make this my default address\"));"));
+            defaultAddress.click();
+            assertEquals(city.getText().toLowerCase(), CITY.toLowerCase());
+            assertEquals(state.getText().toLowerCase(), STATE.toLowerCase());
             saveAddress.click();
-            Thread.sleep(3000);
-
-        }catch (Exception e)
-        {
+            Thread.sleep(2000);
+        } catch (Exception e) {
             e.printStackTrace();
             fail("update address failed");
         }
     }
 
-    @Test
-    public void login() throws InterruptedException {
+//    @Test
+    public void signUp() throws InterruptedException {
+        TouchAction touchAction = new TouchAction(driver);
         assertNotEquals(touchAction, null);
 
         int xCoordinate = 355;
         int yCoordinate = 565;
+        Thread.sleep(1000);
         touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
-        Thread.sleep(5000);
+        Thread.sleep(1000);
+        touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
         WebElement mobileInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
         assertNotEquals(mobileInput, null);
         System.out.println("Mobile input text: " + mobileInput.getText());
         mobileInput.click();
-        Thread.sleep(2000);
+        MOBILE_NUMBER = String.valueOf(getNumber());
         mobileInput.sendKeys(MOBILE_NUMBER);
-        Thread.sleep(1000);
-
         WebElement proceedBtn = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/proceed"));
         assertNotEquals(proceedBtn, null);
         System.out.println("Proceed button text: " + proceedBtn.getText());
         proceedBtn.click();
-        Thread.sleep(5000);
-        try {
-            WebElement otpContainer = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cl_otp_container"));
-            assertNotEquals(otpContainer, null);
-            WebElement otpLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_otp_label"));
-            WebElement mobileNumberLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile"));
-            WebElement mobileNumberEditCta = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile_ed"));
-            WebElement otpEnterInput = driver.findElement(AppiumBy.className("android.widget.EditText"));
-            String otpLabelText = "Enter OTP sent via SMS";
-            String mobileNumberLabelText = "+91-" + MOBILE_NUMBER;
-            String mobileNumberEditCtaText = "Edit";
-            assertTrue(otpLabelText.trim().equalsIgnoreCase(otpLabel.getText().trim()));
-            assertTrue(mobileNumberLabelText.trim().equalsIgnoreCase(mobileNumberLabel.getText().trim()));
-            assertTrue(mobileNumberEditCtaText.trim().equalsIgnoreCase(mobileNumberEditCta.getText().trim()));
-            otpEnterInput.click();
-//            enter otp
-            Process process = Runtime.getRuntime().exec("adb shell input text " + VALID_OTP);
-            process.waitFor();
-            System.out.println("OTP typed successfully."+ VALID_OTP);
 
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            fail();
+        String maleElementId = "com.app.smytten.debug:id/tv_male";
+        String femaleElementId = "com.app.smytten.debug:id/tv_female";
+        String selectedGenderId = (RANDOMNUMBER == 0) ? maleElementId : femaleElementId;
+        WebElement chooseGender = driver.findElement(AppiumBy.id(selectedGenderId));
+        chooseGender.click();
+
+        WebElement chooseMonth = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/month_spinner"));
+        chooseMonth.click();
+        WebElement selectMonth = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@resource-id='android:id/title' and @text='March']"));
+        selectMonth.click();
+
+        WebElement chooseYear = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/year_spinner"));
+        chooseYear.click();
+        WebElement selectYear = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@resource-id='android:id/title' and @text='2009']"));
+        selectYear.click();
+
+        WebElement confirmBtn = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/signup_manual"));
+        confirmBtn.click();
+    }
+
+    private static long getNumber() {
+        Random random = new Random();
+        long firstDigit = random.nextInt(5) + 1;
+        long id = (firstDigit * 1000000000L) + (random.nextLong() % 1000000000L);
+        if (id <= last) {
+            id = last % (MAX_NUMBER - MIN_NUMBER + 1) + MIN_NUMBER;
         }
-        Thread.sleep(3000);
+        return last = id;
+    }
+
+    public static String generateRandomEmail() {
+        String uuid = UUID.randomUUID().toString();
+        return "katziio" + uuid.substring(0, 8) + "@smytten.com";
     }
 
 

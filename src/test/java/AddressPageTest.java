@@ -271,7 +271,6 @@ public class AddressPageTest {
 
     @Test(priority = 5)
     public void updateAddress() {
-
         try {
             WebElement firstName = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_fname"));
             WebElement lastName = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_lname"));
