@@ -1,3 +1,5 @@
+package luxe;
+
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
@@ -182,10 +184,7 @@ public class LuxeMemberShipTest {
         WebElement idbiBank = driver.findElement(AppiumBy.xpath("//android.view.View[@resource-id=\"bank-item-IBKL\"]/android.view.View"));
         idbiBank.click();
         Thread.sleep(1000);
-//        WebElement bankName = driver.findElement(AppiumBy.id("bank-select"));
-//        assertEquals("Bank Name",bankName.getText(),"IDBI");
         touchAction.tap(PointOption.point(544, 2297)).perform();
-
         Thread.sleep(10000);
         WebElement successPage = driver.findElement(AppiumBy.xpath("//android.webkit.WebView[@text=\"Razorpay Bank\"]"));
         assertNotEquals(null,successPage);
