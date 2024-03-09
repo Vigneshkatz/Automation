@@ -1,236 +1,309 @@
 package accountsection;
 
+import base.BaseTest;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.TouchAction;
-import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.clipboard.ClipboardContentType;
 import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
+import org.smytten.pof.*;
+import org.smytten.util.Utility;
 import org.testng.annotations.Test;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.Duration;
 import java.util.Base64;
-
-import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.testng.Assert.assertNotEquals;
-import static org.testng.AssertJUnit.assertNotNull;
-import static org.testng.AssertJUnit.assertTrue;
+import static org.testng.AssertJUnit.*;
 
-public class AccountPageTest {
-    private AndroidDriver driver;
-    private WebDriverWait wait;
-    @BeforeTest
-    public void setUp() throws MalformedURLException, InterruptedException {
-        DesiredCapabilities caps = new DesiredCapabilities();
-//        oneplus
-        caps.setCapability("deviceName", "OnePlus LE2111");
-        caps.setCapability("platformVersion", "14");
-        caps.setCapability("platformName", "Android");
-//        oneplus
+public class AccountPageTest extends BaseTest {
 
-        caps.setCapability("deviceName", "realme RMX1971");
-        caps.setCapability("platformVersion", "11");
-        caps.setCapability("automationName", "UiAutomator2");
-        caps.setCapability("autoGrantPermissions", true);
-        caps.setCapability("enforceAppInstall", true);
-        caps.setCapability("app", "/Users/Vignesh/Desktop/Automation/src/main/resources/Smytten-169-debug (1).apk");
-        driver = new AndroidDriver(new URL("http://127.0.0.1:4723/"), caps);
-        assertNotNull(driver);
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        assertNotNull(wait);
-        Thread.sleep(5000);
-    }
+    private static final int RANDOMNUMBER = ThreadLocalRandom.current().nextInt(0, 2);
+    private static TouchAction touchAction;
 
-    @AfterTest
-    public void tearDown() {
-        if (driver != null) {
-            driver.quit();
+    @Test(priority = 4)
+    public void verifyAccountSection() {
+        WebElement profileSection = null;
+        WebElement profileName = null;
+        WebElement editProfile = null;
+        WebElement editIcon = null;
+        WebElement smyttenBenefits = null;
+        WebElement trialHowTo = null;
+        WebElement shopHowTo = null;
+        WebElement rewardHowTo = null;
+        WebElement myOrders = null;
+        WebElement helpSection = null;
+        WebElement referAndEarn = null;
+        WebElement referBanner = null;
+        WebElement reviewSection = null;
+        WebElement surveySection = null;
+        WebElement savedAddress = null;
+        WebElement wishlist = null;
+        WebElement smyttenLuxe = null;
+        WebElement smyttenBlog = null;
+        WebElement privacyPolicy = null;
+        WebElement termsAndCondition = null;
+        WebElement faqs = null;
+        WebElement smyttenLogo = null;
+        WebElement signOut = null;
+        try {
+            profileSection = AccountPage.getEditProfile(driver);
+            profileName = AccountPage.getProfileName(driver);
+            editProfile = AccountPage.getEditProfile(driver);
+            editIcon = AccountPage.getEditIcon(driver);
+            smyttenBenefits = AccountPage.getSmyttenBenefits(driver);
+            trialHowTo = AccountPage.getTrialHowTo(driver);
+            shopHowTo = AccountPage.getShopHowTo(driver);
+            rewardHowTo = AccountPage.getRewardHowTo(driver);
+            myOrders = AccountPage.getMyOrders(driver);
+            helpSection = AccountPage.getHelpSection(driver);
+            referAndEarn = AccountPage.getReferAndEarn(driver);
+            referBanner = AccountPage.getReferBanner(driver);
+            reviewSection = AccountPage.getReviewSection(driver);
+            surveySection = AccountPage.getSurveySection(driver);
+            savedAddress = AccountPage.getSavedAddress(driver);
+            wishlist = AccountPage.getWishlist(driver);
+            smyttenLuxe = AccountPage.getSmyttenLuxe(driver);
+            smyttenBlog = AccountPage.getSmyttenBlog(driver);
+            driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(100000)"));
+            privacyPolicy = AccountPage.getPrivacyPolicy(driver);
+            termsAndCondition = AccountPage.getTermsAndCondition(driver);
+            faqs = AccountPage.getFaqs(driver);
+            smyttenLogo = AccountPage.getSmyttenLogo(driver);
+            signOut = AccountPage.getSignOut(driver);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Element not found");
         }
     }
 
-    @Test
-    public void verifyBasicFields() throws InterruptedException {
-        login();
-        gotoAccountPage();
-//        verifyBasicFieldsText();
-//        openEditPage();
-    }
-
-    @Test
-    public void openEditPage() throws InterruptedException {
-        login();
-        gotoAccountPage();
-        WebElement editIcon = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/profile_home_tab"));
-        editIcon.click();
-        updateProfile();
-    }
-
-    @Test
-    public void verifyBasicFieldsText() throws InterruptedException {
-        WebElement profileName = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/profile_home_tab"));
-        WebElement editText = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/profile_home_tab"));
-        WebElement editIcon = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/profile_home_tab"));
-        WebElement trialPoints = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_trial_point"));
-        WebElement walletBalance = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_shop_wallet_title"));
-        WebElement bucksBalance = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_reward_title"));
-        WebElement myOrders = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/ll_header_1"));
-        WebElement helpSection = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/ll_header_2"));
-        String userName = profileName.getText();
-        System.out.println(userName);
-        assertTrue(userName.equalsIgnoreCase("katziio"));
-        String editTextValue = editText.getText();
-        String trialPointsValue = trialPoints.getText();
-        String walletBalanceValue = walletBalance.getText();
-        String bucksBalanceValue = bucksBalance.getText();
-        String myOrderValue = myOrders.getText();
-        String helpSectionValue = helpSection.getText();
-        assertTrue("Edit Profile Text", editTextValue.equalsIgnoreCase("edit profile"));
-        assertTrue("Default Trial Balance",trialPointsValue.equalsIgnoreCase("6"));
-        assertTrue("Default Wallet Balance",walletBalanceValue.equalsIgnoreCase("0"));
-        assertTrue("Default Bucks Balance",bucksBalanceValue.equalsIgnoreCase("0"));
-        assertTrue("My Order",myOrderValue.equalsIgnoreCase("my orders"));
-        assertTrue("Help Section",helpSectionValue.equalsIgnoreCase("help"));
-    }
-
-
-    public void gotoAccountPage() throws InterruptedException {
-        WebElement popUp = null;
-        popUp = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_image"));
-        if(popUp!= null)
-        {
-            TouchAction touchAction = new TouchAction(driver);
-            assertNotEquals(touchAction, null);
-
-            int xCoordinate = 355;
-            int yCoordinate = 565;
-            touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
-            Thread.sleep(2000);
+    @Test(priority = 3)
+    public void gotoAccountPage() {
+        WebElement mobileInput = null;
+        try {
+            mobileInput = Navigation.getProfileHomeTab(driver);
+            mobileInput.click();
+            assertTrue(true);
+        } catch (Exception e) {
+            fail("failed to go account page");
         }
-       Thread.sleep(2000);
-       WebElement mobileInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/profile_home_tab"));
-       mobileInput.click();
-       Thread.sleep(2000);
     }
 
-    @Test
-    public void login() throws InterruptedException {
-        TouchAction touchAction = new TouchAction(driver);
-        assertNotEquals(touchAction, null);
-
-        int xCoordinate = 355;
-        int yCoordinate = 565;
-        touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
-        Thread.sleep(2000);
-        WebElement mobileInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
-        assertNotEquals(mobileInput, null);
-        System.out.println("Mobile input text: " + mobileInput.getText());
-        mobileInput.click();
-        Thread.sleep(2000);
-        touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
-        mobileInput.sendKeys("8610496028");
-        Thread.sleep(1000);
-
-        WebElement proceedBtn = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/proceed"));
-        assertNotEquals(proceedBtn, null);
-        System.out.println("Proceed button text: " + proceedBtn.getText());
-        proceedBtn.click();
+    @Test(priority = 2)
+    public void checkPopUp() {
+        WebElement popUpClose = null;
+        try {
+            popUpClose = PopUp.getPopUpClose(driver);
+            popUpClose.click();
+            assertTrue("popup successfully closed", true);
+        } catch (Exception e) {
+            System.out.println("no popUp");
+            assertTrue("popup is not there", true);
+        }
     }
 
-    @Test
+    @Test(priority = 0)
+    public void initialLandingPageText() throws InterruptedException {
+        try {
+            touchAction = new TouchAction<>(driver);
+            WebElement startCta = LandingPage.getStartCtaElement(driver);
+            assertNotNull(startCta);
+            startCta.click();
+        } catch (Exception e) {
+            fail("landing page" + e.getMessage());
+        }
+    }
+    @Test(priority = 1)
+    public void signUp() throws InterruptedException {
+        WebElement mobileInput = null;
+        WebElement proceedBtn = null;
+        WebElement otpContainer = null;
+        WebElement otpLabel = null;
+        WebElement mobileNumberLabel = null;
+        WebElement mobileNumberEditCta = null;
+        WebElement otpEnterInput = null;
+        WebElement chooseGender = null;
+
+        try {
+            mobileInput = LoginPage.getMobileNumberInput(driver);
+            assertNotNull(mobileInput);
+            mobileInput.click();
+            mobileInput.sendKeys(Utility.getNumber());
+            proceedBtn = LoginPage.getSendOtpButton(driver);
+            proceedBtn.click();
+
+//            otpContainer = OtpPage.getOtpContainer(driver);
+//            assertNotEquals(otpContainer, null);
+//            otpLabel = OtpPage.getOtpLabel(driver);
+//            mobileNumberLabel = OtpPage.getMobileNumberLabel(driver);
+//            mobileNumberEditCta = OtpPage.getMobileNumberEditCta(driver);
+//            otpEnterInput = OtpPage.getOtpEnterInput(driver);
+//            assertNotNull(otpLabel);
+//            assertNotNull(mobileNumberLabel);
+//            assertNotNull(mobileNumberEditCta);
+//            assertNotNull(otpEnterInput);
+
+            WebElement maleElement = SignUpPage.getMaleGenderOption(driver);
+            WebElement femaleElement = SignUpPage.getFemaleGenderOption(driver);
+            chooseGender = (RANDOMNUMBER == 0) ? maleElement : femaleElement;
+            chooseGender.click();
+
+            SignUpPage.getMonthSpinner(driver).click();
+            SignUpPage.getMarchMonthOption(driver).click();
+
+            SignUpPage.getYearSpinner(driver).click();
+            SignUpPage.getYear2009Option(driver).click();
+
+            SignUpPage.getReferralInput(driver).click();
+            SignUpPage.getReferralInput(driver).sendKeys(SignUpPage.GROUP_INVITE_CODE);
+
+            SignUpPage.getReferralApplyBtn(driver).click();
+
+            // Wait for referral success title to be visible
+            SignUpPage.getReferralSuccessTitle(driver);
+            assertNotNull(SignUpPage.getReferralSuccessTitle(driver));
+            System.out.println(SignUpPage.getReferralSuccessTitle(driver).getText());
+
+            System.out.println(SignUpPage.getReferralSuccessPaymentTitle(driver).getText());
+
+            SignUpPage.getConfirmBtn(driver).click();
+        } catch (Exception e) {
+            fail("Some element not found");
+        }
+    }
+
+    @Test(priority = 4)
+    public void openEditProfile() {
+        WebElement editIcon = null;
+
+        try {
+            editIcon = AccountPage.getEditIcon(driver);
+            editIcon.click();
+        } catch (Exception e) {
+            fail("Failed to open edit page");
+        }
+
+    }
+
+    @Test(priority = 5)
     public void updateProfile() throws InterruptedException {
+        WebElement editIcon = null;
+        WebElement saveBtn = null;
+        try {
+            editIcon = AccountPage.getProfileEditTab(driver);
+            editIcon.click();
             updateName();
             updateEmail();
             updateGender();
             updateDOB();
             updatePincode();
-            WebElement saveBtn = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_proceed"));
+            saveBtn = ProfileUpdatePage.getProceedButton(driver);
             saveBtn.click();
-
+        } catch (Exception e) {
+            fail("Some Element not found"+e.getMessage());
+        }
     }
 
     private void updatePincode() {
-        WebElement pincodeInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_pincode"));
-        pincodeInput.click();
-        pincodeInput.sendKeys("635115");
+        WebElement pincodeInput = null;
+        try {
+            pincodeInput = ProfileUpdatePage.getPincodeInput(driver);
+            pincodeInput.click();
+            pincodeInput.sendKeys("635115");
+        } catch (Exception e) {
+            fail("fained to updated pincode");
+        } finally {
+            driver.navigate().back();
+        }
 
     }
 
     private void updateDOB() throws InterruptedException {
-        WebElement chooseMonth = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/month_spinner"));
-        chooseMonth.click();
-        Thread.sleep(1000);
-        WebElement selectMonth = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@resource-id='android:id/title' and @text='March']"));
-        selectMonth.click();
+        WebElement chooseMonth = null;
+        WebElement selectMonth = null;
+        WebElement chooseYear = null;
+        WebElement selectYear = null;
+        try {
+            chooseMonth = ProfileUpdatePage.getChooseMonth(driver);
+            chooseMonth.click();
+            selectMonth = ProfileUpdatePage.getSelectMarch(driver);
+            selectMonth.click();
 
-        WebElement chooseYear = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/year_spinner"));
-        chooseYear.click();
-        Thread.sleep(1000);
-        WebElement selectYear = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@resource-id='android:id/title' and @text='2009']"));
-        selectYear.click();
+            chooseYear = ProfileUpdatePage.getChooseYear(driver);
+            chooseYear.click();
+
+            selectYear = ProfileUpdatePage.getChooseYear(driver);
+            selectYear.click();
+        } catch (Exception e) {
+            fail("Failed to update dob");
+        }
     }
 
     private void updateGender() {
-        WebElement otherGender = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_others"));
-        otherGender.click();
+        WebElement otherGender = null;
+        try {
+            otherGender = ProfileUpdatePage.getOthersOption(driver);
+            otherGender.click();
+        } catch (Exception e) {
+            fail("failed to update gender");
+        }
+
     }
 
     private void updateEmail() throws InterruptedException {
-        String email =generateRandomEmail();
-        WebElement emailInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_name"));
-        emailInput.click();
-        Thread.sleep(1000);
-        emailInput.sendKeys(email);
+        String email = Utility.generateRandomEmail();
+        WebElement emailInput = null;
+        try {
+            emailInput = ProfileUpdatePage.getEmailInput(driver);
+            emailInput.click();
+            emailInput.sendKeys(email);
+        } catch (Exception e) {
+            fail("Failed to update email");
+        }
+
     }
 
     private void updateName() throws InterruptedException {
         String name = "Not Guest User";
-        WebElement nameInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_name"));
-        nameInput.click();
-        Thread.sleep(1000);
-        nameInput.sendKeys(name);
+        WebElement nameInput = null;
+        try {
+            nameInput = ProfileUpdatePage.getNameInput(driver);
+            nameInput.click();
+            nameInput.sendKeys(name);
+        } catch (Exception e) {
+            fail("name update failed");
+        }
+
     }
 
-    public static String generateRandomEmail() {
-        String uuid = UUID.randomUUID().toString();
-        return "smytten" + uuid.substring(0, 8) + "@katziio.com";
-    }
-
-    @Test
+    //    @Test
     public void copyOtp() throws InterruptedException {
         String decodedOtp = null;
-        Thread.sleep(2000);
-        driver.openNotifications ();
-        Thread.sleep(2000);
         WebElement clearNotification = null;
+        WebElement actionContainer = null;
+        WebElement copyAction = null;
         try {
+            driver.openNotifications();
             clearNotification = driver.findElement(AppiumBy.id("com.android.systemui:id/clear_all_port"));
             clearNotification.click();
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             TouchAction touchAction = new TouchAction(driver);
             int xCoordinate = 627;
             int yCoordinate = 1608;
             touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
             System.out.println("no new notification");
-            Thread.sleep(2000);
         }
-        login();
+        signUp();
+
         try {
-            Thread.sleep(20000);
             driver.openNotifications();
-            Thread.sleep(2000);
-            WebElement actionContainer = driver.findElement(AppiumBy.id("android:id/actions_container_layout"));
-            WebElement copyAction  = driver.findElement(AppiumBy.xpath("//android.widget.Button[@content-desc=\"Copy Verification Code\"]"));
+            actionContainer = driver.findElement(AppiumBy.id("android:id/actions_container_layout"));
+            assertNotNull(actionContainer);
+            copyAction = driver.findElement(AppiumBy.xpath("//android.widget.Button[@content-desc=\"Copy Verification Code\"]"));
             copyAction.click();
             System.out.println("copied otp");
-            String otp = ((AndroidDriver) driver).getClipboard(ClipboardContentType.PLAINTEXT);
+            String otp = driver.getClipboard(ClipboardContentType.PLAINTEXT);
             System.out.println(otp);
             byte[] decodedBytes = Base64.getDecoder().decode(otp);
             String decodedText = new String(decodedBytes);
@@ -238,17 +311,15 @@ public class AccountPageTest {
             try {
                 clearNotification = driver.findElement(AppiumBy.id("com.android.systemui:id/clear_all_port"));
                 clearNotification.click();
-            }catch (Exception e)
-            {
-                TouchAction touchAction = new TouchAction(driver);
+            } catch (Exception e) {
                 int xCoordinate = 627;
                 int yCoordinate = 1608;
                 touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
                 System.out.println("no new notification");
             }
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
+            fail();
         }
     }
 }

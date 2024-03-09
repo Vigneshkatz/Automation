@@ -1,33 +1,27 @@
 package accountsection;
 
+import base.BaseTest;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.TouchAction;
-import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.smytten.Address;
-import org.smytten.PinCodeDetails;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeSuite;
+import org.smytten.user.Address;
+import org.smytten.user.PinCodeDetails;
+import org.smytten.util.Utility;
 import org.testng.annotations.Test;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static org.testng.Assert.assertNotEquals;
 import static org.testng.AssertJUnit.*;
 
 
-public class AddressPageTest {
+public class AddressPageTest extends BaseTest {
     public static final String FIRST_NAME = "VIGNESH";
     public static final String LAST_NAME = "M";
     public static final String HOUSE_NO = "3/182 THIPPANAPALLI VILLAGE AND POST";
@@ -38,93 +32,26 @@ public class AddressPageTest {
     public static final String CITY = "RAMAPURAM";
     public static final String[] ADDRESS_TYPE = {"Office", "Home", "Other"};
     private static final int RANDOMNUMBER = ThreadLocalRandom.current().nextInt(0, 2);
-    private static final long MIN_NUMBER = 1000000000L;
-    private static final long MAX_NUMBER = 5999999999L;
-    private static int addressEntryCount = 1;
     public static String MOBILE_NUMBER = null;
     public static HashMap<Integer, HashMap<String, String>> address = new HashMap<>();
     public static Map<Integer, PinCodeDetails> pincode = defaultPincode();
     static List<Address> addressList = new ArrayList<>();
-    private static long last = MIN_NUMBER - 1;
+    private static int addressEntryCount = 1;
     private static TouchAction touchAction;
-    private static AndroidDriver driver;
     private WebDriverWait wait;
     private Boolean isEmpty = true;
     private Boolean isNewUser = true;
-
-    @BeforeSuite
-    public static void setUp() throws MalformedURLException {
-        startAppiumServer();
-        DesiredCapabilities caps = new DesiredCapabilities();
-//        oneplus
-        caps.setCapability("deviceName", "OnePlus LE2111");
-        caps.setCapability("platformVersion", "14");
-        caps.setCapability("platformName", "Android");
-//        realme
-//        caps.setCapability("deviceName", "realme RMX1971");
-//        caps.setCapability("platformVersion", "11");
-        caps.setCapability("automationName", "UiAutomator2");
-        caps.setCapability("autoGrantPermissions", true);
-        caps.setCapability("enforceAppInstall", true);
-        caps.setCapability("app", "/Users/Vignesh/Desktop/Automation/src/main/resources/Smytten-169-debug (1).apk");
-        driver = new AndroidDriver(new URL("http://127.0.0.1:4723/"), caps);
-        assertNotEquals(driver, null);
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        touchAction = new TouchAction(driver);
-    }
-
-    @AfterSuite
-    public static void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
-        stopAppiumServer();
-    }
-
-    private static void startAppiumServer() {
-        try {
-            Runtime.getRuntime().exec("appium");
-            TimeUnit.SECONDS.sleep(10);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void stopAppiumServer() {
-        try {
-            Runtime.getRuntime().exec("pkill -9 node");
-            TimeUnit.SECONDS.sleep(5);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static String generateRandomEmail() {
-        String uuid = UUID.randomUUID().toString();
-        return "katziio" + uuid.substring(0, 8) + "@smytten.com";
-    }
 
     public static void addAddress(int noOfAddress) {
 
         for (int i = 1; i <= noOfAddress; i++) {
             Random random = new Random();
             int randomNumber = random.nextInt(5) + 1;
-            Address address = new Address(generateRandomString(10), generateRandomString(5), generateRandomEmail(), String.valueOf(getNumber()), generateRandomString(8), generateRandomString(20), generateRandomString(20), pincode.get(randomNumber).pinCode, pincode.get(randomNumber).city, pincode.get(randomNumber).state);
+            Address address = new Address(Utility.generateRandomString(10), Utility.generateRandomString(5), Utility.generateRandomEmail(), Utility.getNumber(), Utility.generateRandomString(8), Utility.generateRandomString(20), Utility.generateRandomString(20), pincode.get(randomNumber).pinCode, pincode.get(randomNumber).city, pincode.get(randomNumber).state);
             addressList.add(address);
         }
     }
 
-    public static String generateRandomString(int length) {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        StringBuilder sb = new StringBuilder(length);
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        for (int i = 0; i < length; i++) {
-            int index = random.nextInt(characters.length());
-            char randomChar = characters.charAt(index);
-            sb.append(randomChar);
-        }
-        return sb.toString();
-    }
 
     public static Map<Integer, PinCodeDetails> defaultPincode() {
         Map<Integer, PinCodeDetails> pinCodeMap = new HashMap<>();
@@ -136,15 +63,6 @@ public class AddressPageTest {
         return pinCodeMap;
     }
 
-    private static long getNumber() {
-        Random random = new Random();
-        long firstDigit = random.nextInt(5) + 1;
-        long id = (firstDigit * 1000000000L) + (random.nextLong() % 1000000000L);
-        if (id <= last) {
-            id = last % (MAX_NUMBER - MIN_NUMBER + 1) + MIN_NUMBER;
-        }
-        return last = id;
-    }
 
     @Test(priority = 0)
     public void login() throws InterruptedException {
@@ -165,7 +83,7 @@ public class AddressPageTest {
             proceedBtn.click();
             this.isEmpty = false;
             this.isNewUser = false;
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             fail("login attempt fail");
         }
@@ -281,7 +199,7 @@ public class AddressPageTest {
             WebElement streetName = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_street"));
             WebElement landmark = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_landmark"));
             WebElement email = null;
-            if(isNewUser) {
+            if (isNewUser) {
                 email = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_email"));
             }
             WebElement pincode = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_pincode"));
@@ -298,12 +216,12 @@ public class AddressPageTest {
             driver.navigate().back();
             phoneNumber.click();
             phoneNumber.clear();
-            phoneNumber.sendKeys(MOBILE_NUMBER == null ? "9500752205 ": MOBILE_NUMBER);
+            phoneNumber.sendKeys(MOBILE_NUMBER == null ? "9500752205 " : MOBILE_NUMBER);
             driver.navigate().back();
-            if(isNewUser) {
+            if (isNewUser) {
                 email.click();
                 email.clear();
-                email.sendKeys(generateRandomEmail());
+                email.sendKeys(Utility.generateRandomEmail());
             }
             houseNumber.click();
             houseNumber.sendKeys(HOUSE_NO);
@@ -342,29 +260,27 @@ public class AddressPageTest {
         List<WebElement> addressCards = null;
         try {
             addressList = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/rv_address"));
-             addressCards = addressList.findElements(AppiumBy.id("com.app.smytten.debug:id/cl_root"));
-             if(addressCards !=null && addressCards.isEmpty())
-             {
-                 assertTrue("no address is there",true);
-             }
+            addressCards = addressList.findElements(AppiumBy.id("com.app.smytten.debug:id/cl_root"));
+            if (addressCards != null && addressCards.isEmpty()) {
+                assertTrue("no address is there", true);
+            }
 
-            if(addressCards.size() == 1)
-            {
-                assertTrue("onlyone address is there",true);
+            if (addressCards.size() == 1) {
+                assertTrue("onlyone address is there", true);
             }
             for (WebElement addressCard : addressCards) {
                 WebElement defaultCta = null;
                 try {
                     defaultCta = addressCard.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_set_default"));
-                    if(defaultCta==null){
-                        assertTrue("only one card is there and it is default",true);
+                    if (defaultCta == null) {
+                        assertTrue("only one card is there and it is default", true);
                         return;
                     }
                     defaultAddressName = addressCard.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_address_title")).getText();
                     defaultCta.click();
                     break;
                 } catch (NoSuchElementException e) {
-                    assertTrue("only one card is there and it is default",true);
+                    assertTrue("only one card is there and it is default", true);
                     e.printStackTrace();
                 }
             }
@@ -411,9 +327,8 @@ public class AddressPageTest {
                         continue;
 
                     }
-                }catch (Exception e)
-                {
-                    assertTrue("not more address left to delete",true);
+                } catch (Exception e) {
+                    assertTrue("not more address left to delete", true);
                     break;
                 }
             }
@@ -437,7 +352,7 @@ public class AddressPageTest {
         assertNotEquals(mobileInput, null);
         System.out.println("Mobile input text: " + mobileInput.getText());
         mobileInput.click();
-        MOBILE_NUMBER = String.valueOf(getNumber());
+        MOBILE_NUMBER = Utility.getNumber();
         mobileInput.sendKeys(MOBILE_NUMBER);
         WebElement proceedBtn = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/proceed"));
         assertNotEquals(proceedBtn, null);
@@ -465,7 +380,7 @@ public class AddressPageTest {
     }
 
     public void addMultipleAddress() throws InterruptedException {
-        this.isEmpty= false;
+        this.isEmpty = false;
         verifyAddressPage();
         if (addressEntryCount == 1) {
             addAddress(5);

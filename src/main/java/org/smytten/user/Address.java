@@ -1,4 +1,4 @@
-package org.smytten;
+package org.smytten.user;
 
 public class Address {
     public final String firstName;

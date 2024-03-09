@@ -1,90 +1,34 @@
 package accountsection;
 
+import base.BaseTest;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.TouchAction;
-import io.appium.java_client.android.AndroidDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeSuite;
+import org.smytten.pof.*;
 import org.testng.annotations.Test;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.concurrent.TimeUnit;
 
 import static org.testng.Assert.assertNotEquals;
 import static org.testng.AssertJUnit.*;
 
-public class AccountRedirectionTest {
+public class AccountRedirectionTest extends BaseTest {
 
-    public static String MOBILE_NUMBER = "3939383528";
-    private static AndroidDriver driver;
-    private static TouchAction touchAction;
-    private WebDriverWait wait;
+    private static final String MOBILE_NUMBER = null;
 
-    @BeforeSuite
-    public static void setUp() throws MalformedURLException {
-        startAppiumServer();
-        DesiredCapabilities caps = new DesiredCapabilities();
-//        oneplus
-        caps.setCapability("deviceName", "OnePlus LE2111");
-        caps.setCapability("platformVersion", "14");
-        caps.setCapability("platformName", "Android");
-//        realme
-//        caps.setCapability("deviceName", "realme RMX1971");
-//        caps.setCapability("platformVersion", "11");
-        caps.setCapability("automationName", "UiAutomator2");
-        caps.setCapability("autoGrantPermissions", true);
-        caps.setCapability("enforceAppInstall", true);
-        caps.setCapability("app", "/Users/Vignesh/Desktop/Automation/src/main/resources/Smytten-169-debug (1).apk");
-        driver = new AndroidDriver(new URL("http://127.0.0.1:4723/"), caps);
-        assertNotEquals(driver, null);
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        touchAction = new TouchAction(driver);
-    }
-
-    @AfterSuite
-    public static void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
-        stopAppiumServer();
-    }
-
-    private static void startAppiumServer() {
-        try {
-            Runtime.getRuntime().exec("appium");
-            TimeUnit.SECONDS.sleep(10);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void stopAppiumServer() {
-        try {
-            Runtime.getRuntime().exec("pkill -9 node");
-            TimeUnit.SECONDS.sleep(5);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     @Test(priority = 1)
     public void login() throws InterruptedException {
         try {
-            WebElement startCta = driver.findElement(AppiumBy.className("android.widget.TextView"));
+            WebElement startCta = LandingPage.getStartCtaElement(driver);
             startCta.click();
-            WebElement mobileInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
+            WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
             assertNotEquals(mobileInput, null);
-            System.out.println("Mobile input text: " + mobileInput.getText());
+            System.out.println("Mobile input text: " + mobileInput.getText() + "->" + MOBILE_NUMBER);
             mobileInput.click();
             mobileInput.click();
             mobileInput.click();
             mobileInput.sendKeys(MOBILE_NUMBER);
 
-            WebElement proceedBtn = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/proceed"));
+            WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             assertNotEquals(proceedBtn, null);
             System.out.println("Proceed button text: " + proceedBtn.getText());
             proceedBtn.click();
@@ -124,7 +68,7 @@ public class AccountRedirectionTest {
     public void checkPopUp() {
         WebElement popUpClose = null;
         try {
-            popUpClose = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_close"));
+            popUpClose = PopUp.getPopUpClose(driver);
             popUpClose.click();
             assertTrue("popup successfully closed", true);
         } catch (Exception e) {
@@ -135,8 +79,9 @@ public class AccountRedirectionTest {
 
     @Test(priority = 3)
     public void gotoAccountPage() {
+        WebElement mobileInput = null;
         try {
-            WebElement mobileInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/profile_home_tab"));
+            mobileInput = Navigation.getProfileHomeTab(driver);
             mobileInput.click();
             assertTrue(true);
         } catch (Exception e) {
@@ -170,30 +115,30 @@ public class AccountRedirectionTest {
         WebElement smyttenLogo = null;
         WebElement signOut = null;
         try {
-            profileSection = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/v_edit_profile"));
-            profileName = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/name"));
-            editProfile = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/email"));
-            editIcon = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_edit_profile"));
-            smyttenBenefits = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cv_banefits"));
-            trialHowTo = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/v_edit_profile"));
-            shopHowTo = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cv_shop_wallet"));
-            rewardHowTo = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cv_reward_cash"));
-            myOrders = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/ll_header_1"));
-            helpSection = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/ll_header_2"));
-            referAndEarn = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"Refer and Earn\"));"));
-            referBanner = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_banner"));
-            reviewSection = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"Leave a review\"));"));
-            surveySection = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"Take a survey\"));"));
-            savedAddress = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"My Saved Address\"));"));
-            wishlist = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"My Wishlist\"));"));
-            smyttenLuxe = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"Smytten Luxe\"));"));
-            smyttenBlog = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"Smytten Blog\"));"));
+            profileSection = AccountPage.getEditProfile(driver);
+            profileName = AccountPage.getProfileName(driver);
+            editProfile = AccountPage.getEditProfile(driver);
+            editIcon = AccountPage.getEditIcon(driver);
+            smyttenBenefits = AccountPage.getSmyttenBenefits(driver);
+            trialHowTo = AccountPage.getTrialHowTo(driver);
+            shopHowTo = AccountPage.getShopHowTo(driver);
+            rewardHowTo = AccountPage.getRewardHowTo(driver);
+            myOrders = AccountPage.getMyOrders(driver);
+            helpSection = AccountPage.getHelpSection(driver);
+            referAndEarn = AccountPage.getReferAndEarn(driver);
+            referBanner = AccountPage.getReferBanner(driver);
+            reviewSection = AccountPage.getReviewSection(driver);
+            surveySection = AccountPage.getSurveySection(driver);
+            savedAddress = AccountPage.getSavedAddress(driver);
+            wishlist = AccountPage.getWishlist(driver);
+            smyttenLuxe = AccountPage.getSmyttenLuxe(driver);
+            smyttenBlog = AccountPage.getSmyttenBlog(driver);
             driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(100000)"));
-            privacyPolicy = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/ll_footer_1"));
-            termsAndCondition = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/ll_footer_2"));
-            faqs = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/ll_footer_3"));
-            smyttenLogo = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_smytten_logo"));
-            signOut = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_sign_out"));
+            privacyPolicy = AccountPage.getPrivacyPolicy(driver);
+            termsAndCondition = AccountPage.getTermsAndCondition(driver);
+            faqs = AccountPage.getFaqs(driver);
+            smyttenLogo = AccountPage.getSmyttenLogo(driver);
+            signOut = AccountPage.getSignOut(driver);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -323,7 +268,7 @@ public class AccountRedirectionTest {
         try {
             myOrders = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/ll_header_1"));
             myOrders.click();
-            orderTitle = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text=\"My Orders\"]"));
+//            orderTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tb_my_orders"));
             emptyTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_empty_title"));
             emptyData = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_empty_data"));
             emptySubtitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_empty_desc"));
@@ -331,6 +276,7 @@ public class AccountRedirectionTest {
             assertEquals("Order Page empty title", "Sorry, You do not have any orders!", emptyTitle.getText());
             assertEquals("Order Page subtitle", "Discover something new, place an order today!", emptySubtitle.getText());
             assertNotNull(emptyData);
+            assertNotNull(orderTitle);
         } catch (Exception e) {
             e.printStackTrace();
             fail("element Not found");
@@ -395,12 +341,54 @@ public class AccountRedirectionTest {
 
     @Test(priority = 11)
     public void openReview() {
-        // Test logic for opening review section
+        gotoAccountPage();
+        WebElement reviewSection = null;
+        WebElement reviewTitle = null;
+        WebElement emptyState = null;
+        WebElement tabs = null;
+        WebElement emptyText = null;
+        try {
+            reviewSection = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"Leave a review\"));"));
+            assertNotNull(reviewSection);
+            reviewTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
+            assertEquals("Review Section title", "Feedbacks & Surveys", reviewTitle.getText());
+            tabs = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_tab1"));
+            assertEquals("trial section", "Trial", tabs.getText());
+            emptyState = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_empty_data"));
+            assertNotNull(emptyState);
+            emptyText = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_empty_title"));
+            assertEquals("Empty State", "You don't have any products with pending feedback. \n" + "\n" + "Find all your recently purchased products here for review.", emptyText.getText());
+        } catch (Exception e) {
+            fail("Some element not found" + e.getMessage());
+        } finally {
+            driver.navigate().back();
+        }
     }
 
     @Test(priority = 12)
     public void openSurvey() {
-        // Test logic for opening survey
+        gotoAccountPage();
+        WebElement surveySection = null;
+        WebElement surveyTitle = null;
+        WebElement emptyState = null;
+        WebElement tabs = null;
+        WebElement emptyText = null;
+        try {
+            surveySection = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"Leave a review\"));"));
+            assertNotNull(surveySection);
+            surveyTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
+            assertEquals("Review Section title", "Feedbacks & Surveys", surveyTitle.getText());
+            tabs = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_tab3"));
+            assertEquals("trial section", "Surveys", tabs.getText());
+            emptyState = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_empty_data"));
+            assertNotNull(emptyState);
+            emptyText = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_empty_title"));
+            assertEquals("Empty State", "Unfortunately, we do not have a survey available for you right now.", emptyText.getText());
+        } catch (Exception e) {
+            fail("Some element not found" + e.getMessage());
+        } finally {
+            driver.navigate().back();
+        }
     }
 
     @Test(priority = 13)
@@ -411,14 +399,13 @@ public class AccountRedirectionTest {
         WebElement placeholderImage = null;
         WebElement savedAddress = null;
         try {
-           savedAddress =  driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"My Saved Address\"));"));
-           savedAddress.click();
-           addressTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
+            savedAddress = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"My Saved Address\"));"));
+            savedAddress.click();
+            addressTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
             noAddressWarning = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_error"));
             addNewAddressCta = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/ll_add_new_address"));
             placeholderImage = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/img_msg_placeholder"));
             assertNotNull(placeholderImage);
-
             assertEquals("Shipping Address".toLowerCase(), addressTitle.getText().toLowerCase());
             assertEquals("Add New Address +".toLowerCase(), addNewAddressCta.getText().toLowerCase());
             assertEquals("Sorry, you have no saved address.".toLowerCase(), noAddressWarning.getText().toLowerCase());
@@ -430,6 +417,7 @@ public class AccountRedirectionTest {
 
     @Test(priority = 14)
     public void openWishList() {
+        gotoAccountPage();
         WebElement wishlist = null;
         WebElement title = null;
         WebElement cart = null;
@@ -442,6 +430,7 @@ public class AccountRedirectionTest {
         WebElement exploreCta = null;
         WebElement closeCta = null;
         try {
+            driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(100000)"));
             wishlist = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"My Wishlist\"));"));
             wishlist.click();
             title = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
