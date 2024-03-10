@@ -2,7 +2,7 @@ package signin;
 
 import base.BaseTest;
 import org.openqa.selenium.WebElement;
-import org.smytten.pof.LandingPage;
+import org.smytten.pof.entry.LandingPage;
 import org.testng.annotations.Test;
 
 import static org.testng.AssertJUnit.*;

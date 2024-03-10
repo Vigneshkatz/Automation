@@ -5,7 +5,15 @@ import io.appium.java_client.AppiumBy;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.WebElement;
-import org.smytten.pof.*;
+import org.smytten.pof.account.AddressPage;
+import org.smytten.pof.common.Navigation;
+import org.smytten.pof.common.PopUp;
+import org.smytten.pof.entry.LoginPage;
+import org.smytten.pof.entry.OtpPage;
+import org.smytten.pof.entry.SignUpPage;
+import org.smytten.pof.luxe.LuxeLandingPage;
+import org.smytten.pof.luxe.LuxeOrderConfirmation;
+import org.smytten.pof.payment.RazorpayPaymentStatusPage;
 import org.smytten.util.Utility;
 import org.testng.annotations.Test;
 

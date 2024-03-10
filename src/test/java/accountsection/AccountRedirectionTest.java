@@ -2,9 +2,12 @@ package accountsection;
 
 import base.BaseTest;
 import io.appium.java_client.AppiumBy;
-import io.appium.java_client.TouchAction;
 import org.openqa.selenium.WebElement;
-import org.smytten.pof.*;
+import org.smytten.pof.account.AccountPage;
+import org.smytten.pof.common.Navigation;
+import org.smytten.pof.common.PopUp;
+import org.smytten.pof.entry.LoginPage;
+import org.smytten.pof.entry.LandingPage;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertNotEquals;

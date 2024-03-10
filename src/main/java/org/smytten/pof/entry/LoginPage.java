@@ -1,4 +1,4 @@
-package org.smytten.pof;
+package org.smytten.pof.entry;
 
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.AndroidDriver;

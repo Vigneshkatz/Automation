@@ -2,12 +2,10 @@ package signin;
 
 import base.BaseTest;
 import io.appium.java_client.TouchAction;
-import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.WebElement;
-import org.smytten.pof.LandingPage;
-import org.smytten.pof.LoginPage;
-import org.smytten.pof.OtpPage;
-import org.smytten.pof.SignUpPage;
+import org.smytten.pof.entry.LandingPage;
+import org.smytten.pof.entry.LoginPage;
+import org.smytten.pof.entry.SignUpPage;
 import org.smytten.util.Utility;
 import org.testng.annotations.Test;
 

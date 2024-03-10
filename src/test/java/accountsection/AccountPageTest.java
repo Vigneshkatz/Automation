@@ -6,7 +6,13 @@ import io.appium.java_client.TouchAction;
 import io.appium.java_client.clipboard.ClipboardContentType;
 import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.WebElement;
-import org.smytten.pof.*;
+import org.smytten.pof.account.AccountPage;
+import org.smytten.pof.account.ProfileUpdatePage;
+import org.smytten.pof.common.Navigation;
+import org.smytten.pof.common.PopUp;
+import org.smytten.pof.entry.LoginPage;
+import org.smytten.pof.entry.SignUpPage;
+import org.smytten.pof.entry.LandingPage;
 import org.smytten.util.Utility;
 import org.testng.annotations.Test;
 
