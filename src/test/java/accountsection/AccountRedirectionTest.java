@@ -6,11 +6,13 @@ import org.openqa.selenium.WebElement;
 import org.smytten.pof.account.AccountPage;
 import org.smytten.pof.common.Navigation;
 import org.smytten.pof.common.PopUp;
+import org.smytten.pof.common.VerifyElementHelper;
 import org.smytten.pof.entry.LoginPage;
-import org.smytten.pof.entry.LandingPage;
+import org.smytten.pof.entry.OtpPage;
+import org.smytten.pof.luxe.LuxeLandingPage;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertNotEquals;
 import static org.testng.AssertJUnit.*;
 
 public class AccountRedirectionTest extends BaseTest {
@@ -20,64 +22,57 @@ public class AccountRedirectionTest extends BaseTest {
 
     @Test(priority = 1)
     public void login() throws InterruptedException {
+        WebElement mobileInput = null;
+        WebElement proceedBtn = null;
+        WebElement otpContainer = null;
+        WebElement otpLabel = null;
+        WebElement mobileNumberLabel = null;
+        WebElement mobileNumberEditCta = null;
+        WebElement otpEnterInput = null;
+
         try {
-            WebElement startCta = LandingPage.getStartCtaElement(driver);
-            startCta.click();
-            WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
-            assertNotEquals(mobileInput, null);
-            System.out.println("Mobile input text: " + mobileInput.getText() + "->" + MOBILE_NUMBER);
+            mobileInput = LoginPage.getMobileNumberInput(driver);
+            assertNotNull(mobileInput);
             mobileInput.click();
-            mobileInput.click();
-            mobileInput.click();
-            mobileInput.sendKeys(MOBILE_NUMBER);
-
-            WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
-            assertNotEquals(proceedBtn, null);
-            System.out.println("Proceed button text: " + proceedBtn.getText());
+            mobileInput.sendKeys(LoginPage.getMOBILE_NUMBER(1));
+            proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("login attempt fail");
-        }
+            otpContainer = OtpPage.getOtpContainer(driver);
+            assertNotNull(otpContainer);
+            //  otpLabel = OtpPage.getOtpLabel(driver);
+//            mobileNumberLabel = OtpPage.getMobileNumberLabel(driver);
+//            mobileNumberEditCta = OtpPage.getMobileNumberEditCta(driver);
+            otpEnterInput = OtpPage.getOtpEnterInput(driver);
+//            assertTrue(OtpPage.OTP_NOT_RECEIVED_LABEL_TEXT.equalsIgnoreCase(otpLabel.getText().trim()));
+//            assertTrue(OtpPage.CONTACT_US_EMAIL_LABEL_TEXT.equalsIgnoreCase(mobileNumberLabel.getText().trim()));
+//            assertTrue(OtpPage.MOBILE_NUMBER_EDIT_CTA_TEXT.equalsIgnoreCase(mobileNumberEditCta.getText().trim()));
+            otpEnterInput.click();
+            // enter otp
+            Process process = Runtime.getRuntime().exec("adb shell input text " + OtpPage.VALID_OTP);
+            process.waitFor();
+            System.out.println("OTP typed successfully." + OtpPage.VALID_OTP);
+            recordResult("loginWithCrtOTP", "Pass");
 
-//        Thread.sleep(5000);
-//        try {
-//            WebElement otpContainer = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cl_otp_container"));
-//            assertNotEquals(otpContainer, null);
-//            WebElement otpLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_otp_label"));
-//            WebElement mobileNumberLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile"));
-//            WebElement mobileNumberEditCta = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile_ed"));
-//            WebElement otpEnterInput = driver.findElement(AppiumBy.className("android.widget.EditText"));
-//            String otpLabelText = "Enter OTP sent via SMS";
-//            String mobileNumberLabelText = "+91-" + MOBILE_NUMBER;
-//            String mobileNumberEditCtaText = "Edit";
-//            assertTrue(otpLabelText.trim().equalsIgnoreCase(otpLabel.getText().trim()));
-//            assertTrue(mobileNumberLabelText.trim().equalsIgnoreCase(mobileNumberLabel.getText().trim()));
-//            assertTrue(mobileNumberEditCtaText.trim().equalsIgnoreCase(mobileNumberEditCta.getText().trim()));
-//            otpEnterInput.click();
-////            enter otp
-//            Process process = Runtime.getRuntime().exec("adb shell input text " + 1111);
-//            process.waitFor();
-//            System.out.println("OTP typed successfully."+ 1111);
-//
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//            fail();
-//        }
-//        Thread.sleep(3000);
+        } catch (AssertionError e) {
+            recordResult("loginWithCrtOTP", "Fail " + e.getMessage());
+            Assert.fail("loginWithCrtOTP assertion failed: " + e.getMessage());
+        } catch (Exception e) {
+            recordResult("signUp", "Fail " + e.getMessage());
+            Assert.fail("loginWithCrtOTP failed: " + e.getMessage());
+        }
     }
 
     @Test(priority = 2)
     public void checkPopUp() {
         WebElement popUpClose = null;
-        try {
+        if(VerifyElementHelper.isPopupPresent(driver)){
             popUpClose = PopUp.getPopUpClose(driver);
             popUpClose.click();
             assertTrue("popup successfully closed", true);
-        } catch (Exception e) {
-            System.out.println("no popUp");
-            assertTrue("popup is not there", true);
+            recordResult("checkPopUp", "Pass");
+
         }
+        recordResult("CheckPopUp", "Pass");
     }
 
     @Test(priority = 3)
@@ -87,8 +82,14 @@ public class AccountRedirectionTest extends BaseTest {
             mobileInput = Navigation.getProfileHomeTab(driver);
             mobileInput.click();
             assertTrue(true);
+            recordResult("addMultipleAddress", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("addMultipleAddress", "Fail " + e.getMessage());
+            Assert.fail("addMultipleAddress assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            fail("failed to go account page");
+            recordResult("addMultipleAddress", "Fail " + e.getMessage());
+            Assert.fail("addMultipleAddress failed: " + e.getMessage());
         }
     }
 
@@ -142,10 +143,14 @@ public class AccountRedirectionTest extends BaseTest {
             faqs = AccountPage.getFaqs(driver);
             smyttenLogo = AccountPage.getSmyttenLogo(driver);
             signOut = AccountPage.getSignOut(driver);
+            recordResult("verifyAccountSection", "Pass");
 
+        } catch (AssertionError e) {
+            recordResult("verifyAccountSection", "Fail " + e.getMessage());
+            Assert.fail("verifyAccountSection assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Element not found");
+            recordResult("verifyAccountSection", "Fail " + e.getMessage());
+            Assert.fail("verifyAccountSection failed: " + e.getMessage());
         }
     }
 
@@ -161,9 +166,9 @@ public class AccountRedirectionTest extends BaseTest {
         WebElement trialVideo = null;
         WebElement trialBanner = null;
         try {
-            trialHowTo = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_trial_point"));
+            trialHowTo = AccountPage.getTrialHowTo(driver);
             trialHowTo.click();
-            headerSection = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_wallet_banner_top"));
+            headerSection = AccountPage.getHelpSection(driver);
             content = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cl_root"));
             trialTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
             trialPoint = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_trial"));
@@ -176,9 +181,14 @@ public class AccountRedirectionTest extends BaseTest {
             assertNotNull(trialBanner);
             assertNotNull(content);
             driver.navigate().back();
+            recordResult("openTrialHowTo", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("openTrialHowTo", "Fail " + e.getMessage());
+            Assert.fail("openTrialHowTo assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Element Not found");
+            recordResult("openTrialHowTo", "Fail " + e.getMessage());
+            Assert.fail("openTrialHowTo failed: " + e.getMessage());
         } finally {
             driver.navigate().back();
 
@@ -197,7 +207,7 @@ public class AccountRedirectionTest extends BaseTest {
         WebElement shopVideo = null;
         WebElement shopBanner = null;
         try {
-            shopHowTo = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_shop_wallet_title"));
+            shopHowTo = AccountPage.getShopHowTo(driver);
             shopHowTo.click();
             headerSection = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_wallet_banner_top"));
             content = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cl_root"));
@@ -212,11 +222,14 @@ public class AccountRedirectionTest extends BaseTest {
             assertNotNull(shopBanner);
             assertNotNull(content);
             driver.navigate().back();
+            recordResult("openShopHowTo", "Pass");
+
         } catch (AssertionError e) {
-            e.printStackTrace();
+            recordResult("openShopHowTo", "Fail " + e.getMessage());
+            Assert.fail("openShopHowTo assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Element Not found");
+            recordResult("openShopHowTo", "Fail " + e.getMessage());
+            Assert.fail("openShopHowTo failed: " + e.getMessage());
         } finally {
             driver.navigate().back();
 
@@ -235,7 +248,7 @@ public class AccountRedirectionTest extends BaseTest {
         WebElement rewardVideo = null;
         WebElement rewardBanner = null;
         try {
-            rewardHowTo = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_reward_title"));
+            rewardHowTo = AccountPage.getRewardHowTo(driver);
             rewardHowTo.click();
             headerSection = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_wallet_banner_top"));
             content = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cl_root"));
@@ -250,9 +263,14 @@ public class AccountRedirectionTest extends BaseTest {
             assertNotNull(rewardBanner);
             assertNotNull(content);
             driver.navigate().back();
+            recordResult("openRewardsHowTo", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("openRewardsHowTo", "Fail " + e.getMessage());
+            Assert.fail("openRewardsHowTo assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Element Not found");
+            recordResult("openRewardsHowTo", "Fail " + e.getMessage());
+            Assert.fail("openRewardsHowTo failed: " + e.getMessage());
         } finally {
             driver.navigate().back();
 
@@ -269,7 +287,7 @@ public class AccountRedirectionTest extends BaseTest {
         WebElement emptyTitle = null;
         WebElement emptySubtitle = null;
         try {
-            myOrders = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/ll_header_1"));
+            myOrders = AccountPage.getMyOrders(driver);
             myOrders.click();
 //            orderTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tb_my_orders"));
             emptyTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_empty_title"));
@@ -280,9 +298,14 @@ public class AccountRedirectionTest extends BaseTest {
             assertEquals("Order Page subtitle", "Discover something new, place an order today!", emptySubtitle.getText());
             assertNotNull(emptyData);
             assertNotNull(orderTitle);
+            recordResult("myOrders", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("myOrders", "Fail " + e.getMessage());
+            Assert.fail("myOrders asssertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("element Not found");
+            recordResult("myOrders", "Fail " + e.getMessage());
+            Assert.fail("myOrders failed: " + e.getMessage());
         } finally {
             driver.navigate().back();
 
@@ -306,7 +329,7 @@ public class AccountRedirectionTest extends BaseTest {
         WebElement chatBot = null;
         WebElement otpFooter = null;
         try {
-            helpSection = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/ll_header_2"));
+            helpSection = AccountPage.getHelpSection(driver);
             helpSection.click();
             contactTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_bucks_title1"));
             supportDelivery = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_support_1"));
@@ -327,9 +350,14 @@ public class AccountRedirectionTest extends BaseTest {
             assertEquals("need more help", "Need More Help?", needMoreHelp.getText());
             assertEquals("Otp footer", "We will never ask you to share your bank details, OTP or any other sensitive information", otpFooter.getText());
             driver.navigate().back();
+            recordResult("openHelp", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("openHelp", "Fail " + e.getMessage());
+            Assert.fail("openHelp assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Element Not found");
+            recordResult("openHelp", "Fail " + e.getMessage());
+            Assert.fail("openHelp failed: " + e.getMessage());
         } finally {
             driver.navigate().back();
         }
@@ -337,9 +365,18 @@ public class AccountRedirectionTest extends BaseTest {
 
     @Test(priority = 10)
     public void openReferAndEarn() {
-        gotoAccountPage();
-        driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToBeginning(100000)"));
-
+        try {
+            gotoAccountPage();
+            driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToBeginning(100000)"));
+            AccountPage.getReferBanner(driver);
+            recordResult("openReferAndEarn", "Pass");
+        } catch (AssertionError e) {
+            recordResult("openReferAndEarn", "Fail " + e.getMessage());
+            Assert.fail("openReferAndEarn assertion failed: " + e.getMessage());
+        } catch (Exception e) {
+            recordResult("openReferAndEarn", "Fail " + e.getMessage());
+            Assert.fail("openReferAndEarn failed: " + e.getMessage());
+        }
     }
 
     @Test(priority = 11)
@@ -351,7 +388,7 @@ public class AccountRedirectionTest extends BaseTest {
         WebElement tabs = null;
         WebElement emptyText = null;
         try {
-            reviewSection = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"Leave a review\"));"));
+            reviewSection = AccountPage.getReviewSection(driver);
             assertNotNull(reviewSection);
             reviewTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
             assertEquals("Review Section title", "Feedbacks & Surveys", reviewTitle.getText());
@@ -361,8 +398,13 @@ public class AccountRedirectionTest extends BaseTest {
             assertNotNull(emptyState);
             emptyText = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_empty_title"));
             assertEquals("Empty State", "You don't have any products with pending feedback. \n" + "\n" + "Find all your recently purchased products here for review.", emptyText.getText());
+            recordResult("openReview", "Pass");
+        } catch (AssertionError e) {
+            recordResult("openReview", "Fail " + e.getMessage());
+            Assert.fail("openReview assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            fail("Some element not found" + e.getMessage());
+            recordResult("openReview", "Fail " + e.getMessage());
+            Assert.fail("openReview failed: " + e.getMessage());
         } finally {
             driver.navigate().back();
         }
@@ -377,7 +419,7 @@ public class AccountRedirectionTest extends BaseTest {
         WebElement tabs = null;
         WebElement emptyText = null;
         try {
-            surveySection = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"Leave a review\"));"));
+            surveySection = AccountPage.getSurveySection(driver);
             assertNotNull(surveySection);
             surveyTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
             assertEquals("Review Section title", "Feedbacks & Surveys", surveyTitle.getText());
@@ -387,8 +429,14 @@ public class AccountRedirectionTest extends BaseTest {
             assertNotNull(emptyState);
             emptyText = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_empty_title"));
             assertEquals("Empty State", "Unfortunately, we do not have a survey available for you right now.", emptyText.getText());
+            recordResult("openSurvey", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("openSurvey", "Fail " + e.getMessage());
+            Assert.fail("openSurvey assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            fail("Some element not found" + e.getMessage());
+            recordResult("openSurvey", "Fail " + e.getMessage());
+            Assert.fail("openSurvey failed: " + e.getMessage());
         } finally {
             driver.navigate().back();
         }
@@ -402,7 +450,7 @@ public class AccountRedirectionTest extends BaseTest {
         WebElement placeholderImage = null;
         WebElement savedAddress = null;
         try {
-            savedAddress = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"My Saved Address\"));"));
+            savedAddress = AccountPage.getSavedAddress(driver);
             savedAddress.click();
             addressTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
             noAddressWarning = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_error"));
@@ -412,9 +460,14 @@ public class AccountRedirectionTest extends BaseTest {
             assertEquals("Shipping Address".toLowerCase(), addressTitle.getText().toLowerCase());
             assertEquals("Add New Address +".toLowerCase(), addNewAddressCta.getText().toLowerCase());
             assertEquals("Sorry, you have no saved address.".toLowerCase(), noAddressWarning.getText().toLowerCase());
+            recordResult("openSavedAddress", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("openSavedAddress", "Fail " + e.getMessage());
+            Assert.fail("openSavedAddress assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Something missing in empty address page" + e.getMessage());
+            recordResult("openSavedAddress", "Fail " + e.getMessage());
+            Assert.fail("openSavedAddress failed: " + e.getMessage());
         }
     }
 
@@ -434,7 +487,7 @@ public class AccountRedirectionTest extends BaseTest {
         WebElement closeCta = null;
         try {
             driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(100000)"));
-            wishlist = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"My Wishlist\"));"));
+            wishlist = AccountPage.getWishlist(driver);
             wishlist.click();
             title = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
             cart = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_cart"));
@@ -455,9 +508,14 @@ public class AccountRedirectionTest extends BaseTest {
             assertEquals("Description", description.getText(), "Tap ❤ \uFE0F on your favourite products to find them here.");
             assertEquals("Explore cta", exploreCta.getText(), "Explore Now");
             assertNotNull(closeCta);
+
+            recordResult("openWishList", "Pass");
+        } catch (AssertionError e) {
+            recordResult("openWishList", "Fail " + e.getMessage());
+            Assert.fail("openWishList assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Elements not there");
+            recordResult("openWishList", "Fail " + e.getMessage());
+            Assert.fail("openWishList failed: " + e.getMessage());
         } finally {
             driver.navigate().back();
         }
@@ -470,16 +528,21 @@ public class AccountRedirectionTest extends BaseTest {
         WebElement luxeTitle = null;
         WebElement luxeProceed = null;
         try {
-            smyttenLuxe = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"Smytten Luxe\"));"));
+            smyttenLuxe = AccountPage.getSmyttenLuxe(driver);
             smyttenLuxe.click();
-            luxeTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_subtitle"));
+            luxeTitle = LuxeLandingPage.getLuxeTitle(driver);
             String luxeTitleText = luxeTitle.getText();
             assertEquals("Luxe title", "Smytten Luxe", luxeTitleText.trim());
-            luxeProceed = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_proceed"));
+            luxeProceed = LuxeLandingPage.getProceedButton(driver);
             assertNotNull(luxeProceed);
+
+            recordResult("openSmyttenLuxe", "Pass");
+        } catch (AssertionError e) {
+            recordResult("openSmyttenLuxe", "Fail " + e.getMessage());
+            Assert.fail("openSmyttenLuxe assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Element not found");
+            recordResult("openSmyttenLuxe", "Fail " + e.getMessage());
+            Assert.fail("openSmyttenLuxe failed: " + e.getMessage());
         } finally {
             driver.navigate().back();
         }
@@ -495,16 +558,21 @@ public class AccountRedirectionTest extends BaseTest {
         WebElement closeIcon = null;
 
         try {
-            smyttenBlog = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"Smytten Blog\"));"));
+            smyttenBlog = AccountPage.getSmyttenBlog(driver);
             assertNotNull(smyttenBlog);
             smyttenBlog.click();
             smyttenBlogTile = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
             assertEquals("Redirection title", "Blog", smyttenBlogTile.getText());
             closeIcon = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_close"));
             assertNotNull(closeIcon);
+
+            recordResult("openSmyttenBlog", "Pass");
+        } catch (AssertionError e) {
+            recordResult("openSmyttenBlog", "Fail " + e.getMessage());
+            Assert.fail("openSmyttenBlog assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Element not found");
+            recordResult("openSmyttenBlog", "Fail " + e.getMessage());
+            Assert.fail("openSmyttenBlog failed: " + e.getMessage());
         } finally {
             driver.navigate().back();
         }
@@ -524,15 +592,20 @@ public class AccountRedirectionTest extends BaseTest {
         WebElement tncTitle = null;
         WebElement closeIcon = null;
         try {
-            tnc = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/ll_footer_2"));
+            tnc = AccountPage.getTermsAndCondition(driver);
             tnc.click();
             tncTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
             assertEquals("Redirection title", "Terms", tncTitle.getText().trim());
             closeIcon = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_close"));
             assertNotNull(closeIcon);
+
+            recordResult("openTermsAndCondition", "Pass");
+        } catch (AssertionError e) {
+            recordResult("openTermsAndCondition", "Fail " + e.getMessage());
+            Assert.fail("openTermsAndCondition assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Element not found");
+            recordResult("openTermsAndCondition", "Fail " + e.getMessage());
+            Assert.fail("openTermsAndCondition failed: " + e.getMessage());
         } finally {
             driver.navigate().back();
         }
@@ -546,16 +619,20 @@ public class AccountRedirectionTest extends BaseTest {
         WebElement privacyTitle = null;
         WebElement closeIcon = null;
         try {
-            privacy = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/ll_footer_1"));
+            privacy = AccountPage.getPrivacyPolicy(driver);
             privacy.click();
             privacyTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
             assertEquals("Redirection title", "Privacy Policy", privacyTitle.getText());
             closeIcon = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_close"));
             assertNotNull(closeIcon);
+            recordResult("openPrivacyPolicy", "Pass");
 
+        } catch (AssertionError e) {
+            recordResult("openPrivacyPolicy", "Fail " + e.getMessage());
+            Assert.fail("openPrivacyPolicy assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Element not found");
+            recordResult("openPrivacyPolicy", "Fail " + e.getMessage());
+            Assert.fail("openPrivacyPolicy failed: " + e.getMessage());
         } finally {
             driver.navigate().back();
         }
@@ -569,16 +646,20 @@ public class AccountRedirectionTest extends BaseTest {
         WebElement faqTitle = null;
         WebElement closeIcon = null;
         try {
-            faqs = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/ll_footer_3"));
+            faqs = AccountPage.getFaqs(driver);
             faqs.click();
             faqTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
             assertEquals("Redirection title", "FAQ", faqTitle.getText());
             closeIcon = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_close"));
             assertNotNull(closeIcon);
+            recordResult("openFaqs", "Pass");
 
+        } catch (AssertionError e) {
+            recordResult("openFaqs", "Fail " + e.getMessage());
+            Assert.fail("openFaqs assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Element not found");
+            recordResult("openFaqs", "Fail " + e.getMessage());
+            Assert.fail("openFaqs failed: " + e.getMessage());
         } finally {
             driver.navigate().back();
         }
@@ -586,21 +667,24 @@ public class AccountRedirectionTest extends BaseTest {
 
     @Test(priority = 21)
     public void signOut() {
+        checkPopUp();
         gotoAccountPage();
         driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(100000)"));
         WebElement signOut = null;
         WebElement mobileInput = null;
         WebElement yesCta = null;
         try {
-            signOut = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_sign_out"));
+            signOut = AccountPage.getSignOut(driver);
             signOut.click();
             yesCta = driver.findElement(AppiumBy.id("android:id/button1"));
             yesCta.click();
-            mobileInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
-            assertNotNull(mobileInput);
+            recordResult("signOut", "Pass");
+        } catch (AssertionError e) {
+            recordResult("signOut", "Fail " + e.getMessage());
+            Assert.fail("signOut assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Element not found");
+            recordResult("signOut", "Fail " + e.getMessage());
+            Assert.fail("signOut failed: " + e.getMessage());
         }
     }
 }

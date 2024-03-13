@@ -71,7 +71,7 @@ public class LuxeLandingPage {
     public static WebElement getProceedSummaryButton(AndroidDriver driver) {
         return proceedSummaryButton = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_proceed"));
     }
-    public String getLuxeTitleText() {
+    public static String getLuxeTitleText() {
         return LUXE_TITLE;
     }
 }

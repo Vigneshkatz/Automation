@@ -1,36 +1,40 @@
-package luxe;
+package order;
 
 import base.BaseTest;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.TouchAction;
+import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.touch.offset.PointOption;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.smytten.pof.account.AddressPage;
+import org.smytten.pof.cart.CartPage;
+import org.smytten.pof.cart.TrialOrderConfirmation;
 import org.smytten.pof.common.Navigation;
 import org.smytten.pof.common.PopUp;
 import org.smytten.pof.common.VerifyElementHelper;
 import org.smytten.pof.entry.LandingPage;
 import org.smytten.pof.entry.LoginPage;
 import org.smytten.pof.entry.SignUpPage;
-import org.smytten.pof.luxe.LuxeLandingPage;
-import org.smytten.pof.luxe.LuxeOrderConfirmation;
+import org.smytten.pof.payment.Payment;
+import org.smytten.pof.product.TrialProductCard;
 import org.smytten.util.Utility;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Random;
 
-import static org.testng.Assert.assertNotEquals;
 import static org.testng.AssertJUnit.*;
 
-
-public class LuxeMemberShipTest extends BaseTest {
+public class TrialOrderTest extends BaseTest {
+    private static final String MOBILE_NUMBER = Utility.getNumber();
     private static TouchAction touchAction;
 
     @Test(priority = 0)
     public void initialLandingPageText() {
         try {
-            touchAction = new TouchAction<>(driver);
             WebElement startCta = LandingPage.getStartCtaElement(driver);
             assertNotNull(startCta);
             startCta.click();
@@ -57,7 +61,7 @@ public class LuxeMemberShipTest extends BaseTest {
             mobileInput = LoginPage.getMobileNumberInput(driver);
             assertNotNull(mobileInput);
             mobileInput.click();
-            mobileInput.sendKeys(Utility.getNumber());
+            mobileInput.sendKeys(MOBILE_NUMBER);
             proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
 
@@ -106,20 +110,6 @@ public class LuxeMemberShipTest extends BaseTest {
         }
     }
 
-
-    @Test(priority = 2)
-    public void checkPopUp() {
-        WebElement popUpClose = null;
-        if(VerifyElementHelper.isPopupPresent(driver)){
-            popUpClose = PopUp.getPopUpClose(driver);
-            popUpClose.click();
-            assertTrue("popup successfully closed", true);
-            recordResult("checkPopUp", "Pass");
-
-        }
-        recordResult("CheckPopUp", "Pass");
-    }
-
     @Test(priority = 3)
     public void gotoTrialFront() {
         try {
@@ -138,29 +128,75 @@ public class LuxeMemberShipTest extends BaseTest {
     }
 
     @Test(priority = 4)
-    public void openLuxeMembershipPage() {
-        WebElement luxeEntryPointTrial = null;
-        WebElement luxeTitle = null;
-        WebElement luxeProceed = null;
+    public void openProductListing() {
         try {
-            luxeEntryPointTrial = LuxeLandingPage.getLuxeTopImageView(driver);
-            luxeEntryPointTrial.click();
-            luxeTitle = LuxeLandingPage.getLuxeTitle(driver);
-            String luxeTitleText = luxeTitle.getText();
-            assertEquals("Luxe title", LuxeLandingPage.getLuxeTitleText().toLowerCase().trim(), luxeTitleText.toLowerCase().trim());
-            luxeProceed = LuxeLandingPage.getProceedButton(driver);
-            luxeProceed.click();
-            recordResult("openLuxeMembershipPage", "Pass");
-        } catch (AssertionError e) {
-            recordResult("openLuxeMembershipPage", "Fail " + e.getMessage());
-            fail("openLuxeMembershipPage assertion failed: " + e.getMessage());
+            List<WebElement> list = driver.findElements(AppiumBy.id("com.app.smytten.debug:id/iv_circle_view"));
+            assertNotNull(list);
+            System.out.println(list.size());
+            for (int i = 0; i < list.size(); i++) {
+                if (i == 1) {
+                    list.get(i).click();
+                    break;
+                }
+            }
+
         } catch (Exception e) {
-            recordResult("openLuxeMembershipPage", "Fail " + e.getMessage());
-            fail("openLuxeMembershipPage failed: " + e.getMessage());
+            fail("failed to open product listing");
         }
+
+
     }
 
     @Test(priority = 5)
+    public void addProductToCart() {
+        try {
+            List<WebElement> productCartList = TrialProductCard.getAllProductCard(driver);
+            assertNotNull(productCartList);
+            for (WebElement productCart : productCartList) {
+                productCart.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_try_now")).click();
+                if (VerifyElementHelper.isPopupPresent(driver)) {
+                    TrialProductCard.getPopUpDesc(driver);
+                    TrialProductCard.getPopUpOkButton(driver);
+                } else {
+                    System.out.println("No pop-up found");
+                }
+                break;
+            }
+        } catch (Exception e) {
+            fail("Failed to add product to cart");
+        }
+    }
+
+    @Test(priority = 6)
+    public void gotoCart() {
+        try {
+            WebElement cart = Navigation.getCartView(driver);
+            assertNotNull(cart);
+            cart.click();
+            if(VerifyElementHelper.isAutoApplyCouponPresent(driver)){
+                TouchAction touchAction = new TouchAction(driver);
+                touchAction.tap(PointOption.point(877, 877)).perform();
+            }
+        } catch (Exception e) {
+            fail("failed to go to cart");
+        }
+    }
+
+    @Test(priority = 7)
+    public void goToPaymentPage() {
+        try {
+           WebElement proceedBtn = CartPage.getProceedButton(driver);
+           assertNotNull(proceedBtn);
+           proceedBtn.click();
+           if(VerifyElementHelper.isConsentPopupPresent(driver)) {
+               PopUp.getRightCtaConsentPopUp(driver).click();
+           }
+        } catch (Exception e) {
+            fail("Failed to got to payment page");
+        }
+    }
+
+    @Test(priority = 8)
     public void updateAddress() {
         WebElement firstName = null;
         WebElement lastName = null;
@@ -238,96 +274,37 @@ public class LuxeMemberShipTest extends BaseTest {
         }
     }
 
-    @Test(priority = 6)
-    public void completePayment() {
-        WebElement paymentTitle = null;
-        WebElement upi = null;
-        WebElement proceedPayment = null;
-        WebElement idbiBank = null;
-        WebElement successPage = null;
-        WebElement successCta = null;
-        WebElement orderConfirmScreen = null;
-
+    @Test(priority = 9)
+    public void codOrder() {
         try {
-            paymentTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_payment_mode"));
-            assertEquals("payment title", "Select Payment Methods", paymentTitle.getText());
-            upi = driver.findElement(AppiumBy.xpath("//androidx.recyclerview.widget.RecyclerView[@resource-id=\"com.app.smytten.debug:id/rv_payment_mode\"]/android.widget.LinearLayout[1]"));
-            upi.click();
-            proceedPayment = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_proceed"));
-            proceedPayment.click();
-            Thread.sleep(5000);
+            WebElement codOption = Payment.getCodOption(driver);
+            assertNotNull(codOption);
+            codOption.click();
+            WebElement proceedBtn= Payment.getProceedBtn(driver);
+            assertNotNull(proceedBtn);
+            proceedBtn.click();
+            if(VerifyElementHelper.isCodCouponPopUpPresent(driver)) {
+                PopUp.getCodProceedBtn(driver).click();
+            }
+        }catch (AssertionError e){
+            fail("consent popUp not found "+e.getMessage());
+        }catch (Exception e) {
+            fail("Failed to got to payment page");
+        }
+    }
 
-            touchAction.tap(PointOption.point(625, 827)).perform();
-            Thread.sleep(2000);
-            idbiBank = driver.findElement(AppiumBy.xpath("//android.view.View[@resource-id=\"bank-item-IBKL\"]/android.view.View"));
-            idbiBank.click();
-            Thread.sleep(1000);
-            touchAction.tap(PointOption.point(544, 2297)).perform();
-            Thread.sleep(10000);
-            successPage = driver.findElement(AppiumBy.xpath("//android.webkit.WebView[@text=\"Razorpay Bank\"]"));
-            assertNotEquals(null, successPage);
-            successCta = driver.findElement(AppiumBy.xpath("//android.widget.Button[@text=\"Success\"]"));
-            successCta.click();
-            Thread.sleep(5000);
-            orderConfirmScreen = LuxeOrderConfirmation.getRootLayout(driver);
-            assertNotEquals(null, orderConfirmScreen);
-            recordResult("completePayment", "Pass");
-
-        } catch (AssertionError e) {
-            recordResult("completePayment", "Fail " + e.getMessage());
-            fail("completePayment assertion failed: " + e.getMessage());
-        } catch (Exception e) {
-            recordResult("completePayment", "Fail " + e.getMessage());
-            fail("completePayment failed: " + e.getMessage());
+    @Test(priority = 10)
+    public void goToOrderDetailPage() {
+        try {
+            WebElement orderDetail =  TrialOrderConfirmation.getViewOrderDetailButton(driver);
+            assertNotNull(orderDetail);
+            orderDetail.click();
+        }catch (AssertionError e){
+            fail("some element not found "+e.getMessage());
+        }catch (Exception e) {
+            fail("Failed to got to payment page");
         }
     }
 
 
-    @Test(priority = 7)
-    public void verifyOrderConfirmScreen() throws InterruptedException {
-        WebElement fullPage = null;
-        WebElement header = null;
-        WebElement title = null;
-        WebElement orderId = null;
-        WebElement edd = null;
-        WebElement membershipValidity = null;
-        WebElement totalPaid = null;
-        WebElement luxeBanner = null;
-        WebElement helpSection = null;
-        WebElement exploreCta = null;
-        try {
-            fullPage = LuxeOrderConfirmation.getRootLayout(driver);
-            header = LuxeOrderConfirmation.getHeaderImageView(driver);
-            title = LuxeOrderConfirmation.getSizeTextView(driver);
-            orderId = LuxeOrderConfirmation.getOrderIdTextView(driver);
-            edd = LuxeOrderConfirmation.getEstimatedDeliveryDateTextView(driver);
-            membershipValidity = LuxeOrderConfirmation.getTotalPayableTextView(driver);
-            totalPaid = LuxeOrderConfirmation.getTotalPayableRsTextView(driver);
-            luxeBanner = LuxeOrderConfirmation.getMembershipBannerImageView(driver);
-            helpSection = LuxeOrderConfirmation.getTermsAndConditionsTextView(driver);
-            exploreCta = LuxeOrderConfirmation.getExploreButton(driver);
-            assertNotNull("Full page is not null", fullPage);
-            assertNotNull("Header is not null", header);
-            assertNotNull("Title is not null", title);
-            assertNotNull("Order ID is not null", orderId);
-            assertNotNull("Estimated Delivery Date is not null", edd);
-            assertNotNull("Membership Validity is not null", membershipValidity);
-            assertNotNull("Total Paid amount is not null", totalPaid);
-            assertNotNull("Luxe Banner is not null", luxeBanner);
-            assertNotNull("Help Section is not null", helpSection);
-            assertNotNull("Explore CTA is not null", exploreCta);
-            assertEquals("Luxe Welcome kit (1 item)", title.getText());
-            assertEquals("Luxe membership (1 year)", membershipValidity.getText());
-            System.out.println(exploreCta.getText());
-            exploreCta.click();
-            recordResult("verifyOrderConfirmScreen", "Pass");
-            Thread.sleep(10000);
-        } catch (AssertionError e) {
-            recordResult("verifyOrderConfirmScreen", "Fail " + e.getMessage());
-            fail("verifyOrderConfirmScreen assertion failed: " + e.getMessage());
-        } catch (Exception e) {
-            recordResult("verifyOrderConfirmScreen", "Fail " + e.getMessage());
-            fail("verifyOrderConfirmScreen failed: " + e.getMessage());
-        }
-    }
 }

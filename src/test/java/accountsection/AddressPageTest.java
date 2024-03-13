@@ -3,21 +3,26 @@ package accountsection;
 import base.BaseTest;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.TouchAction;
-import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.smytten.pof.account.AccountPage;
+import org.smytten.pof.account.AddressPage;
+import org.smytten.pof.common.PopUp;
+import org.smytten.pof.common.VerifyElementHelper;
+import org.smytten.pof.entry.LoginPage;
+import org.smytten.pof.entry.OtpPage;
+import org.smytten.pof.entry.SignUpPage;
 import org.smytten.user.Address;
 import org.smytten.user.PinCodeDetails;
 import org.smytten.util.Utility;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
-import static org.testng.Assert.assertNotEquals;
 import static org.testng.AssertJUnit.*;
 
 
@@ -31,16 +36,13 @@ public class AddressPageTest extends BaseTest {
     public static final String STATE = "TAMIL NADU";
     public static final String CITY = "RAMAPURAM";
     public static final String[] ADDRESS_TYPE = {"Office", "Home", "Other"};
-    private static final int RANDOMNUMBER = ThreadLocalRandom.current().nextInt(0, 2);
     public static String MOBILE_NUMBER = null;
-    public static HashMap<Integer, HashMap<String, String>> address = new HashMap<>();
     public static Map<Integer, PinCodeDetails> pincode = defaultPincode();
     static List<Address> addressList = new ArrayList<>();
     private static int addressEntryCount = 1;
     private static TouchAction touchAction;
-    private WebDriverWait wait;
     private Boolean isEmpty = true;
-    private Boolean isNewUser = true;
+    private final Boolean isNewUser = true;
 
     public static void addAddress(int noOfAddress) {
 
@@ -66,66 +68,57 @@ public class AddressPageTest extends BaseTest {
 
     @Test(priority = 0)
     public void login() throws InterruptedException {
+        WebElement mobileInput = null;
+        WebElement proceedBtn = null;
+        WebElement otpContainer = null;
+        WebElement otpLabel = null;
+        WebElement mobileNumberLabel = null;
+        WebElement mobileNumberEditCta = null;
+        WebElement otpEnterInput = null;
+
         try {
-            WebElement startCta = driver.findElement(AppiumBy.className("android.widget.TextView"));
-            startCta.click();
-            WebElement mobileInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
-            assertNotEquals(mobileInput, null);
-            System.out.println("Mobile input text: " + mobileInput.getText());
+            mobileInput = LoginPage.getMobileNumberInput(driver);
+            assertNotNull(mobileInput);
             mobileInput.click();
-            mobileInput.click();
-            mobileInput.click();
-            mobileInput.sendKeys("1058032280");
-
-            WebElement proceedBtn = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/proceed"));
-            assertNotEquals(proceedBtn, null);
-            System.out.println("Proceed button text: " + proceedBtn.getText());
+            mobileInput.sendKeys(LoginPage.getMOBILE_NUMBER(1));
+            proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
-            this.isEmpty = false;
-            this.isNewUser = false;
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("login attempt fail");
-        }
+            otpContainer = OtpPage.getOtpContainer(driver);
+            assertNotNull(otpContainer);
+            //  otpLabel = OtpPage.getOtpLabel(driver);
+//            mobileNumberLabel = OtpPage.getMobileNumberLabel(driver);
+//            mobileNumberEditCta = OtpPage.getMobileNumberEditCta(driver);
+            otpEnterInput = OtpPage.getOtpEnterInput(driver);
+//            assertTrue(OtpPage.OTP_NOT_RECEIVED_LABEL_TEXT.equalsIgnoreCase(otpLabel.getText().trim()));
+//            assertTrue(OtpPage.CONTACT_US_EMAIL_LABEL_TEXT.equalsIgnoreCase(mobileNumberLabel.getText().trim()));
+//            assertTrue(OtpPage.MOBILE_NUMBER_EDIT_CTA_TEXT.equalsIgnoreCase(mobileNumberEditCta.getText().trim()));
+            otpEnterInput.click();
+            // enter otp
+            Process process = Runtime.getRuntime().exec("adb shell input text " + OtpPage.VALID_OTP);
+            process.waitFor();
+            System.out.println("OTP typed successfully." + OtpPage.VALID_OTP);
+            recordResult("loginWithCrtOTP", "Pass");
 
-//        Thread.sleep(5000);
-//        try {
-//            WebElement otpContainer = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cl_otp_container"));
-//            assertNotEquals(otpContainer, null);
-//            WebElement otpLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_otp_label"));
-//            WebElement mobileNumberLabel = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile"));
-//            WebElement mobileNumberEditCta = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_mobile_ed"));
-//            WebElement otpEnterInput = driver.findElement(AppiumBy.className("android.widget.EditText"));
-//            String otpLabelText = "Enter OTP sent via SMS";
-//            String mobileNumberLabelText = "+91-" + MOBILE_NUMBER;
-//            String mobileNumberEditCtaText = "Edit";
-//            assertTrue(otpLabelText.trim().equalsIgnoreCase(otpLabel.getText().trim()));
-//            assertTrue(mobileNumberLabelText.trim().equalsIgnoreCase(mobileNumberLabel.getText().trim()));
-//            assertTrue(mobileNumberEditCtaText.trim().equalsIgnoreCase(mobileNumberEditCta.getText().trim()));
-//            otpEnterInput.click();
-////            enter otp
-//            Process process = Runtime.getRuntime().exec("adb shell input text " + 1111);
-//            process.waitFor();
-//            System.out.println("OTP typed successfully."+ 1111);
-//
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//            fail();
-//        }
-//        Thread.sleep(3000);
+        } catch (AssertionError e) {
+            recordResult("loginWithCrtOTP", "Fail " + e.getMessage());
+            Assert.fail("loginWithCrtOTP assertion failed: " + e.getMessage());
+        } catch (Exception e) {
+            recordResult("signUp", "Fail " + e.getMessage());
+            Assert.fail("loginWithCrtOTP failed: " + e.getMessage());
+        }
     }
 
     @Test(priority = 1)
     public void checkPopUp() {
         WebElement popUpClose = null;
-        try {
-            popUpClose = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_close"));
+        if(VerifyElementHelper.isPopupPresent(driver)){
+            popUpClose = PopUp.getPopUpClose(driver);
             popUpClose.click();
             assertTrue("popup successfully closed", true);
-        } catch (Exception e) {
-            System.out.println("no popUp");
-            assertTrue("popup is not there", true);
+            recordResult("checkPopUp", "Pass");
+
         }
+        recordResult("CheckPopUp", "Pass");
     }
 
     @Test(priority = 2)
@@ -134,17 +127,22 @@ public class AddressPageTest extends BaseTest {
             WebElement mobileInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/profile_home_tab"));
             mobileInput.click();
             assertTrue(true);
-        } catch (Exception e) {
-            fail("failed to go account page");
-        }
+            recordResult("gotoAccountPage", "Pass");
 
+        } catch (AssertionError e) {
+            recordResult("gotoAccountPage", "Fail " + e.getMessage());
+            Assert.fail("gotoAccountPage assertion failed: " + e.getMessage());
+        } catch (Exception e) {
+            recordResult("gotoAccountPage", "Fail " + e.getMessage());
+            Assert.fail("gotoAccountPage failed: " + e.getMessage());
+        }
     }
 
     @Test(priority = 3)
     public void gotoAddressPage() {
         try {
             WebElement menu = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/rv_menu"));
-            WebElement savedAddress = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"My Saved Address\"));"));
+            WebElement savedAddress = AccountPage.getSavedAddress(driver);
             if (savedAddress != null) {
                 savedAddress.click();
                 assertTrue("Saved address tapped successfully.", true);
@@ -152,9 +150,15 @@ public class AddressPageTest extends BaseTest {
                 fail("No address found");
                 System.out.println("Saved address not found.");
             }
+
+            recordResult("gotoAddressPage", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("gotoAddressPage", "Fail " + e.getMessage());
+            Assert.fail("gotoAddressPage assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("failed to go to address page");
+            recordResult("gotoAddressPage", "Fail " + e.getMessage());
+            Assert.fail("gotoAddressPage failed: " + e.getMessage());
         }
 
     }
@@ -174,9 +178,15 @@ public class AddressPageTest extends BaseTest {
                 assertEquals("Sorry, you have no saved address.".toLowerCase(), noAddressWarning.getText().toLowerCase());
                 Thread.sleep(2000);
                 addNewAddressCta.click();
+
+                recordResult("verifyAddressPage", "Pass");
+
+            } catch (AssertionError e) {
+                recordResult("verifyAddressPage", "Fail " + e.getMessage());
+                Assert.fail("verifyAddressPage assertion failed: " + e.getMessage());
             } catch (Exception e) {
-                e.printStackTrace();
-                fail("something missing in empty address page" + e.getMessage());
+                recordResult("verifyAddressPage", "Fail " + e.getMessage());
+                Assert.fail("verifyAddressPage failed: " + e.getMessage());
             }
         } else {
             WebElement addressTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
@@ -192,20 +202,20 @@ public class AddressPageTest extends BaseTest {
     @Test(priority = 5)
     public void updateAddress() {
         try {
-            WebElement firstName = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_fname"));
-            WebElement lastName = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_lname"));
-            WebElement phoneNumber = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
-            WebElement houseNumber = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_house"));
-            WebElement streetName = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_street"));
-            WebElement landmark = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_landmark"));
+            WebElement firstName = AddressPage.getFirstNameField(driver);
+            WebElement lastName = AddressPage.getLastNameField(driver);
+            WebElement phoneNumber = AddressPage.getMobileElement(driver);
+            WebElement houseNumber = AddressPage.getHouseField(driver);
+            WebElement streetName = AddressPage.getStreetField(driver);
+            WebElement landmark = AddressPage.getLandmarkField(driver);
             WebElement email = null;
             if (isNewUser) {
-                email = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_email"));
+                email = AddressPage.getEmailField(driver);
             }
-            WebElement pincode = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_pincode"));
-            WebElement city = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_city"));
-            WebElement state = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_state"));
-            WebElement saveAddress = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_proceed"));
+            WebElement pincode = AddressPage.getPincodeField(driver);
+            WebElement city = AddressPage.getCityField(driver);
+            WebElement state = AddressPage.getStateField(driver);
+            WebElement saveAddress = AddressPage.getProceedButton(driver);
             firstName.click();
             firstName.clear();
             firstName.sendKeys(FIRST_NAME);
@@ -239,17 +249,22 @@ public class AddressPageTest extends BaseTest {
             Random random = new Random();
             int randomIndex = random.nextInt(ADDRESS_TYPE.length);
             String randomAddressType = ADDRESS_TYPE[randomIndex];
-            WebElement addressType = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"" + randomAddressType + "\"));"));
+            WebElement addressType = AddressPage.getAddressFieldType(randomAddressType,driver);
             addressType.click();
-            WebElement defaultAddress = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"Make this my default address\"));"));
+            WebElement defaultAddress = AddressPage.getDefaultAddressCheckbox(driver);
             defaultAddress.click();
             assertEquals(city.getText().toLowerCase(), CITY.toLowerCase());
             assertEquals(state.getText().toLowerCase(), STATE.toLowerCase());
             saveAddress.click();
             Thread.sleep(2000);
+            recordResult("updateAddress", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("updateAddress", "Fail " + e.getMessage());
+            Assert.fail("updateAddress assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("update address failed");
+            recordResult("updateAddress", "Fail " + e.getMessage());
+            Assert.fail("updateAddress failed: " + e.getMessage());
         }
     }
 
@@ -285,13 +300,14 @@ public class AddressPageTest extends BaseTest {
                 }
             }
             assertEquals(defaultAddressName, driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_address_title")).getText());
+            recordResult("changeDefaultAddress", "Pass");
 
-        } catch (NoSuchElementException e) {
-            e.printStackTrace();
-            System.out.println("Failed to change Default Address: Element not found");
+        } catch (AssertionError e) {
+            recordResult("changeDefaultAddress", "Fail " + e.getMessage());
+            Assert.fail("changeDefaultAddress assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Failed to change Default Address: " + e.getMessage());
+            recordResult("changeDefaultAddress", "Fail " + e.getMessage());
+            Assert.fail("changeDefaultAddress failed: " + e.getMessage());
         }
     }
 
@@ -332,51 +348,79 @@ public class AddressPageTest extends BaseTest {
                     break;
                 }
             }
-        } catch (NoSuchElementException e) {
-            fail("Elements not found");
+            recordResult("deleteAddress", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("deleteAddress", "Fail " + e.getMessage());
+            Assert.fail("deleteAddress assertion failed: " + e.getMessage());
+        } catch (Exception e) {
+            recordResult("copyOtp", "Fail " + e.getMessage());
+            Assert.fail("deleteAddress failed: " + e.getMessage());
         }
     }
 
     //    @Test(priority = 0)
-    public void signUp() throws InterruptedException {
-        TouchAction touchAction = new TouchAction(driver);
-        assertNotEquals(touchAction, null);
+    public void signUp() {
+        WebElement mobileInput = null;
+        WebElement proceedBtn = null;
+        WebElement otpContainer = null;
+        WebElement otpLabel = null;
+        WebElement mobileNumberLabel = null;
+        WebElement mobileNumberEditCta = null;
+        WebElement otpEnterInput = null;
+        WebElement chooseGender = null;
 
-        int xCoordinate = 355;
-        int yCoordinate = 565;
-        Thread.sleep(1000);
-        touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
-        Thread.sleep(1000);
-        touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
-        WebElement mobileInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
-        assertNotEquals(mobileInput, null);
-        System.out.println("Mobile input text: " + mobileInput.getText());
-        mobileInput.click();
-        MOBILE_NUMBER = Utility.getNumber();
-        mobileInput.sendKeys(MOBILE_NUMBER);
-        WebElement proceedBtn = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/proceed"));
-        assertNotEquals(proceedBtn, null);
-        System.out.println("Proceed button text: " + proceedBtn.getText());
-        proceedBtn.click();
+        try {
+            mobileInput = LoginPage.getMobileNumberInput(driver);
+            assertNotNull(mobileInput);
+            mobileInput.click();
+            mobileInput.sendKeys(Utility.getNumber());
+            proceedBtn = LoginPage.getSendOtpButton(driver);
+            proceedBtn.click();
 
-        String maleElementId = "com.app.smytten.debug:id/tv_male";
-        String femaleElementId = "com.app.smytten.debug:id/tv_female";
-        String selectedGenderId = (RANDOMNUMBER == 0) ? maleElementId : femaleElementId;
-        WebElement chooseGender = driver.findElement(AppiumBy.id(selectedGenderId));
-        chooseGender.click();
+//            otpContainer = OtpPage.getOtpContainer(driver);
+//            assertNotEquals(otpContainer, null);
+//            otpLabel = OtpPage.getOtpLabel(driver);
+//            mobileNumberLabel = OtpPage.getMobileNumberLabel(driver);
+//            mobileNumberEditCta = OtpPage.getMobileNumberEditCta(driver);
+//            otpEnterInput = OtpPage.getOtpEnterInput(driver);
+//            assertNotNull(otpLabel);
+//            assertNotNull(mobileNumberLabel);
+//            assertNotNull(mobileNumberEditCta);
+//            assertNotNull(otpEnterInput);
 
-        WebElement chooseMonth = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/month_spinner"));
-        chooseMonth.click();
-        WebElement selectMonth = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@resource-id='android:id/title' and @text='March']"));
-        selectMonth.click();
+            WebElement maleElement = SignUpPage.getMaleGenderOption(driver);
+            WebElement femaleElement = SignUpPage.getFemaleGenderOption(driver);
+            chooseGender = (Utility.RANDOMNUMBER == 0) ? maleElement : femaleElement;
+            chooseGender.click();
 
-        WebElement chooseYear = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/year_spinner"));
-        chooseYear.click();
-        WebElement selectYear = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@resource-id='android:id/title' and @text='2009']"));
-        selectYear.click();
+            SignUpPage.getMonthSpinner(driver).click();
+            SignUpPage.getMarchMonthOption(driver).click();
 
-        WebElement confirmBtn = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/signup_manual"));
-        confirmBtn.click();
+            SignUpPage.getYearSpinner(driver).click();
+            SignUpPage.getYear2009Option(driver).click();
+
+            SignUpPage.getReferralInput(driver).click();
+            SignUpPage.getReferralInput(driver).sendKeys(SignUpPage.GROUP_INVITE_CODE);
+
+            SignUpPage.getReferralApplyBtn(driver).click();
+
+            // Wait for referral success title to be visible
+            SignUpPage.getReferralSuccessTitle(driver);
+            assertNotNull(SignUpPage.getReferralSuccessTitle(driver));
+            System.out.println(SignUpPage.getReferralSuccessTitle(driver).getText());
+
+            System.out.println(SignUpPage.getReferralSuccessPaymentTitle(driver).getText());
+
+            SignUpPage.getConfirmBtn(driver).click();
+            recordResult("SignUp", "Pass");
+        } catch (AssertionError e) {
+            recordResult("signUp", "Fail " + e.getMessage());
+            Assert.fail("singUp assertion failed: " + e.getMessage());
+        } catch (Exception e) {
+            recordResult("signUp", "Fail " + e.getMessage());
+            Assert.fail("signup failed: " + e.getMessage());
+        }
     }
 
     public void addMultipleAddress() throws InterruptedException {
@@ -434,9 +478,14 @@ public class AddressPageTest extends BaseTest {
             assertEquals(state.getText().toLowerCase(), addressList.get(addressEntryCount - 1).state.toLowerCase());
             saveAddress.click();
             Thread.sleep(2000);
+            recordResult("addMultipleAddress", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("addMultipleAddress", "Fail " + e.getMessage());
+            Assert.fail("addMultipleAddress assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("update address failed");
+            recordResult("addMultipleAddress", "Fail " + e.getMessage());
+            Assert.fail("addMultipleAddress failed: " + e.getMessage());
         }
         addressEntryCount++;
     }

@@ -10,16 +10,16 @@ import org.smytten.pof.account.AccountPage;
 import org.smytten.pof.account.ProfileUpdatePage;
 import org.smytten.pof.common.Navigation;
 import org.smytten.pof.common.PopUp;
+import org.smytten.pof.common.VerifyElementHelper;
+import org.smytten.pof.entry.LandingPage;
 import org.smytten.pof.entry.LoginPage;
 import org.smytten.pof.entry.SignUpPage;
-import org.smytten.pof.entry.LandingPage;
 import org.smytten.util.Utility;
 import org.testng.annotations.Test;
 
 import java.util.Base64;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static org.testng.Assert.assertNotEquals;
 import static org.testng.AssertJUnit.*;
 
 public class AccountPageTest extends BaseTest {
@@ -27,101 +27,27 @@ public class AccountPageTest extends BaseTest {
     private static final int RANDOMNUMBER = ThreadLocalRandom.current().nextInt(0, 2);
     private static TouchAction touchAction;
 
-    @Test(priority = 4)
-    public void verifyAccountSection() {
-        WebElement profileSection = null;
-        WebElement profileName = null;
-        WebElement editProfile = null;
-        WebElement editIcon = null;
-        WebElement smyttenBenefits = null;
-        WebElement trialHowTo = null;
-        WebElement shopHowTo = null;
-        WebElement rewardHowTo = null;
-        WebElement myOrders = null;
-        WebElement helpSection = null;
-        WebElement referAndEarn = null;
-        WebElement referBanner = null;
-        WebElement reviewSection = null;
-        WebElement surveySection = null;
-        WebElement savedAddress = null;
-        WebElement wishlist = null;
-        WebElement smyttenLuxe = null;
-        WebElement smyttenBlog = null;
-        WebElement privacyPolicy = null;
-        WebElement termsAndCondition = null;
-        WebElement faqs = null;
-        WebElement smyttenLogo = null;
-        WebElement signOut = null;
-        try {
-            profileSection = AccountPage.getEditProfile(driver);
-            profileName = AccountPage.getProfileName(driver);
-            editProfile = AccountPage.getEditProfile(driver);
-            editIcon = AccountPage.getEditIcon(driver);
-            smyttenBenefits = AccountPage.getSmyttenBenefits(driver);
-            trialHowTo = AccountPage.getTrialHowTo(driver);
-            shopHowTo = AccountPage.getShopHowTo(driver);
-            rewardHowTo = AccountPage.getRewardHowTo(driver);
-            myOrders = AccountPage.getMyOrders(driver);
-            helpSection = AccountPage.getHelpSection(driver);
-            referAndEarn = AccountPage.getReferAndEarn(driver);
-            referBanner = AccountPage.getReferBanner(driver);
-            reviewSection = AccountPage.getReviewSection(driver);
-            surveySection = AccountPage.getSurveySection(driver);
-            savedAddress = AccountPage.getSavedAddress(driver);
-            wishlist = AccountPage.getWishlist(driver);
-            smyttenLuxe = AccountPage.getSmyttenLuxe(driver);
-            smyttenBlog = AccountPage.getSmyttenBlog(driver);
-            driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(100000)"));
-            privacyPolicy = AccountPage.getPrivacyPolicy(driver);
-            termsAndCondition = AccountPage.getTermsAndCondition(driver);
-            faqs = AccountPage.getFaqs(driver);
-            smyttenLogo = AccountPage.getSmyttenLogo(driver);
-            signOut = AccountPage.getSignOut(driver);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Element not found");
-        }
-    }
-
-    @Test(priority = 3)
-    public void gotoAccountPage() {
-        WebElement mobileInput = null;
-        try {
-            mobileInput = Navigation.getProfileHomeTab(driver);
-            mobileInput.click();
-            assertTrue(true);
-        } catch (Exception e) {
-            fail("failed to go account page");
-        }
-    }
-
-    @Test(priority = 2)
-    public void checkPopUp() {
-        WebElement popUpClose = null;
-        try {
-            popUpClose = PopUp.getPopUpClose(driver);
-            popUpClose.click();
-            assertTrue("popup successfully closed", true);
-        } catch (Exception e) {
-            System.out.println("no popUp");
-            assertTrue("popup is not there", true);
-        }
-    }
 
     @Test(priority = 0)
-    public void initialLandingPageText() throws InterruptedException {
+    public void initialLandingPageText() {
         try {
             touchAction = new TouchAction<>(driver);
             WebElement startCta = LandingPage.getStartCtaElement(driver);
             assertNotNull(startCta);
             startCta.click();
+            recordResult("initialLandingPageText", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("initialLandingPageText", "Fail " + e.getMessage());
+            fail("initialLandingPageText assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            fail("landing page" + e.getMessage());
+            recordResult("initialLandingPageText", "Fail " + e.getMessage());
+            fail("initialLandingPageText failed: " + e.getMessage());
         }
     }
+
     @Test(priority = 1)
-    public void signUp() throws InterruptedException {
+    public void signUp() {
         WebElement mobileInput = null;
         WebElement proceedBtn = null;
         WebElement otpContainer = null;
@@ -174,40 +100,150 @@ public class AccountPageTest extends BaseTest {
             System.out.println(SignUpPage.getReferralSuccessPaymentTitle(driver).getText());
 
             SignUpPage.getConfirmBtn(driver).click();
+            recordResult("signUp", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("signUp", "Fail " + e.getMessage());
+            fail("signUp assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            fail("Some element not found");
+            recordResult("signUp", "Fail " + e.getMessage());
+            fail("signUp failed: " + e.getMessage());
+        }
+    }
+
+    @Test(priority = 2)
+    public void checkPopUp() {
+        WebElement popUpClose = null;
+        if(VerifyElementHelper.isPopupPresent(driver)){
+            popUpClose = PopUp.getPopUpClose(driver);
+            popUpClose.click();
+            assertTrue("popup successfully closed", true);
+            recordResult("checkPopUp", "Pass");
+
+        }
+        recordResult("CheckPopUp", "Pass");
+    }
+
+    @Test(priority = 3)
+    public void gotoAccountPage() {
+        WebElement mobileInput = null;
+        try {
+            mobileInput = Navigation.getProfileHomeTab(driver);
+            mobileInput.click();
+            assertTrue(true);
+            recordResult("gotoAccountPage", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("gotoAccountPage", "Fail " + e.getMessage());
+            fail("gotoAccountPage assertion failed: " + e.getMessage());
+        } catch (Exception e) {
+            recordResult("gotoAccountPage", "Fail " + e.getMessage());
+            fail("signOut failed: " + e.getMessage());
         }
     }
 
     @Test(priority = 4)
+    public void verifyAccountSection() {
+        WebElement profileSection = null;
+        WebElement profileName = null;
+        WebElement editProfile = null;
+        WebElement editIcon = null;
+        WebElement smyttenBenefits = null;
+        WebElement trialHowTo = null;
+        WebElement shopHowTo = null;
+        WebElement rewardHowTo = null;
+        WebElement myOrders = null;
+        WebElement helpSection = null;
+        WebElement referAndEarn = null;
+        WebElement referBanner = null;
+        WebElement reviewSection = null;
+        WebElement surveySection = null;
+        WebElement savedAddress = null;
+        WebElement wishlist = null;
+        WebElement smyttenLuxe = null;
+        WebElement smyttenBlog = null;
+        WebElement privacyPolicy = null;
+        WebElement termsAndCondition = null;
+        WebElement faqs = null;
+        WebElement smyttenLogo = null;
+        WebElement signOut = null;
+        WebElement yesCta = null;
+        try {
+            profileSection = AccountPage.getEditProfile(driver);
+            profileName = AccountPage.getProfileName(driver);
+            editProfile = AccountPage.getEditProfile(driver);
+            editIcon = AccountPage.getEditIcon(driver);
+            smyttenBenefits = AccountPage.getSmyttenBenefits(driver);
+            trialHowTo = AccountPage.getTrialHowTo(driver);
+            shopHowTo = AccountPage.getShopHowTo(driver);
+            rewardHowTo = AccountPage.getRewardHowTo(driver);
+            myOrders = AccountPage.getMyOrders(driver);
+            helpSection = AccountPage.getHelpSection(driver);
+            referAndEarn = AccountPage.getReferAndEarn(driver);
+            referBanner = AccountPage.getReferBanner(driver);
+            reviewSection = AccountPage.getReviewSection(driver);
+            surveySection = AccountPage.getSurveySection(driver);
+            driverControl.scrollToBottom();
+            savedAddress = AccountPage.getSavedAddress(driver);
+            wishlist = AccountPage.getWishlist(driver);
+            smyttenLuxe = AccountPage.getSmyttenLuxe(driver);
+            smyttenBlog = AccountPage.getSmyttenBlog(driver);
+            privacyPolicy = AccountPage.getPrivacyPolicy(driver);
+            termsAndCondition = AccountPage.getTermsAndCondition(driver);
+            faqs = AccountPage.getFaqs(driver);
+            smyttenLogo = AccountPage.getSmyttenLogo(driver);
+            signOut = AccountPage.getSignOut(driver);
+            yesCta = driver.findElement(AppiumBy.id("android:id/button1"));
+            yesCta.click();
+            recordResult("verifyLandingPage", "Pass");
+        } catch (AssertionError e) {
+            recordResult("verifyAccountSection", "Fail " + e.getMessage());
+            fail("verifyAccountSection assertion failed: " + e.getMessage());
+        } catch (Exception e) {
+            recordResult("signOut", "Fail " + e.getMessage());
+            fail("verifyAccountSection failed: " + e.getMessage());
+        }
+    }
+
+    @Test(priority = 5)
     public void openEditProfile() {
         WebElement editIcon = null;
 
         try {
             editIcon = AccountPage.getEditIcon(driver);
             editIcon.click();
-        } catch (Exception e) {
-            fail("Failed to open edit page");
-        }
+            recordResult("openEditProfile", "Pass");
 
+        } catch (AssertionError e) {
+            recordResult("openEditProfile", "Fail " + e.getMessage());
+            fail("openEditProfile assertion failed: " + e.getMessage());
+        } catch (Exception e) {
+            recordResult("openEditProfile", "Fail " + e.getMessage());
+            fail("openEditProfile failed: " + e.getMessage());
+        }
     }
 
-    @Test(priority = 5)
-    public void updateProfile() throws InterruptedException {
+    @Test(priority = 6)
+    public void updateProfile() {
         WebElement editIcon = null;
         WebElement saveBtn = null;
         try {
-            editIcon = AccountPage.getProfileEditTab(driver);
-            editIcon.click();
+            driverControl.scrollToTop();
             updateName();
             updateEmail();
+            driver.hideKeyboard();
             updateGender();
             updateDOB();
             updatePincode();
             saveBtn = ProfileUpdatePage.getProceedButton(driver);
             saveBtn.click();
+            recordResult("updateProfile", "Pass");
+        } catch (AssertionError e) {
+            recordResult("updateProfile", "Fail " + e.getMessage());
+            fail("updateProfile assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            fail("Some Element not found"+e.getMessage());
+            recordResult("updateProfile", "Fail " + e.getMessage());
+            fail("updateProfile failed: " + e.getMessage());
         }
     }
 
@@ -217,21 +253,27 @@ public class AccountPageTest extends BaseTest {
             pincodeInput = ProfileUpdatePage.getPincodeInput(driver);
             pincodeInput.click();
             pincodeInput.sendKeys("635115");
+            recordResult("updatePincode", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("updatePincode", "Fail " + e.getMessage());
+            fail("updatePincode assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            fail("fained to updated pincode");
+            recordResult("updatePincode", "Fail " + e.getMessage());
+            fail("updatePincode failed: " + e.getMessage());
         } finally {
             driver.navigate().back();
         }
 
     }
 
-    private void updateDOB() throws InterruptedException {
+    private void updateDOB() {
         WebElement chooseMonth = null;
         WebElement selectMonth = null;
         WebElement chooseYear = null;
         WebElement selectYear = null;
         try {
-            chooseMonth = ProfileUpdatePage.getChooseMonth(driver);
+            chooseMonth = ProfileUpdatePage.getBirthdateInput(driver);
             chooseMonth.click();
             selectMonth = ProfileUpdatePage.getSelectMarch(driver);
             selectMonth.click();
@@ -239,10 +281,16 @@ public class AccountPageTest extends BaseTest {
             chooseYear = ProfileUpdatePage.getChooseYear(driver);
             chooseYear.click();
 
-            selectYear = ProfileUpdatePage.getChooseYear(driver);
+            selectYear = ProfileUpdatePage.getSelectYear(driver);
             selectYear.click();
+            recordResult("updateDOB", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("updateDOB", "Fail " + e.getMessage());
+            fail("updateDOB assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            fail("Failed to update dob");
+            recordResult("updateDOB", "Fail " + e.getMessage());
+            fail("updateDOB failed: " + e.getMessage());
         }
     }
 
@@ -251,40 +299,57 @@ public class AccountPageTest extends BaseTest {
         try {
             otherGender = ProfileUpdatePage.getOthersOption(driver);
             otherGender.click();
+            recordResult("updateGender", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("updateGender", "Fail " + e.getMessage());
+            fail("updateGender assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            fail("failed to update gender");
+            recordResult("updateGender", "Fail " + e.getMessage());
+            fail("updateGender failed: " + e.getMessage());
         }
 
     }
 
-    private void updateEmail() throws InterruptedException {
+    private void updateEmail() {
         String email = Utility.generateRandomEmail();
         WebElement emailInput = null;
         try {
             emailInput = ProfileUpdatePage.getEmailInput(driver);
             emailInput.click();
             emailInput.sendKeys(email);
+            recordResult("updateEmail", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("updateEmail", "Fail " + e.getMessage());
+            fail("updateEmail assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            fail("Failed to update email");
+            recordResult("updateEmail", "Fail " + e.getMessage());
+            fail("updateEmail failed: " + e.getMessage());
         }
 
     }
 
-    private void updateName() throws InterruptedException {
+    private void updateName() {
         String name = "Not Guest User";
         WebElement nameInput = null;
         try {
             nameInput = ProfileUpdatePage.getNameInput(driver);
             nameInput.click();
             nameInput.sendKeys(name);
+            recordResult("updateName", "Pass");
+        } catch (AssertionError e) {
+            recordResult("updateName", "Fail " + e.getMessage());
+            fail("updateName assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            fail("name update failed");
+            recordResult("updateName", "Fail " + e.getMessage());
+            fail("updateName failed: " + e.getMessage());
         }
 
     }
 
     //    @Test
-    public void copyOtp() throws InterruptedException {
+    public void copyOtp() {
         String decodedOtp = null;
         WebElement clearNotification = null;
         WebElement actionContainer = null;
@@ -323,9 +388,14 @@ public class AccountPageTest extends BaseTest {
                 touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
                 System.out.println("no new notification");
             }
+            recordResult("copyOtp", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("copyOtp", "Fail " + e.getMessage());
+            fail("copyOtp assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            fail();
+            recordResult("copyOtp", "Fail " + e.getMessage());
+            fail("copyOtp failed: " + e.getMessage());
         }
     }
 }

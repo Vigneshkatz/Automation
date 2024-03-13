@@ -74,7 +74,7 @@ public class AddressPage {
     }
 
     public static WebElement getHouseField(AndroidDriver driver) {
-        return houseField = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/til_house"));
+        return houseField = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_house"));
     }
 
     public static WebElement getStreetField(AndroidDriver driver) {

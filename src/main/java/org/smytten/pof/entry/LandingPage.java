@@ -10,6 +10,9 @@ public class LandingPage {
 
     private AndroidDriver driver;
     private static WebElement startCtaElement;
+
+    private static WebElement rootContent;
+    private static WebElement topBanner;
     private static final String EXPECTED_CTA_TEXT = "Get started";
 
     public LandingPage(AndroidDriver driver) {
@@ -20,6 +23,14 @@ public class LandingPage {
 
     public static WebElement getStartCtaElement(AndroidDriver driver) {
         return startCtaElement = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text='Get Started']"));
+    }
+
+    public static WebElement getTopBanner(AndroidDriver driver) {
+        return topBanner = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_header"));
+    }
+
+    public static WebElement getrootContent(AndroidDriver driver) {
+        return rootContent = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_header"));
     }
 
     public static String getExpectedCtaText() {

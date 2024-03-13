@@ -9,9 +9,11 @@ import org.openqa.selenium.WebElement;
 import org.smytten.pof.account.AccountPage;
 import org.smytten.pof.common.Navigation;
 import org.smytten.pof.common.PopUp;
+import org.smytten.pof.common.VerifyElementHelper;
 import org.smytten.pof.entry.LoginPage;
 import org.smytten.pof.entry.OtpPage;
 import org.smytten.pof.entry.LandingPage;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Base64;
@@ -34,8 +36,14 @@ public class LoginTest extends BaseTest {
             WebElement startCta = LandingPage.getStartCtaElement(driver);
             assertNotNull(startCta);
             startCta.click();
+            recordResult("initialLandingPageText", "Pass");
+
+        }catch (AssertionError e) {
+            recordResult("initialLandingPageText", "Fail "+e.getMessage());
+            Assert.fail("initialLandingPageText assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            fail("landing page" + e.getMessage());
+            recordResult("signUp", "Fail "+e.getMessage());
+            Assert.fail("initialLandingPageText failed: " + e.getMessage());
         }
     }
 
@@ -70,9 +78,14 @@ public class LoginTest extends BaseTest {
             Process process = Runtime.getRuntime().exec("adb shell input text " + OtpPage.VALID_OTP);
             process.waitFor();
             System.out.println("OTP typed successfully." + OtpPage.VALID_OTP);
+            recordResult("loginWithCrtOTP", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("loginWithCrtOTP", "Fail "+e.getMessage());
+            Assert.fail("loginWithCrtOTP assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            fail();
+            recordResult("signUp", "Fail "+e.getMessage());
+            Assert.fail("loginWithCrtOTP failed: " + e.getMessage());
         }
         signOut();
     }
@@ -118,9 +131,14 @@ public class LoginTest extends BaseTest {
             System.out.println(otpToastMessage.getText());
             assertEquals("Invalid Otp Message", OtpPage.INVALID_OTP_MESSAGE, otpToastMessage.getText());
             System.out.println("OTP typed successfully." + OtpPage.INVALID_OTP);
+            recordResult("loginWithWrongOTP", "Pass");
+
+        } catch (AssertionError e) {
+            recordResult("loginWithWrongOTP", "Fail "+e.getMessage());
+            Assert.fail("loginWithWrongOTP assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            fail();
+            recordResult("loginWithWrongOTP", "Fail "+e.getMessage());
+            Assert.fail("loginWithWrongOTP failed: " + e.getMessage());
         }
     }
 
@@ -218,10 +236,15 @@ public class LoginTest extends BaseTest {
                     assertEquals("Invalid Otp Message", OtpPage.INVALID_OTP_MESSAGE, otpToastText);
                 }
             }
+            recordResult("otpMaxLimitCheck", "Pass");
 
+
+        }catch (AssertionError e) {
+            recordResult("otpMaxLimitCheck", "Fail "+e.getMessage());
+            Assert.fail("otpMaxLimitCheck assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            fail();
+            recordResult("otpMaxLimitCheck", "Fail "+e.getMessage());
+            Assert.fail("otpMaxLimitCheck failed: " + e.getMessage());
         }
 //        signOut();
     }
@@ -230,9 +253,14 @@ public class LoginTest extends BaseTest {
         try {
             Thread.sleep(2000);
             OtpPage.getMobileNumberEditCta(driver).click();
-        }catch (Exception e)
-        {
-            fail("failed to go to edit page"+ e.getMessage());
+            recordResult("openMobileNumberEntryScreen", "Pass");
+
+        }catch (AssertionError e) {
+            recordResult("openMobileNumberEntryScreen", "Fail "+e.getMessage());
+            Assert.fail("openMobileNumberEntryScreen assertion failed: " + e.getMessage());
+        } catch (Exception e) {
+            recordResult("openMobileNumberEntryScreen", "Fail "+e.getMessage());
+            Assert.fail("openMobileNumberEntryScreen failed: " + e.getMessage());
         }
     }
 
@@ -287,12 +315,16 @@ public class LoginTest extends BaseTest {
                         fail("Toast message not received");
                     }
                 }
-                i++; // Increment i
+                i++;
             } while (i <= OtpPage.OTP_MAX_SENT_COUNT);
+            recordResult("resentOtp", "Pass");
 
+        } catch (AssertionError e) {
+            recordResult("resentOtp", "Fail "+e.getMessage());
+            Assert.fail("resentOtp assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            fail();
+            recordResult("resentOtp", "Fail "+e.getMessage());
+            Assert.fail("resentOtp failed: " + e.getMessage());
         }
     }
 
@@ -313,22 +345,27 @@ public class LoginTest extends BaseTest {
             termsTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
             assertEquals(LoginPage.getTNC_TITLE(), termsTitle.getText());
             touchAction.tap(PointOption.point(544, 211)).perform();
+            recordResult("openTermsAndPolicy", "Pass");
+
+        }catch (AssertionError e) {
+            recordResult("openTermsAndPolicy", "Fail "+e.getMessage());
+            Assert.fail("openTermsAndPolicy assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            fail("something not found");
+            recordResult("openTermsAndPolicy", "Fail "+e.getMessage());
+            Assert.fail("openTermsAndPolicy failed: " + e.getMessage());
         }
     }
 
     private void checkPopUp() {
         WebElement popUpClose = null;
-        try {
-            popUp = new PopUp(driver);
+        if(VerifyElementHelper.isPopupPresent(driver)){
             popUpClose = PopUp.getPopUpClose(driver);
             popUpClose.click();
             assertTrue("popup successfully closed", true);
-        } catch (Exception e) {
-            System.out.println("no popUp");
-            assertTrue("popup is not there", true);
+            recordResult("checkPopUp", "Pass");
+
         }
+        recordResult("CheckPopUp", "Pass");
     }
 
     private void gotoAccountPage() {
@@ -338,8 +375,13 @@ public class LoginTest extends BaseTest {
             mobileInput = Navigation.getProfileHomeTab(driver);
             mobileInput.click();
             assertNotNull(mobileInput);
+            recordResult("SignUp", "Pass");
+        } catch (AssertionError e) {
+            recordResult("signUp", "Fail "+e.getMessage());
+            Assert.fail("singUp assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            fail("failed to go account page");
+            recordResult("signUp", "Fail "+e.getMessage());
+            Assert.fail("signup failed: " + e.getMessage());
         }
     }
 
@@ -356,9 +398,13 @@ public class LoginTest extends BaseTest {
             signOut.click();
             yesCta = driver.findElement(AppiumBy.id("android:id/button1"));
             yesCta.click();
+            recordResult("signOut", "Pass");
+        } catch (AssertionError e) {
+            recordResult("signOut", "Fail "+e.getMessage());
+            Assert.fail("signOut assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Element not found");
+            recordResult("signOut", "Fail "+e.getMessage());
+            Assert.fail("signOut failed: " + e.getMessage());
         }
     }
 }

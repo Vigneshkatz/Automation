@@ -7,6 +7,7 @@ import org.smytten.pof.entry.LandingPage;
 import org.smytten.pof.entry.LoginPage;
 import org.smytten.pof.entry.SignUpPage;
 import org.smytten.util.Utility;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertNotEquals;
@@ -17,13 +18,18 @@ public class SignUpTest extends BaseTest {
     private static TouchAction touchAction;
 
     @Test(priority = 0)
-    public void initialLandingPageText() throws InterruptedException {
+    public void initialLandingPageText(){
         try {
             touchAction = new TouchAction<>(driver);
             WebElement startCta = LandingPage.getStartCtaElement(driver);
             assertNotNull(startCta);
             startCta.click();
-        } catch (Exception e) {
+        }catch (AssertionError e)
+        {
+            recordResult("verifyLandingPage", "Fail "+e.getMessage());
+            fail("verification assertion failed: "+e.getMessage());
+        }
+        catch (Exception e) {
             fail("landing page" + e.getMessage());
         }
     }
@@ -81,8 +87,13 @@ public class SignUpTest extends BaseTest {
             System.out.println(SignUpPage.getReferralSuccessPaymentTitle(driver).getText());
 
             SignUpPage.getConfirmBtn(driver).click();
+            recordResult("SignUp", "Pass");
+        }catch (AssertionError e) {
+            recordResult("signUp", "Fail "+e.getMessage());
+            Assert.fail("singUp assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            fail("Some element not found");
+            recordResult("signUp", "Fail "+e.getMessage());
+            Assert.fail("signup failed: " + e.getMessage());
         }
     }
 

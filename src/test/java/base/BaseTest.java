@@ -2,29 +2,49 @@ package base;
 
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.remote.AndroidMobileCapabilityType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.smytten.export.ExcelReportGenerator;
+import org.smytten.util.driver.Driver;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
 
 import static org.testng.AssertJUnit.assertNotNull;
 
 public class BaseTest {
-    public static AndroidDriver driver;
+
+    public  AndroidDriver driver;
+
+    public  Driver driverControl;
+    
+    public  Map<String, String> testResults;
 
     @BeforeSuite
-    public static void setUp() {
+    public void setUp() {
 //        startAppiumServer();
         System.out.println("Appium server started successfully");
         try {
             driver = initializeDriver();
+            this.driverControl = new Driver(driver);
             assertNotNull("Driver initialization failed", driver);
-            long time = 2000;
+            long time = 10;
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(time));
         } catch (Exception e) {
             System.err.println("Invalid Appium server URL: " + e.getMessage());
@@ -32,7 +52,9 @@ public class BaseTest {
     }
 
     @AfterSuite
-    public static void tearDown() {
+    public void tearDown(){
+        ExcelReportGenerator excelReportGenerator = new ExcelReportGenerator(testResults);
+        excelReportGenerator.generateExcelReport();
         System.out.println("Appium server stopped");
         if (driver != null) {
             driver.quit();
@@ -41,7 +63,7 @@ public class BaseTest {
         stopAppiumServer();
     }
 
-    private static AndroidDriver initializeDriver() throws MalformedURLException {
+    private  AndroidDriver initializeDriver() throws MalformedURLException {
         DesiredCapabilities caps = new DesiredCapabilities();
 //        caps.setCapability(AppiumCapability.DEVICE_NAME.getCapabilityName(), "OnePlus LE2111");
 //        caps.setCapability(AppiumCapability.PLATFORM_VERSION.getCapabilityName(), "14");
@@ -71,20 +93,20 @@ public class BaseTest {
 
         // Set app path
         caps.setCapability("app", "/Users/Vignesh/Desktop/Automation/src/main/resources/Smytten-169-debug (1).apk");
+//        caps.setCapability(AndroidMobileCapabilityType.APP_WAIT_DURATION, Duration.ofSeconds(8));
 
         return new AndroidDriver(new URL("http://127.0.0.1:4723/"), caps);
     }
 
-    private static void startAppiumServer() {
+    private  void startAppiumServer() {
         try {
             Runtime.getRuntime().exec("appium");
-            TimeUnit.SECONDS.sleep(10);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void stopAppiumServer() {
+    private  void stopAppiumServer() {
         try {
             ProcessBuilder builder = new ProcessBuilder("pkill", "-9", "node");
             Process process = builder.start();
@@ -99,4 +121,18 @@ public class BaseTest {
             e.printStackTrace();
         }
     }
+
+    public  void recordResult(String methodName, String result) {
+        if (testResults == null) {
+            testResults = new HashMap<>();
+        }
+        testResults.put(methodName, result);
+    }
+
+    private  String getCurrentDateTime() {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm");
+        return currentDateTime.format(formatter);
+    }
+
 }

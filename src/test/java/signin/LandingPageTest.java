@@ -3,23 +3,59 @@ package signin;
 import base.BaseTest;
 import org.openqa.selenium.WebElement;
 import org.smytten.pof.entry.LandingPage;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
-import static org.testng.AssertJUnit.*;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
+import static org.testng.AssertJUnit.assertNotNull;
 
 public class LandingPageTest extends BaseTest {
-    @Test
-    public void initialLandingPageText() throws InterruptedException {
+
+
+    @Test(priority = 1)
+    public void initialLandingPageText() {
         try {
-            LandingPage landingPage = new LandingPage(driver);
-            assertNotNull(landingPage);
-            WebElement startCta = landingPage.getStartCtaElement(driver);
+            WebElement startCta = LandingPage.getStartCtaElement(driver);
             assertNotNull(startCta);
-            assertTrue(startCta.getText().equalsIgnoreCase(landingPage.getExpectedCtaText()));
+            assertTrue(startCta.getText().equalsIgnoreCase(LandingPage.getExpectedCtaText()));
             startCta.click();
-            Thread.sleep(5000);
+            recordResult("initialLandingPageText", "Pass");
+        } catch (AssertionError e) {
+            recordResult("initialLandingPageText", "Fail "+e.getMessage());
+            fail("landing page assertion failed: " + e.getMessage());
         } catch (Exception e) {
-            fail("landing page" + e.getMessage());
+            recordResult("initialLandingPageText", "Fail");
+            fail("landing page failed: " + e.getMessage());
         }
     }
+
+    @Test
+    public void verifyLandingPage() {
+        try {
+            WebElement topBanner = LandingPage.getTopBanner(driver);
+            assertNotNull(topBanner);
+            WebElement rootElement = LandingPage.getrootContent(driver);
+            assertNotNull(rootElement);
+            WebElement startCta = LandingPage.getStartCtaElement(driver);
+            assertNotNull(startCta);
+            recordResult("verifyLandingPage", "Pass");
+        } catch (AssertionError e) {
+            recordResult("verifyLandingPage", "Fail "+e.getMessage());
+            fail("verification assertion failed: " + e.getMessage());
+        } catch (Exception e) {
+            recordResult("verifyLandingPage", "Fail "+e.getMessage());
+            fail("verification failed: " + e.getMessage());
+        }
+    }
+
+    @AfterMethod
+    public void recordTestResult(ITestResult result) {
+        String methodName = result.getMethod().getMethodName();
+        String status = result.isSuccess() ? "Pass" : "Fail";
+        testResults.put(methodName, status);
+    }
+
+
 }

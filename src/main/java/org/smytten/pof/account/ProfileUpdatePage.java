@@ -87,9 +87,6 @@ public class ProfileUpdatePage {
         return birthdateInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_birthdate"));
     }
 
-    public static WebElement getBirthYearInput(AndroidDriver driver) {
-        return birthYearInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_birthyear"));
-    }
 
     public static WebElement getPincodeInput(AndroidDriver driver) {
         return pincodeInput = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_pincode"));
@@ -99,16 +96,13 @@ public class ProfileUpdatePage {
         return proceedButton = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_proceed"));
     }
 
-    public static WebElement getChooseMonth(AndroidDriver driver) {
-        return chooseMonth = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/month_spinner"));
-    }
 
     public static WebElement getSelectMarch(AndroidDriver driver) {
         return selectMarch = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@resource-id='android:id/title' and @text='March']"));
     }
 
     public static WebElement getChooseYear(AndroidDriver driver) {
-        return chooseYear = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/year_spinner"));
+        return chooseYear = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_birthyear"));
     }
 
     public static WebElement getSelectYear(AndroidDriver driver) {
