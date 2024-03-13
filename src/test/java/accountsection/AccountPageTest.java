@@ -183,7 +183,7 @@ public class AccountPageTest extends BaseTest {
             referBanner = AccountPage.getReferBanner(driver);
             reviewSection = AccountPage.getReviewSection(driver);
             surveySection = AccountPage.getSurveySection(driver);
-            driverControl.scrollToBottom();
+            driverHelper.scrollToBottom();
             savedAddress = AccountPage.getSavedAddress(driver);
             wishlist = AccountPage.getWishlist(driver);
             smyttenLuxe = AccountPage.getSmyttenLuxe(driver);
@@ -228,7 +228,7 @@ public class AccountPageTest extends BaseTest {
         WebElement editIcon = null;
         WebElement saveBtn = null;
         try {
-            driverControl.scrollToTop();
+            driverHelper.scrollToTop();
             updateName();
             updateEmail();
             driver.hideKeyboard();

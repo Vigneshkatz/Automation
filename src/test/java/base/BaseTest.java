@@ -2,39 +2,29 @@ package base;
 
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.remote.AndroidMobileCapabilityType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.smytten.export.ExcelReportGenerator;
-import org.smytten.util.driver.Driver;
+import org.smytten.util.driver.DriverHelper;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-
 import static org.testng.AssertJUnit.assertNotNull;
 
 public class BaseTest {
 
-    public  AndroidDriver driver;
-
-    public  Driver driverControl;
-    
-    public  Map<String, String> testResults;
+    public AndroidDriver driver;
+    public Map<String, String> testResults;
+    public DriverHelper driverHelper;
 
     @BeforeSuite
     public void setUp() {
@@ -42,7 +32,7 @@ public class BaseTest {
         System.out.println("Appium server started successfully");
         try {
             driver = initializeDriver();
-            this.driverControl = new Driver(driver);
+            this.driverHelper = new DriverHelper(driver);
             assertNotNull("Driver initialization failed", driver);
             long time = 10;
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(time));
@@ -52,7 +42,7 @@ public class BaseTest {
     }
 
     @AfterSuite
-    public void tearDown(){
+    public void tearDown() {
         ExcelReportGenerator excelReportGenerator = new ExcelReportGenerator(testResults);
         excelReportGenerator.generateExcelReport();
         System.out.println("Appium server stopped");
@@ -63,7 +53,7 @@ public class BaseTest {
         stopAppiumServer();
     }
 
-    private  AndroidDriver initializeDriver() throws MalformedURLException {
+    private AndroidDriver initializeDriver() throws MalformedURLException {
         DesiredCapabilities caps = new DesiredCapabilities();
 //        caps.setCapability(AppiumCapability.DEVICE_NAME.getCapabilityName(), "OnePlus LE2111");
 //        caps.setCapability(AppiumCapability.PLATFORM_VERSION.getCapabilityName(), "14");
@@ -98,7 +88,7 @@ public class BaseTest {
         return new AndroidDriver(new URL("http://127.0.0.1:4723/"), caps);
     }
 
-    private  void startAppiumServer() {
+    private void startAppiumServer() {
         try {
             Runtime.getRuntime().exec("appium");
         } catch (Exception e) {
@@ -106,7 +96,7 @@ public class BaseTest {
         }
     }
 
-    private  void stopAppiumServer() {
+    private void stopAppiumServer() {
         try {
             ProcessBuilder builder = new ProcessBuilder("pkill", "-9", "node");
             Process process = builder.start();
@@ -122,14 +112,14 @@ public class BaseTest {
         }
     }
 
-    public  void recordResult(String methodName, String result) {
+    public void recordResult(String methodName, String result) {
         if (testResults == null) {
             testResults = new HashMap<>();
         }
         testResults.put(methodName, result);
     }
 
-    private  String getCurrentDateTime() {
+    private String getCurrentDateTime() {
         LocalDateTime currentDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm");
         return currentDateTime.format(formatter);

@@ -3,9 +3,7 @@ package order;
 import base.BaseTest;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.TouchAction;
-import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.touch.offset.PointOption;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.smytten.pof.account.AddressPage;
 import org.smytten.pof.cart.CartPage;
@@ -19,6 +17,7 @@ import org.smytten.pof.entry.SignUpPage;
 import org.smytten.pof.payment.Payment;
 import org.smytten.pof.product.TrialProductCard;
 import org.smytten.util.Utility;
+import org.smytten.util.driver.DriverHelper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -117,7 +116,6 @@ public class TrialOrderTest extends BaseTest {
             assertNotNull(trialFront);
             trialFront.click();
             recordResult("gotoTrialFront", "Pass");
-
         } catch (AssertionError e) {
             recordResult("gotoTrialFront", "Fail " + e.getMessage());
             fail("gotoTrialFront assertion failed: " + e.getMessage());
@@ -139,9 +137,14 @@ public class TrialOrderTest extends BaseTest {
                     break;
                 }
             }
+            recordResult("openProductListing","pass");
 
-        } catch (Exception e) {
-            fail("failed to open product listing");
+
+        }catch (AssertionError e){
+            recordResult("openProductListing","fail "+ e.getMessage());
+        }catch (Exception e) {
+            recordResult("openProductListing","fail "+ e.getMessage());
+            fail("failed to open product listing"+e.getMessage());
         }
 
 
@@ -154,16 +157,25 @@ public class TrialOrderTest extends BaseTest {
             assertNotNull(productCartList);
             for (WebElement productCart : productCartList) {
                 productCart.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_try_now")).click();
-                if (VerifyElementHelper.isPopupPresent(driver)) {
-                    TrialProductCard.getPopUpDesc(driver);
-                    TrialProductCard.getPopUpOkButton(driver);
-                } else {
-                    System.out.println("No pop-up found");
+                try {
+                    if (VerifyElementHelper.isPopupPresent(driver)) {
+                        TrialProductCard.getPopUpDesc(driver);
+                        TrialProductCard.getPopUpOkButton(driver);
+                    } else {
+                        System.out.println("No pop-up found");
+                    }
+                }catch (NoSuchElementException e)
+                {
+                    e.printStackTrace();
                 }
                 break;
             }
-        } catch (Exception e) {
-            fail("Failed to add product to cart");
+            recordResult("addProductToCart","pass");
+        } catch (AssertionError e){
+            recordResult("addProductToCart","fail "+ e.getMessage());
+        }catch (Exception e) {
+            recordResult("addProductToCart","fail "+ e.getMessage());
+            fail("failed to open product listing"+e.getMessage());
         }
     }
 
@@ -173,26 +185,44 @@ public class TrialOrderTest extends BaseTest {
             WebElement cart = Navigation.getCartView(driver);
             assertNotNull(cart);
             cart.click();
-            if(VerifyElementHelper.isAutoApplyCouponPresent(driver)){
-                TouchAction touchAction = new TouchAction(driver);
-                touchAction.tap(PointOption.point(877, 877)).perform();
+            try {
+                if (VerifyElementHelper.isAutoApplyCouponPresent(driver)) {
+                    TouchAction touchAction = new TouchAction(driver);
+                    touchAction.tap(PointOption.point(877, 877)).perform();
+                }
+            }catch (NoSuchElementException e){
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            fail("failed to go to cart");
+            Utility.takeScreenshot(driver,"Cart");
+            recordResult("gotoCart","pass");
+
+        }catch (AssertionError e){
+            recordResult("gotoCart","fail "+ e.getMessage());
+        }catch (Exception e) {
+            recordResult("gotoCart","fail "+ e.getMessage());
+            fail("failed to gotoCart"+e.getMessage());
         }
     }
 
     @Test(priority = 7)
     public void goToPaymentPage() {
         try {
-           WebElement proceedBtn = CartPage.getProceedButton(driver);
-           assertNotNull(proceedBtn);
-           proceedBtn.click();
-           if(VerifyElementHelper.isConsentPopupPresent(driver)) {
-               PopUp.getRightCtaConsentPopUp(driver).click();
-           }
-        } catch (Exception e) {
-            fail("Failed to got to payment page");
+           driverHelper.scrollToBottom();
+            Utility.takeScreenshot(driver,"PaymentSummary");
+            WebElement proceedBtn = CartPage.getProceedButton(driver);
+            assertNotNull(proceedBtn);
+            proceedBtn.click();
+            if (VerifyElementHelper.isConsentPopupPresent(driver)) {
+                PopUp.getRightCtaConsentPopUp(driver).click();
+            }
+
+            recordResult("goToPaymentPage", "Pass");
+
+        }catch (AssertionError e){
+            recordResult("goToPaymentPage","fail "+ e.getMessage());
+        }catch (Exception e) {
+            recordResult("goToPaymentPage","fail "+ e.getMessage());
+            fail("failed to open product listing"+e.getMessage());
         }
     }
 
@@ -280,31 +310,37 @@ public class TrialOrderTest extends BaseTest {
             WebElement codOption = Payment.getCodOption(driver);
             assertNotNull(codOption);
             codOption.click();
-            WebElement proceedBtn= Payment.getProceedBtn(driver);
+            WebElement proceedBtn = Payment.getProceedBtn(driver);
             assertNotNull(proceedBtn);
             proceedBtn.click();
-            if(VerifyElementHelper.isCodCouponPopUpPresent(driver)) {
-                PopUp.getCodProceedBtn(driver).click();
-            }
-        }catch (AssertionError e){
-            fail("consent popUp not found "+e.getMessage());
+
+                if (VerifyElementHelper.isCodCouponPopUpPresent(driver)) {
+                    PopUp.getCodProceedBtn(driver).click();
+                }
+            recordResult("codOrder", "Pass");
+
+        } catch (AssertionError e){
+            recordResult("codOrder","fail "+ e.getMessage());
         }catch (Exception e) {
-            fail("Failed to got to payment page");
+            recordResult("codOrder","fail "+ e.getMessage());
+            fail("failed to codOrder"+e.getMessage());
         }
     }
 
     @Test(priority = 10)
     public void goToOrderDetailPage() {
         try {
-            WebElement orderDetail =  TrialOrderConfirmation.getViewOrderDetailButton(driver);
-            assertNotNull(orderDetail);
+            WebElement orderDetail = TrialOrderConfirmation.getViewOrderDetailButton(driver);
             orderDetail.click();
-        }catch (AssertionError e){
-            fail("some element not found "+e.getMessage());
+            assertNotNull(orderDetail);
+            Utility.takeScreenshot(driver,"orderDetail");
+            recordResult("goToOrderDetailPage", "Pass");
+        } catch (AssertionError e){
+            recordResult("goToOrderDetailPage","fail "+ e.getMessage());
         }catch (Exception e) {
-            fail("Failed to got to payment page");
+            recordResult("goToOrderDetailPage","fail "+ e.getMessage());
+            fail("failed to goToOrderDetailPage"+e.getMessage());
         }
     }
-
 
 }

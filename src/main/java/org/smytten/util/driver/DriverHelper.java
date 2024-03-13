@@ -3,10 +3,10 @@ package org.smytten.util.driver;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.AndroidDriver;
 
-public class Driver {
+public class DriverHelper {
     private  AndroidDriver driver = null;
 
-    public Driver(AndroidDriver driver){
+    public DriverHelper(AndroidDriver driver){
         this.driver = driver;
     }
     public void back(){

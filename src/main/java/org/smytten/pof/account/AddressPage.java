@@ -5,15 +5,16 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
+import org.smytten.util.Utility;
 
 public class AddressPage {
 
     public static final String[] ADDRESS_TYPE = {"Office", "Home", "Other"};
-    public static final String FIRST_NAME = "VIGNESH";
-    public static final String LAST_NAME = "M";
-    public static final String HOUSE_NO = "3/182 THIPPANAPALLI VILLAGE AND POST";
-    public static final String STREET = "THIPPANAPALLI";
-    public static final String LANDMARK = "KUNDRAPALLI X ROAD";
+    public static final String FIRST_NAME = Utility.generateRandomString(8);
+    public static final String LAST_NAME = Utility.generateRandomString(6);
+    public static final String HOUSE_NO = Utility.generateRandomString(15);
+    public static final String STREET = Utility.generateRandomString(15);
+    public static final String LANDMARK = Utility.generateRandomString(15);
     public static final String PINCODE = "635115";
     public static final String STATE = "TAMIL NADU";
     public static final String CITY = "RAMAPURAM";

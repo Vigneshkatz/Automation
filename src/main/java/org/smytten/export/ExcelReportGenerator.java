@@ -2,6 +2,8 @@ package org.smytten.export;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.smytten.util.Utility;
+
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,7 +23,7 @@ public class ExcelReportGenerator {
             return;
         }
 
-        String fileName = "TestReport_" + getCurrentDateTime() + ".xlsx";
+        String fileName = "TestReport_" + Utility.getCurrentDateTime() + ".xlsx";
         String filePath = FOLDER_PATH + fileName;
 
         try (Workbook workbook = new XSSFWorkbook();
@@ -39,11 +41,6 @@ public class ExcelReportGenerator {
         }
     }
 
-    private String getCurrentDateTime() {
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
-        return now.format(formatter);
-    }
 
     private void createHeaderRow(Sheet sheet) {
         Row headerRow = sheet.createRow(0);
@@ -54,7 +51,7 @@ public class ExcelReportGenerator {
     private static void populateDataRows(Sheet sheet, Map<String, String> testResults) {
         int rowNum = 0;
         for (Map.Entry<String, String> entry : testResults.entrySet()) {
-            Row row = sheet.createRow(++rowNum);
+            Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(entry.getKey());
             row.createCell(1).setCellValue(entry.getValue());
         }
