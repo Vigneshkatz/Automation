@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="All Test Suite">
+    <listeners>
+        <listener class-name="org.smytten.util.listener.ListenerHelper"/>
+    </listeners>
+    <test verbose="2" preserve-order="true" name="/Users/Vignesh/Desktop/Automation">
+        <classes>
+            <class name="accountsection.AccountPageTest">
+                <methods>
+                    <include name="initialLandingPageText"/>
+                    <include name="signUp"/>
+                    <include name="checkPopUp"/>
+                    <include name="gotoAccountPage"/>
+                    <include name="verifyAccountSection"/>
+                    <include name="openEditProfile"/>
+                    <include name="updateProfile"/>
+                </methods>
+            </class>
+            <class name="accountsection.AccountRedirectionTest">
+                <methods>
+                    <include name="login"/>
+                    <include name="checkPopUp"/>
+                    <include name="gotoAccountPage"/>
+                    <include name="verifyAccountSection"/>
+                    <include name="openTrialHowTo"/>
+                    <include name="openShopHowTo"/>
+                    <include name="openRewardsHowTo"/>
+                    <include name="myOrders"/>
+                    <include name="openHelp"/>
+                    <include name="openReferAndEarn"/>
+                    <include name="openReview"/>
+                    <include name="openSurvey"/>
+                    <include name="openSavedAddress"/>
+                    <include name="openWishList"/>
+                    <include name="openSmyttenLuxe"/>
+                    <include name="openSmyttenBlog"/>
+                    <include name="openTermsAndCondition"/>
+                    <include name="openPrivacyPolicy"/>
+                    <include name="openFaqs"/>
+                    <include name="signOut"/>
+                </methods>
+            </class>
+            <class name="accountsection.AddressPageTest">
+                <methods>
+                    <include name="login"/>
+                    <include name="checkPopUp"/>
+                    <include name="gotoAccountPage"/>
+                    <include name="gotoAddressPage"/>
+                    <include name="verifyAddressPage"/>
+                    <include name="updateAddress"/>
+                    <include name="changeDefaultAddress"/>
+                    <include name="deleteAddress"/>
+                </methods>
+            </class>
+            <class name="luxe.LuxeMemberShipTest">
+                <methods>
+                    <include name="initialLandingPageText"/>
+                    <include name="signUp"/>
+                    <include name="checkPopUp"/>
+                    <include name="gotoTrialFront"/>
+                    <include name="openLuxeMembershipPage"/>
+                    <include name="updateAddress"/>
+                    <include name="completePayment"/>
+                    <include name="verifyOrderConfirmScreen"/>
+                </methods>
+            </class>
+            <class name="order.TrialOrderTest">
+                <methods>
+                    <include name="initialLandingPageText"/>
+                    <include name="signUp"/>
+                    <include name="gotoTrialFront"/>
+                    <include name="openProductListing"/>
+                    <include name="addProductToCart"/>
+                    <include name="gotoCart"/>
+                    <include name="goToPaymentPage"/>
+                    <include name="updateAddress"/>
+                    <include name="codOrder"/>
+                    <include name="goToOrderDetailPage"/>
+                </methods>
+            </class>
+            <class name="signin.LandingPageTest">
+                <methods>
+                    <include name="initialLandingPageText"/>
+                    <include name="verifyLandingPage"/>
+                </methods>
+            </class>
+            <class name="signin.LoginTest">
+                <methods>
+                    <include name="initialLandingPageText"/>
+                    <include name="loginWithCrtOTP"/>
+                    <include name="loginWithWrongOTP"/>
+                    <include name="otpMaxLimitCheck"/>
+                    <include name="resentOtp"/>
+                    <include name="openTermsAndPolicy"/>
+                </methods>
+            </class>
+            <class name="signin.SignUpTest">
+                <methods>
+                    <include name="initialLandingPageText"/>
+                    <include name="signUp"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>
