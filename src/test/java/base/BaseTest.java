@@ -1,5 +1,7 @@
 package base;
 
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.remote.AndroidMobileCapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -26,8 +28,11 @@ public class BaseTest {
     public Map<String, String> testResults;
     public DriverHelper driverHelper;
 
+
     @BeforeSuite
     public void setUp() {
+
+
 //        startAppiumServer();
         System.out.println("Appium server started successfully");
         try {

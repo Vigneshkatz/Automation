@@ -46,19 +46,7 @@ public class Utility {
         last = id;
         return String.valueOf(last);
     }
-    public static void takeScreenshot(AndroidDriver driver, String fileName) {
-        final String SCREEN_SHOT_PATH = "/Users/Vignesh/Desktop/Automation/screenshots/";
-        try {
-            byte[] screenshotBytes = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-            FileOutputStream outputStream = new FileOutputStream(SCREEN_SHOT_PATH + fileName +"_"+getCurrentDateTime()+ ".png");
-            outputStream.write(screenshotBytes);
-            outputStream.close();
 
-            System.out.println("Screenshot saved: " + fileName);
-        } catch (Exception e) {
-            System.err.println("Failed to capture screenshot: " + e.getMessage());
-        }
-    }
 
     public static String getCurrentDateTime() {
         LocalDateTime now = LocalDateTime.now();

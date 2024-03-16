@@ -4,7 +4,7 @@ import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.AndroidDriver;
 
 public class DriverHelper {
-    private  AndroidDriver driver = null;
+    public   AndroidDriver driver = null;
 
     public DriverHelper(AndroidDriver driver){
         this.driver = driver;

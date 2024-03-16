@@ -40,10 +40,10 @@ public class LoginTest extends BaseTest {
 
         }catch (AssertionError e) {
             recordResult("initialLandingPageText", "Fail "+e.getMessage());
-            Assert.fail("initialLandingPageText assertion failed: " + e.getMessage());
+           fail("initialLandingPageText assertion failed: " + e.getMessage());
         } catch (Exception e) {
             recordResult("signUp", "Fail "+e.getMessage());
-            Assert.fail("initialLandingPageText failed: " + e.getMessage());
+            fail("initialLandingPageText failed: " + e.getMessage());
         }
     }
 
