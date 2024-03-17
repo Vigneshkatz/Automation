@@ -29,83 +29,64 @@ import static org.testng.AssertJUnit.*;
 
 public class TrialOrderTest extends BaseTest {
     private static final String MOBILE_NUMBER = Utility.getNumber();
-    private static TouchAction touchAction;
-
     @Test(priority = 0)
     public void initialLandingPageText() {
         try {
             WebElement startCta = LandingPage.getStartCtaElement(driver);
             assertNotNull(startCta);
             startCta.click();
-        } catch (AssertionError e) {
-            recordResult("verifyLandingPage", "Fail " + e.getMessage());
-            fail("verification assertion failed: " + e.getMessage());
-        } catch (Exception e) {
+        } catch (AssertionError | Exception e) {
             fail("landing page" + e.getMessage());
         }
     }
 
     @Test(priority = 1)
-    public void signUp() {
-        WebElement mobileInput = null;
-        WebElement proceedBtn = null;
-        WebElement otpContainer = null;
-        WebElement otpLabel = null;
-        WebElement mobileNumberLabel = null;
-        WebElement mobileNumberEditCta = null;
-        WebElement otpEnterInput = null;
-        WebElement chooseGender = null;
-
+    public void testSignUp() {
         try {
-            mobileInput = LoginPage.getMobileNumberInput(driver);
-            assertNotNull(mobileInput);
+            // Enter mobile number and proceed to OTP
+            WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
+            assertNotNull("Mobile number input field not found", mobileInput);
             mobileInput.click();
-            mobileInput.sendKeys(MOBILE_NUMBER);
-            proceedBtn = LoginPage.getSendOtpButton(driver);
+            mobileInput.sendKeys(Utility.getNumber());
+
+            WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
 
-//            otpContainer = OtpPage.getOtpContainer(driver);
-//            assertNotEquals(otpContainer, null);
-//            otpLabel = OtpPage.getOtpLabel(driver);
-//            mobileNumberLabel = OtpPage.getMobileNumberLabel(driver);
-//            mobileNumberEditCta = OtpPage.getMobileNumberEditCta(driver);
-//            otpEnterInput = OtpPage.getOtpEnterInput(driver);
-//            assertNotNull(otpLabel);
-//            assertNotNull(mobileNumberLabel);
-//            assertNotNull(mobileNumberEditCta);
-//            assertNotNull(otpEnterInput);
-
+            // Choose gender
             WebElement maleElement = SignUpPage.getMaleGenderOption(driver);
             WebElement femaleElement = SignUpPage.getFemaleGenderOption(driver);
-            chooseGender = (Utility.RANDOMNUMBER == 0) ? maleElement : femaleElement;
+            WebElement chooseGender = (Utility.RANDOMNUMBER == 0) ? maleElement : femaleElement;
             chooseGender.click();
 
+            // Select birth month
             SignUpPage.getMonthSpinner(driver).click();
             SignUpPage.getMarchMonthOption(driver).click();
 
+            // Select birth year
             SignUpPage.getYearSpinner(driver).click();
             SignUpPage.getYear2009Option(driver).click();
 
-            SignUpPage.getReferralInput(driver).click();
-            SignUpPage.getReferralInput(driver).sendKeys(SignUpPage.GROUP_INVITE_CODE);
+            // Enter referral code
+            WebElement referralInput = SignUpPage.getReferralInput(driver);
+            referralInput.click();
+            referralInput.sendKeys(SignUpPage.GROUP_INVITE_CODE);
 
+            // Apply referral code
             SignUpPage.getReferralApplyBtn(driver).click();
 
-            // Wait for referral success title to be visible
-            SignUpPage.getReferralSuccessTitle(driver);
-            assertNotNull(SignUpPage.getReferralSuccessTitle(driver));
-            System.out.println(SignUpPage.getReferralSuccessTitle(driver).getText());
+            // Wait for referral success message
+            WebElement referralSuccessTitle = SignUpPage.getReferralSuccessTitle(driver);
+            assertNotNull("Referral success title not found", referralSuccessTitle);
+            System.out.println(referralSuccessTitle.getText());
 
-            System.out.println(SignUpPage.getReferralSuccessPaymentTitle(driver).getText());
+            // Confirm referral success payment title
+            WebElement referralSuccessPaymentTitle = SignUpPage.getReferralSuccessPaymentTitle(driver);
+            System.out.println(referralSuccessPaymentTitle.getText());
 
+            // Confirm signup
             SignUpPage.getConfirmBtn(driver).click();
-            recordResult("SignUp", "Pass");
-        } catch (AssertionError e) {
-            recordResult("signUp", "Fail " + e.getMessage());
-            Assert.fail("singUp assertion failed: " + e.getMessage());
-        } catch (Exception e) {
-            recordResult("signUp", "Fail " + e.getMessage());
-            Assert.fail("signup failed: " + e.getMessage());
+        } catch (AssertionError | Exception e){
+            fail("signUp"+ e.getMessage());
         }
     }
 
@@ -115,12 +96,7 @@ public class TrialOrderTest extends BaseTest {
             WebElement trialFront = Navigation.getTrialHomeTab(driver);
             assertNotNull(trialFront);
             trialFront.click();
-            recordResult("gotoTrialFront", "Pass");
-        } catch (AssertionError e) {
-            recordResult("gotoTrialFront", "Fail " + e.getMessage());
-            fail("gotoTrialFront assertion failed: " + e.getMessage());
-        } catch (Exception e) {
-            recordResult("gotoTrialFront", "Fail " + e.getMessage());
+        } catch (AssertionError | Exception e) {
             fail("gotoTrialFront failed: " + e.getMessage());
         }
     }
@@ -137,13 +113,7 @@ public class TrialOrderTest extends BaseTest {
                     break;
                 }
             }
-            recordResult("openProductListing","pass");
-
-
-        }catch (AssertionError e){
-            recordResult("openProductListing","fail "+ e.getMessage());
-        }catch (Exception e) {
-            recordResult("openProductListing","fail "+ e.getMessage());
+        }catch (AssertionError | Exception e){
             fail("failed to open product listing"+e.getMessage());
         }
 
@@ -170,11 +140,7 @@ public class TrialOrderTest extends BaseTest {
                 }
                 break;
             }
-            recordResult("addProductToCart","pass");
-        } catch (AssertionError e){
-            recordResult("addProductToCart","fail "+ e.getMessage());
-        }catch (Exception e) {
-            recordResult("addProductToCart","fail "+ e.getMessage());
+        } catch (AssertionError | Exception e){
             fail("failed to open product listing"+e.getMessage());
         }
     }
@@ -193,13 +159,7 @@ public class TrialOrderTest extends BaseTest {
             }catch (NoSuchElementException e){
                 e.printStackTrace();
             }
-            Utility.takeScreenshot(driver,"Cart");
-            recordResult("gotoCart","pass");
-
-        }catch (AssertionError e){
-            recordResult("gotoCart","fail "+ e.getMessage());
-        }catch (Exception e) {
-            recordResult("gotoCart","fail "+ e.getMessage());
+        }catch (AssertionError | Exception e){
             fail("failed to gotoCart"+e.getMessage());
         }
     }
@@ -208,20 +168,13 @@ public class TrialOrderTest extends BaseTest {
     public void goToPaymentPage() {
         try {
            driverHelper.scrollToBottom();
-            Utility.takeScreenshot(driver,"PaymentSummary");
             WebElement proceedBtn = CartPage.getProceedButton(driver);
             assertNotNull(proceedBtn);
             proceedBtn.click();
             if (VerifyElementHelper.isConsentPopupPresent(driver)) {
                 PopUp.getRightCtaConsentPopUp(driver).click();
             }
-
-            recordResult("goToPaymentPage", "Pass");
-
-        }catch (AssertionError e){
-            recordResult("goToPaymentPage","fail "+ e.getMessage());
-        }catch (Exception e) {
-            recordResult("goToPaymentPage","fail "+ e.getMessage());
+        }catch (AssertionError | Exception e){
             fail("failed to open product listing"+e.getMessage());
         }
     }
@@ -294,13 +247,8 @@ public class TrialOrderTest extends BaseTest {
             assertEquals(state.getText().toLowerCase(), AddressPage.STATE.toLowerCase());
             saveAddress.click();
             Thread.sleep(2000);
-            recordResult("updateAddress", "Pass");
-        } catch (AssertionError e) {
-            recordResult("updateAddress", "Fail " + e.getMessage());
+        } catch (AssertionError | Exception e) {
             fail("updateAddress assertion failed: " + e.getMessage());
-        } catch (Exception e) {
-            recordResult("updateAddress", "Fail " + e.getMessage());
-            fail("updateAddress failed: " + e.getMessage());
         }
     }
 
@@ -317,12 +265,7 @@ public class TrialOrderTest extends BaseTest {
                 if (VerifyElementHelper.isCodCouponPopUpPresent(driver)) {
                     PopUp.getCodProceedBtn(driver).click();
                 }
-            recordResult("codOrder", "Pass");
-
-        } catch (AssertionError e){
-            recordResult("codOrder","fail "+ e.getMessage());
-        }catch (Exception e) {
-            recordResult("codOrder","fail "+ e.getMessage());
+        } catch (AssertionError | Exception e){
             fail("failed to codOrder"+e.getMessage());
         }
     }
@@ -333,13 +276,8 @@ public class TrialOrderTest extends BaseTest {
             WebElement orderDetail = TrialOrderConfirmation.getViewOrderDetailButton(driver);
             orderDetail.click();
             assertNotNull(orderDetail);
-            Utility.takeScreenshot(driver,"orderDetail");
-            recordResult("goToOrderDetailPage", "Pass");
-        } catch (AssertionError e){
-            recordResult("goToOrderDetailPage","fail "+ e.getMessage());
-        }catch (Exception e) {
-            recordResult("goToOrderDetailPage","fail "+ e.getMessage());
-            fail("failed to goToOrderDetailPage"+e.getMessage());
+        } catch (AssertionError | Exception e){
+            fail("goToOrderDetailPage "+ e.getMessage());
         }
     }
 

@@ -7,94 +7,72 @@ import org.smytten.pof.entry.LandingPage;
 import org.smytten.pof.entry.LoginPage;
 import org.smytten.pof.entry.SignUpPage;
 import org.smytten.util.Utility;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertNotEquals;
 import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.fail;
 
 public class SignUpTest extends BaseTest {
-    private static TouchAction touchAction;
 
     @Test(priority = 0)
-    public void initialLandingPageText(){
+    public void verifyStartCtaOnInitialLandingPage(){
         try {
             touchAction = new TouchAction<>(driver);
             WebElement startCta = LandingPage.getStartCtaElement(driver);
-            assertNotNull(startCta);
+            assertNotNull( "Start CTA element not found",startCta);
             startCta.click();
-        }catch (AssertionError e)
-        {
-            recordResult("verifyLandingPage", "Fail "+e.getMessage());
-            fail("verification assertion failed: "+e.getMessage());
-        }
-        catch (Exception e) {
-            fail("landing page" + e.getMessage());
+        }catch (AssertionError | Exception e){
+            fail("verifyStartCtaOnInitialLandingPage "+ e.getMessage());
         }
     }
-    @Test(priority = 1)
-    public void signUp() {
-        WebElement mobileInput = null;
-        WebElement proceedBtn = null;
-        WebElement otpContainer = null;
-        WebElement otpLabel = null;
-        WebElement mobileNumberLabel = null;
-        WebElement mobileNumberEditCta = null;
-        WebElement otpEnterInput = null;
-        WebElement chooseGender = null;
 
+    @Test(priority = 1)
+    public void testSignUp() {
         try {
-            mobileInput = LoginPage.getMobileNumberInput(driver);
-            assertNotNull(mobileInput);
+            // Enter mobile number and proceed to OTP
+            WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
+            assertNotNull("Mobile number input field not found", mobileInput);
             mobileInput.click();
             mobileInput.sendKeys(Utility.getNumber());
-            proceedBtn = LoginPage.getSendOtpButton(driver);
+
+            WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
 
-//            otpContainer = OtpPage.getOtpContainer(driver);
-//            assertNotEquals(otpContainer, null);
-//            otpLabel = OtpPage.getOtpLabel(driver);
-//            mobileNumberLabel = OtpPage.getMobileNumberLabel(driver);
-//            mobileNumberEditCta = OtpPage.getMobileNumberEditCta(driver);
-//            otpEnterInput = OtpPage.getOtpEnterInput(driver);
-//            assertNotNull(otpLabel);
-//            assertNotNull(mobileNumberLabel);
-//            assertNotNull(mobileNumberEditCta);
-//            assertNotNull(otpEnterInput);
-
+            // Choose gender
             WebElement maleElement = SignUpPage.getMaleGenderOption(driver);
             WebElement femaleElement = SignUpPage.getFemaleGenderOption(driver);
-            chooseGender = (Utility.RANDOMNUMBER == 0) ? maleElement : femaleElement;
+            WebElement chooseGender = (Utility.RANDOMNUMBER == 0) ? maleElement : femaleElement;
             chooseGender.click();
 
+            // Select birth month
             SignUpPage.getMonthSpinner(driver).click();
             SignUpPage.getMarchMonthOption(driver).click();
 
+            // Select birth year
             SignUpPage.getYearSpinner(driver).click();
             SignUpPage.getYear2009Option(driver).click();
 
-            SignUpPage.getReferralInput(driver).click();
-            SignUpPage.getReferralInput(driver).sendKeys(SignUpPage.GROUP_INVITE_CODE);
+            // Enter referral code
+            WebElement referralInput = SignUpPage.getReferralInput(driver);
+            referralInput.click();
+            referralInput.sendKeys(SignUpPage.GROUP_INVITE_CODE);
 
+            // Apply referral code
             SignUpPage.getReferralApplyBtn(driver).click();
 
-            // Wait for referral success title to be visible
-            SignUpPage.getReferralSuccessTitle(driver);
-            assertNotNull(SignUpPage.getReferralSuccessTitle(driver));
-            System.out.println(SignUpPage.getReferralSuccessTitle(driver).getText());
+            // Wait for referral success message
+            WebElement referralSuccessTitle = SignUpPage.getReferralSuccessTitle(driver);
+            assertNotNull("Referral success title not found", referralSuccessTitle);
+            System.out.println(referralSuccessTitle.getText());
 
-            System.out.println(SignUpPage.getReferralSuccessPaymentTitle(driver).getText());
+            // Confirm referral success payment title
+            WebElement referralSuccessPaymentTitle = SignUpPage.getReferralSuccessPaymentTitle(driver);
+            System.out.println(referralSuccessPaymentTitle.getText());
 
+            // Confirm signup
             SignUpPage.getConfirmBtn(driver).click();
-            recordResult("SignUp", "Pass");
-        }catch (AssertionError e) {
-            recordResult("signUp", "Fail "+e.getMessage());
-            Assert.fail("singUp assertion failed: " + e.getMessage());
-        } catch (Exception e) {
-            recordResult("signUp", "Fail "+e.getMessage());
-            Assert.fail("signup failed: " + e.getMessage());
+        } catch (AssertionError | Exception e){
+            fail("signUp"+ e.getMessage());
         }
     }
-
 }

@@ -10,107 +10,115 @@ import org.smytten.pof.account.AccountPage;
 import org.smytten.pof.common.Navigation;
 import org.smytten.pof.common.PopUp;
 import org.smytten.pof.common.VerifyElementHelper;
+import org.smytten.pof.entry.LandingPage;
 import org.smytten.pof.entry.LoginPage;
 import org.smytten.pof.entry.OtpPage;
-import org.smytten.pof.entry.LandingPage;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.Base64;
 
-import static org.testng.Assert.assertNotEquals;
-import static org.testng.AssertJUnit.*;
+import static org.testng.Assert.*;
+import static org.testng.AssertJUnit.assertNotNull;
+import static org.testng.AssertJUnit.assertTrue;
+import static org.testng.AssertJUnit.fail;
 
 
 public class LoginTest extends BaseTest {
-    private static AccountPage accountPage;
-    private static Navigation navigation;
-    private static PopUp popUp;
-    private static TouchAction touchAction;
-
     @Test(priority = 0)
-    public void initialLandingPageText() throws InterruptedException {
+    public void verifyStartCtaOnInitialLandingPage() {
         try {
             touchAction = new TouchAction<>(driver);
-
             WebElement startCta = LandingPage.getStartCtaElement(driver);
-            assertNotNull(startCta);
+            assertNotNull("Start CTA element not found", startCta);
             startCta.click();
-            recordResult("initialLandingPageText", "Pass");
-
-        }catch (AssertionError e) {
-            recordResult("initialLandingPageText", "Fail "+e.getMessage());
-           fail("initialLandingPageText assertion failed: " + e.getMessage());
+        } catch (AssertionError e) {
+            fail("verifyStartCtaOnInitialLandingPage " + e.getMessage());
         } catch (Exception e) {
-            recordResult("signUp", "Fail "+e.getMessage());
-            fail("initialLandingPageText failed: " + e.getMessage());
+            fail("Error occurred while clicking Start CTA: " + e.getMessage());
+        }
+    }
+
+    @Test(priority = 1)
+    public void testOpenTermsAndPolicy() {
+        try {
+            int xCoordinate = 355;
+            int yCoordinate = 565;
+            // Tap on the screen to open privacy policy
+            touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
+            touchAction.tap(PointOption.point(LoginPage.PRIVACY_X_COORDINATE, LoginPage.PRIVACY_Y_COORDINATE)).perform();
+
+            // Verify privacy policy title
+            WebElement privacyTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
+            assertEquals(LoginPage.getPRIVACY_POLICY_TITLE(), privacyTitle.getText(), "Privacy policy title mismatch");
+
+            // Tap on the screen to go back
+            touchAction.tap(PointOption.point(544, 211)).perform();
+
+            // Tap on the screen to open terms and conditions
+            touchAction.tap(PointOption.point(LoginPage.TERMS_X_COORDINATE, LoginPage.TERMS_Y_COORDINATE)).perform();
+
+            // Verify terms and conditions title
+            WebElement termsTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
+            assertEquals(LoginPage.getTNC_TITLE(), termsTitle.getText(), "Terms and conditions title mismatch");
+
+            // Tap on the screen to go back
+            touchAction.tap(PointOption.point(544, 211)).perform();
+        } catch (AssertionError | Exception e){
+            fail("openTermsAndPolicy" + e.getMessage());
         }
     }
 
     @Test(priority = 2)
-    public void loginWithCrtOTP() {
-        WebElement mobileInput = null;
-        WebElement proceedBtn = null;
-        WebElement otpContainer = null;
-        WebElement otpLabel = null;
-        WebElement mobileNumberLabel = null;
-        WebElement mobileNumberEditCta = null;
-        WebElement otpEnterInput = null;
-
+    public void testLoginWithCorrectOTP() {
         try {
-            mobileInput = LoginPage.getMobileNumberInput(driver);
-            assertNotNull(mobileInput);
+            WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
+            assertNotNull("Mobile input field not found", mobileInput);
             mobileInput.click();
             mobileInput.sendKeys(LoginPage.getMOBILE_NUMBER(1));
-            proceedBtn = LoginPage.getSendOtpButton(driver);
+
+            WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
-            otpContainer = OtpPage.getOtpContainer(driver);
-            assertNotNull(otpContainer);
-          //  otpLabel = OtpPage.getOtpLabel(driver);
+
+            WebElement otpContainer = OtpPage.getOtpContainer(driver);
+            assertNotNull("OTP container not found", otpContainer);
+
+            WebElement otpEnterInput = OtpPage.getOtpEnterInput(driver);
+            otpEnterInput.click();
+
+            //  otpLabel = OtpPage.getOtpLabel(driver);
 //            mobileNumberLabel = OtpPage.getMobileNumberLabel(driver);
 //            mobileNumberEditCta = OtpPage.getMobileNumberEditCta(driver);
-            otpEnterInput = OtpPage.getOtpEnterInput(driver);
+//            otpEnterInput = OtpPage.getOtpEnterInput(driver);
 //            assertTrue(OtpPage.OTP_NOT_RECEIVED_LABEL_TEXT.equalsIgnoreCase(otpLabel.getText().trim()));
 //            assertTrue(OtpPage.CONTACT_US_EMAIL_LABEL_TEXT.equalsIgnoreCase(mobileNumberLabel.getText().trim()));
 //            assertTrue(OtpPage.MOBILE_NUMBER_EDIT_CTA_TEXT.equalsIgnoreCase(mobileNumberEditCta.getText().trim()));
-            otpEnterInput.click();
+//            otpEnterInput.click();
             // enter otp
-            Process process = Runtime.getRuntime().exec("adb shell input text " + OtpPage.VALID_OTP);
-            process.waitFor();
+            enterOTP(OtpPage.VALID_OTP);
             System.out.println("OTP typed successfully." + OtpPage.VALID_OTP);
-            recordResult("loginWithCrtOTP", "Pass");
-
-        } catch (AssertionError e) {
-            recordResult("loginWithCrtOTP", "Fail "+e.getMessage());
-            Assert.fail("loginWithCrtOTP assertion failed: " + e.getMessage());
-        } catch (Exception e) {
-            recordResult("signUp", "Fail "+e.getMessage());
-            Assert.fail("loginWithCrtOTP failed: " + e.getMessage());
+        }catch (AssertionError | Exception e) {
+            fail("loginWithCrtOTP assertion failed: " + e.getMessage());
         }
         signOut();
     }
 
     @Test(priority = 3)
-    public void loginWithWrongOTP() {
-        WebElement mobileInput = null;
-        WebElement proceedBtn = null;
-        WebElement otpContainer = null;
-        WebElement otpLabel = null;
-        WebElement mobileNumberLabel = null;
-        WebElement mobileNumberEditCta = null;
-        WebElement otpEnterInput = null;
-
+    public void testLoginWithWrongOTP() {
         try {
-            mobileInput = LoginPage.getMobileNumberInput(driver);
-            assertNotNull(mobileInput);
+            WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
+            assertNotNull("Mobile input field not found", mobileInput);
             mobileInput.click();
-            mobileInput.sendKeys(LoginPage.getMOBILE_NUMBER(3));
-            proceedBtn = LoginPage.getSendOtpButton(driver);
+            mobileInput.sendKeys(LoginPage.getMOBILE_NUMBER(1));
+
+            WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
 
-            otpContainer = OtpPage.getOtpContainer(driver);
-            assertNotEquals(otpContainer, null);
-            otpLabel = OtpPage.getOtpLabel(driver);
+            WebElement otpContainer = OtpPage.getOtpContainer(driver);
+            assertNotNull("OTP container not found", otpContainer);
+
+            WebElement otpEnterInput = OtpPage.getOtpEnterInput(driver);
+            otpEnterInput.click();
 //            mobileNumberLabel = OtpPage.getMobileNumberLabel(driver);
 //            mobileNumberEditCta = OtpPage.getMobileNumberEditCta(driver);
             otpEnterInput = OtpPage.getOtpEnterInput(driver);
@@ -125,101 +133,50 @@ public class LoginTest extends BaseTest {
 
             otpEnterInput.click();
             // enter otp
-            Process process = Runtime.getRuntime().exec("adb shell input text " + OtpPage.INVALID_OTP);
-            process.waitFor();
+            enterOTP(OtpPage.INVALID_OTP);
             WebElement otpToastMessage = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/snackbar_text"));
-            System.out.println(otpToastMessage.getText());
             assertEquals("Invalid Otp Message", OtpPage.INVALID_OTP_MESSAGE, otpToastMessage.getText());
-            System.out.println("OTP typed successfully." + OtpPage.INVALID_OTP);
-            recordResult("loginWithWrongOTP", "Pass");
 
-        } catch (AssertionError e) {
-            recordResult("loginWithWrongOTP", "Fail "+e.getMessage());
-            Assert.fail("loginWithWrongOTP assertion failed: " + e.getMessage());
-        } catch (Exception e) {
-            recordResult("loginWithWrongOTP", "Fail "+e.getMessage());
-            Assert.fail("loginWithWrongOTP failed: " + e.getMessage());
+        } catch (AssertionError | Exception e){
+            fail("loginWithWrongOTP assertion failed: " + e.getMessage());
         }
-    }
-
-    //    @Test
-    public void copyOtp() {
-        String decodedOtp = null;
-        WebElement clearNotification = null;
-        WebElement actionContainer = null;
-        WebElement copyAction = null;
-        try {
-            driver.openNotifications();
-            clearNotification = driver.findElement(AppiumBy.id("com.android.systemui:id/clear_all_port"));
-            clearNotification.click();
-        } catch (Exception e) {
-            TouchAction touchAction = new TouchAction(driver);
-            int xCoordinate = 627;
-            int yCoordinate = 1608;
-            touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
-            System.out.println("no new notification");
-        }
-        loginWithCrtOTP();
-        try {
-            driver.openNotifications();
-            actionContainer = driver.findElement(AppiumBy.id("android:id/actions_container_layout"));
-            assertNotNull(actionContainer);
-            copyAction = driver.findElement(AppiumBy.xpath("//android.widget.Button[@content-desc=\"Copy Verification Code\"]"));
-            copyAction.click();
-            System.out.println("copied otp");
-            String otp = driver.getClipboard(ClipboardContentType.PLAINTEXT);
-            System.out.println(otp);
-            byte[] decodedBytes = Base64.getDecoder().decode(otp);
-            String decodedText = new String(decodedBytes);
-            System.out.println(decodedOtp);
-            try {
-                clearNotification = driver.findElement(AppiumBy.id("com.android.systemui:id/clear_all_port"));
-                clearNotification.click();
-            } catch (Exception e) {
-                int xCoordinate = 627;
-                int yCoordinate = 1608;
-                touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
-                System.out.println("no new notification");
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            fail();
-        }
-        signOut();
     }
 
     @Test(priority = 4)
-    public void otpMaxLimitCheck() {
-        openMobileNumberEntryScreen();
-        WebElement mobileInput = null;
-        WebElement proceedBtn = null;
-        WebElement otpContainer = null;
-        WebElement otpLabel = null;
-        WebElement mobileNumberLabel = null;
-        WebElement mobileNumberEditCta = null;
-        WebElement otpEnterInput = null;
+    public void testOtpMaxLimitCheck() {
         try {
+            openMobileNumberEntryScreen();
 
-            mobileInput = LoginPage.getMobileNumberInput(driver);
-            assertNotNull(mobileInput);
+            WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
+            assertNotNull("Mobile input field not found", mobileInput);
             mobileInput.click();
             mobileInput.sendKeys(LoginPage.getMOBILE_NUMBER(2));
-            proceedBtn = LoginPage.getSendOtpButton(driver);
+
+            WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
 
-            otpContainer = OtpPage.getOtpContainer(driver);
-            assertNotEquals(otpContainer, null);
-            otpLabel = OtpPage.getOtpLabel(driver);
-            mobileNumberLabel = OtpPage.getMobileNumberLabel(driver);
-            mobileNumberEditCta = OtpPage.getMobileNumberEditCta(driver);
-            otpEnterInput = OtpPage.getOtpEnterInput(driver);
+            WebElement otpContainer = OtpPage.getOtpContainer(driver);
+            assertNotNull("OTP container not found", otpContainer);
+
+            WebElement otpLabel = OtpPage.getOtpLabel(driver);
+            assertNotNull("OTP label not found", otpLabel);
+
+            WebElement mobileNumberLabel = OtpPage.getMobileNumberLabel(driver);
+            assertNotNull("Mobile number label not found", mobileNumberLabel);
+
+            WebElement mobileNumberEditCta = OtpPage.getMobileNumberEditCta(driver);
+            assertNotNull("Mobile number edit CTA not found", mobileNumberEditCta);
+
+            WebElement otpEnterInput = OtpPage.getOtpEnterInput(driver);
+            assertNotNull("OTP enter input field not found", otpEnterInput);
+
             String otpLabelText = "Enter OTP sent via SMS";
             String mobileNumberLabelText = "+91-" + LoginPage.getMOBILE_NUMBER(2);
             String mobileNumberEditCtaText = "Edit";
 
-            assertTrue(otpLabelText.trim().equalsIgnoreCase(otpLabel.getText().trim()));
-            assertTrue(mobileNumberLabelText.trim().equalsIgnoreCase(mobileNumberLabel.getText().trim()));
-            assertTrue(mobileNumberEditCtaText.trim().equalsIgnoreCase(mobileNumberEditCta.getText().trim()));
+            assertEquals(otpLabelText.trim(), otpLabel.getText().trim(), "OTP label text mismatch");
+            assertEquals(mobileNumberLabelText.trim(), mobileNumberLabel.getText().trim(), "Mobile number label text mismatch");
+            assertEquals(mobileNumberEditCtaText.trim(), mobileNumberEditCta.getText().trim(), "Mobile number edit CTA text mismatch");
 
             for (int i = 1; i <= OtpPage.OTP_MAX_LIMIT; i++) {
                 otpEnterInput.click();
@@ -227,184 +184,173 @@ public class LoginTest extends BaseTest {
                 process.waitFor();
                 WebElement otpToastMessage = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/snackbar_text"));
                 String otpToastText = otpToastMessage.getText();
-                System.out.println("OTP typed successfully." + OtpPage.INVALID_OTP);
-                System.out.println(otpToastText);
+                System.out.println("OTP typed successfully: " + OtpPage.INVALID_OTP);
+                System.out.println("OTP Toast message: " + otpToastText);
 
-                if (i == (OtpPage.OTP_MAX_LIMIT)) {
-                    assertEquals("Invalid Otp Message", OtpPage.OTP_MAX_LIMIT_MESSAGE, otpToastText);
-                } else {
-                    assertEquals("Invalid Otp Message", OtpPage.INVALID_OTP_MESSAGE, otpToastText);
-                }
+                String expectedMessage = (i == OtpPage.OTP_MAX_LIMIT) ? OtpPage.OTP_MAX_LIMIT_MESSAGE : OtpPage.INVALID_OTP_MESSAGE;
+                assertEquals("Invalid Otp Message", expectedMessage, otpToastText);
             }
-            recordResult("otpMaxLimitCheck", "Pass");
-
-
-        }catch (AssertionError e) {
-            recordResult("otpMaxLimitCheck", "Fail "+e.getMessage());
-            Assert.fail("otpMaxLimitCheck assertion failed: " + e.getMessage());
-        } catch (Exception e) {
-            recordResult("otpMaxLimitCheck", "Fail "+e.getMessage());
-            Assert.fail("otpMaxLimitCheck failed: " + e.getMessage());
-        }
-//        signOut();
-    }
-
-    private void openMobileNumberEntryScreen() {
-        try {
-            Thread.sleep(2000);
-            OtpPage.getMobileNumberEditCta(driver).click();
-            recordResult("openMobileNumberEntryScreen", "Pass");
-
-        }catch (AssertionError e) {
-            recordResult("openMobileNumberEntryScreen", "Fail "+e.getMessage());
-            Assert.fail("openMobileNumberEntryScreen assertion failed: " + e.getMessage());
-        } catch (Exception e) {
-            recordResult("openMobileNumberEntryScreen", "Fail "+e.getMessage());
-            Assert.fail("openMobileNumberEntryScreen failed: " + e.getMessage());
+        } catch (AssertionError | Exception e) {
+            fail("otpMaxLimitCheck" + e.getMessage());
         }
     }
+
 
     @Test(priority = 5)
-    public void resentOtp() {
-        openMobileNumberEntryScreen();
-        WebElement mobileInput = null;
-        WebElement proceedBtn = null;
-        WebElement otpContainer = null;
-        WebElement otpLabel = null;
-        WebElement mobileNumberLabel = null;
-        WebElement mobileNumberEditCta = null;
-        WebElement otpEnterInput = null;
-        WebElement resendOtp = null;
-
+    public void testResendOtp() {
         try {
-            mobileInput = LoginPage.getMobileNumberInput(driver);
-            assertNotNull(mobileInput);
+            openMobileNumberEntryScreen();
+
+            WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
+            assertNotNull("Mobile input field not found", mobileInput);
             mobileInput.click();
             mobileInput.sendKeys(LoginPage.getMOBILE_NUMBER(0));
-            proceedBtn = LoginPage.getSendOtpButton(driver);
+
+            WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
 
-            otpContainer = OtpPage.getOtpContainer(driver);
-            assertNotEquals(otpContainer, null);
-            mobileNumberLabel = OtpPage.getMobileNumberLabel(driver);
-            mobileNumberEditCta = OtpPage.getMobileNumberEditCta(driver);
-            otpEnterInput = OtpPage.getOtpEnterInput(driver);
-            assertNotNull(otpEnterInput);
+            WebElement otpContainer = OtpPage.getOtpContainer(driver);
+            assertNotNull("OTP container not found", otpContainer);
+
+            WebElement mobileNumberLabel = OtpPage.getMobileNumberLabel(driver);
+            assertNotNull("Mobile number label not found", mobileNumberLabel);
+
+            WebElement mobileNumberEditCta = OtpPage.getMobileNumberEditCta(driver);
+            assertNotNull("Mobile number edit CTA not found", mobileNumberEditCta);
+
+            WebElement otpEnterInput = OtpPage.getOtpEnterInput(driver);
+            assertNotNull("OTP enter input field not found", otpEnterInput);
+
             String mobileNumberLabelText = "+91-" + LoginPage.getMOBILE_NUMBER(0);
-            String mobileNumberEditCtaText = "Edit";
-            int i = 1;
-            do {
+            assertEquals(mobileNumberLabelText, mobileNumberLabel.getText(), "Mobile number label mismatch");
+            assertEquals("Edit", mobileNumberEditCta.getText(), "Mobile number edit CTA mismatch");
+
+            WebElement resendOtp;
+            for (int i = 1; i <= OtpPage.OTP_MAX_SENT_COUNT; i++) {
                 try {
                     Thread.sleep(30000);
-                    otpLabel = OtpPage.getOtpLabel(driver);
-                    System.out.println(OtpPage.getINVALID_OTP_MESSAGE().trim());
-                    System.out.println(otpLabel.getText().trim());
-//                    assertTrue(OtpPage.getOTP_NOT_RECEIVED_LABEL_TEXT().trim().equalsIgnoreCase(otpLabel.getText().trim()));
-//                    assertTrue(mobileNumberLabelText.trim().equalsIgnoreCase(mobileNumberLabel.getText().trim()));
-//                    assertTrue(mobileNumberEditCtaText.trim().equalsIgnoreCase(mobileNumberEditCta.getText().trim()));
+                    WebElement otpLabel = OtpPage.getOtpLabel(driver);
+                    System.out.println("Expected OTP message: " + OtpPage.getINVALID_OTP_MESSAGE().trim());
+                    System.out.println("Received OTP message: " + otpLabel.getText().trim());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 resendOtp = OtpPage.getOtpTimer(driver);
                 resendOtp.click();
-                System.out.println("Resend otp click times -> " + i);
+                System.out.println("Resend OTP click count: " + i);
                 if (i == OtpPage.OTP_MAX_SENT_COUNT) {
                     try {
-                        assertNotNull(OtpPage.getOtpTitleTemplate(driver));
+                        assertNotNull("Toast message not received", OtpPage.getOtpTitleTemplate(driver));
                     } catch (Exception e) {
                         fail("Toast message not received");
                     }
                 }
-                i++;
-            } while (i <= OtpPage.OTP_MAX_SENT_COUNT);
-            recordResult("resentOtp", "Pass");
-
-        } catch (AssertionError e) {
-            recordResult("resentOtp", "Fail "+e.getMessage());
-            Assert.fail("resentOtp assertion failed: " + e.getMessage());
-        } catch (Exception e) {
-            recordResult("resentOtp", "Fail "+e.getMessage());
-            Assert.fail("resentOtp failed: " + e.getMessage());
+            }
+        }catch (AssertionError | Exception e){
+            fail("resentOtp " + e.getMessage());
         }
     }
 
-    @Test(priority = 0)
-    public void openTermsAndPolicy() {
-        int xCoordinate = 355;
-        int yCoordinate = 565;
-        WebElement privacyTitle = null;
-        WebElement termsTitle = null;
-        touchAction = new TouchAction<>(driver);
-        touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
-        touchAction.tap(PointOption.point(LoginPage.PRIVACY_X_COORDINATE, LoginPage.PRIVACY_Y_COORDINATE)).perform();
+    private void testCheckPopUp() {
         try {
-            privacyTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
-            assertEquals(LoginPage.getPRIVACY_POLICY_TITLE(), privacyTitle.getText());
-            touchAction.tap(PointOption.point(544, 211)).perform();
-            touchAction.tap(PointOption.point(LoginPage.TERMS_X_COORDINATE, LoginPage.TERMS_Y_COORDINATE)).perform();
-            termsTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
-            assertEquals(LoginPage.getTNC_TITLE(), termsTitle.getText());
-            touchAction.tap(PointOption.point(544, 211)).perform();
-            recordResult("openTermsAndPolicy", "Pass");
-
-        }catch (AssertionError e) {
-            recordResult("openTermsAndPolicy", "Fail "+e.getMessage());
-            Assert.fail("openTermsAndPolicy assertion failed: " + e.getMessage());
-        } catch (Exception e) {
-            recordResult("openTermsAndPolicy", "Fail "+e.getMessage());
-            Assert.fail("openTermsAndPolicy failed: " + e.getMessage());
+            if (VerifyElementHelper.isPopupPresent(driver)) {
+                WebElement popUpClose = PopUp.getPopUpClose(driver);
+                assertNotNull("Popup close button not found", popUpClose);
+                popUpClose.click();
+                assertTrue("Popup successfully closed", true);
+            } else {
+                assertTrue("No popUp present", true);
+            }
+        } catch (AssertionError |Exception e) {
+            fail("checkPopUp " + e.getMessage());
         }
     }
 
-    private void checkPopUp() {
-        WebElement popUpClose = null;
-        if(VerifyElementHelper.isPopupPresent(driver)){
-            popUpClose = PopUp.getPopUpClose(driver);
-            popUpClose.click();
-            assertTrue("popup successfully closed", true);
-            recordResult("checkPopUp", "Pass");
 
-        }
-        recordResult("CheckPopUp", "Pass");
-    }
-
-    private void gotoAccountPage() {
-        WebElement mobileInput = null;
+    private void testGotoAccountPage() {
         try {
-            navigation = new Navigation(driver);
-            mobileInput = Navigation.getProfileHomeTab(driver);
-            mobileInput.click();
-            assertNotNull(mobileInput);
-            recordResult("SignUp", "Pass");
+            WebElement profileHomeTab = Navigation.getProfileHomeTab(driver);
+            assertNotNull("Profile home tab not found", profileHomeTab);
+            profileHomeTab.click();
         } catch (AssertionError e) {
-            recordResult("signUp", "Fail "+e.getMessage());
-            Assert.fail("singUp assertion failed: " + e.getMessage());
+            fail("gotoAccountPage " + e.getMessage());
         } catch (Exception e) {
-            recordResult("signUp", "Fail "+e.getMessage());
-            Assert.fail("signup failed: " + e.getMessage());
+            fail("gotoAccountPage " + e.getMessage());
         }
     }
 
     private void signOut() {
-        checkPopUp();
-        gotoAccountPage();
-        accountPage = new AccountPage(driver);
-        driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(100000)"));
-        WebElement signOut = null;
-        WebElement mobileInput = null;
-        WebElement yesCta = null;
         try {
-            signOut = AccountPage.getSignOut(driver);
+            testCheckPopUp();
+            testGotoAccountPage();
+            driverHelper.scrollToBottom();
+            WebElement signOut = AccountPage.getSignOut(driver);
+            assertNotNull("Sign out button not found", signOut);
             signOut.click();
-            yesCta = driver.findElement(AppiumBy.id("android:id/button1"));
+
+            WebElement yesCta = driver.findElement(AppiumBy.id("android:id/button1"));
+            assertNotNull("Yes button not found", yesCta);
             yesCta.click();
-            recordResult("signOut", "Pass");
-        } catch (AssertionError e) {
-            recordResult("signOut", "Fail "+e.getMessage());
-            Assert.fail("signOut assertion failed: " + e.getMessage());
-        } catch (Exception e) {
-            recordResult("signOut", "Fail "+e.getMessage());
-            Assert.fail("signOut failed: " + e.getMessage());
+        }catch (AssertionError | Exception e){
+            fail("signOut " + e.getMessage());
         }
+    }
+
+    public void copyOtp() {
+        try {
+            clearNotifications();
+            testLoginWithCorrectOTP();
+            WebElement actionContainer = driver.findElement(AppiumBy.id("android:id/actions_container_layout"));
+            assertNotNull("Action container not found", actionContainer);
+
+            WebElement copyAction = driver.findElement(AppiumBy.xpath("//android.widget.Button[@content-desc=\"Copy Verification Code\"]"));
+            copyAction.click();
+            System.out.println("OTP copied successfully");
+
+            String otp = driver.getClipboard(ClipboardContentType.PLAINTEXT);
+            System.out.println("Copied OTP: " + otp);
+
+            String decodedOtp = decodeOtp(otp);
+            System.out.println("Decoded OTP: " + decodedOtp);
+
+            clearNotifications();
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e.getMessage());
+            fail("copyOtp failed");
+        } finally {
+            signOut();
+        }
+    }
+
+    private void enterOTP(String otp) throws IOException, InterruptedException {
+        Process process = Runtime.getRuntime().exec("adb shell input text " + otp);
+        process.waitFor();
+        System.out.println("OTP typed successfully: " + otp);
+    }
+
+    private void clearNotifications() {
+        try {
+            driver.openNotifications();
+            WebElement clearNotification = driver.findElement(AppiumBy.id("com.android.systemui:id/clear_all_port"));
+            clearNotification.click();
+        }catch (AssertionError | Exception e) {
+            System.out.println("No new notification");
+        }
+    }
+
+    private void openMobileNumberEntryScreen() {
+        try {
+            Thread.sleep(2000);
+            WebElement mobileNumberEditCta = OtpPage.getMobileNumberEditCta(driver);
+            assertNotNull("Mobile number edit CTA not found", mobileNumberEditCta);
+            mobileNumberEditCta.click();
+        } catch (AssertionError | Exception e){
+            fail("openMobileNumberEntryScreen " + e);
+        }
+    }
+
+    private String decodeOtp(String otp) {
+        byte[] decodedBytes = Base64.getDecoder().decode(otp);
+        return new String(decodedBytes);
     }
 }

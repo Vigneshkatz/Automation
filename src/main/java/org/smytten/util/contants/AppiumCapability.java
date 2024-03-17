@@ -1,8 +1,5 @@
 package org.smytten.util.contants;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public enum AppiumCapability {
     DEVICE_NAME("deviceName"),
     PLATFORM_VERSION("platformVersion"),

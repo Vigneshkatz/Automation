@@ -1,10 +1,5 @@
 package org.smytten.util;
 
-import io.appium.java_client.android.AndroidDriver;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-
-import java.io.FileOutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
@@ -14,11 +9,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Utility {
 
     public static final int RANDOMNUMBER = ThreadLocalRandom.current().nextInt(0, 2);
-
-
     private static final long MIN_NUMBER = 1000000000L;
     private static final long MAX_NUMBER = 5999999999L;
     private static long last = MIN_NUMBER - 1;
+
     public static String generateRandomEmail() {
         String uuid = UUID.randomUUID().toString();
         return "katziio" + uuid.substring(0, 8) + "@smytten.com";
