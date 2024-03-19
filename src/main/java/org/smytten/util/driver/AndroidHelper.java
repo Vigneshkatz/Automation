@@ -5,10 +5,12 @@ import io.appium.java_client.android.AndroidDriver;
 import org.openqa.selenium.WebElement;
 import org.smytten.util.payment.PaymentHelper;
 
-public class DriverHelper {
+import java.util.Base64;
+
+public class AndroidHelper {
     public   AndroidDriver driver = null;
 
-    public DriverHelper(AndroidDriver driver){
+    public AndroidHelper(AndroidDriver driver){
         this.driver = driver;
     }
     public void back(){
@@ -26,5 +28,27 @@ public class DriverHelper {
         inputBox.click();
         inputBox.clear();
         inputBox.sendKeys(PaymentHelper.VISA_NUMBER);
+    }
+
+    public String decodeOtp(String otp) {
+        byte[] decodedBytes = Base64.getDecoder().decode(otp);
+        return new String(decodedBytes);
+    }
+
+    public void clearNotifications() {
+        try {
+            driver.openNotifications();
+            WebElement clearNotification = driver.findElement(AppiumBy.id("com.android.systemui:id/clear_all_port"));
+            clearNotification.click();
+        }catch (AssertionError | Exception e) {
+            System.out.println("No new notification");
+        }
+    }
+
+    public void clearAndSetValueInField(WebElement element, String value) {
+        element.click();
+        element.clear();
+        element.sendKeys(value);
+        driver.hideKeyboard();
     }
 }

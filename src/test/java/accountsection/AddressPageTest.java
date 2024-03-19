@@ -19,7 +19,6 @@ import org.smytten.util.Utility;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
 
@@ -40,11 +39,10 @@ public class AddressPageTest extends BaseTest {
     public static Map<Integer, PinCodeDetails> pincode = defaultPincode();
     static List<Address> addressList = new ArrayList<>();
     private static int addressEntryCount = 1;
-    private Boolean isEmpty = true;
     private final Boolean isNewUser = true;
+    private Boolean isEmpty = true;
 
     public static void addAddress(int noOfAddress) {
-
         for (int i = 1; i <= noOfAddress; i++) {
             Random random = new Random();
             int randomNumber = random.nextInt(5) + 1;
@@ -70,9 +68,7 @@ public class AddressPageTest extends BaseTest {
         try {
             WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
             assertNotNull("Mobile input field not found", mobileInput);
-            mobileInput.click();
-            mobileInput.sendKeys(LoginPage.getMOBILE_NUMBER(1));
-
+            androidHelper.clearAndSetValueInField(mobileInput, LoginPage.getMOBILE_NUMBER(1));
             WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
 
@@ -82,15 +78,6 @@ public class AddressPageTest extends BaseTest {
             WebElement otpEnterInput = OtpPage.getOtpEnterInput(driver);
             otpEnterInput.click();
 
-            //  otpLabel = OtpPage.getOtpLabel(driver);
-//            mobileNumberLabel = OtpPage.getMobileNumberLabel(driver);
-//            mobileNumberEditCta = OtpPage.getMobileNumberEditCta(driver);
-//            otpEnterInput = OtpPage.getOtpEnterInput(driver);
-//            assertTrue(OtpPage.OTP_NOT_RECEIVED_LABEL_TEXT.equalsIgnoreCase(otpLabel.getText().trim()));
-//            assertTrue(OtpPage.CONTACT_US_EMAIL_LABEL_TEXT.equalsIgnoreCase(mobileNumberLabel.getText().trim()));
-//            assertTrue(OtpPage.MOBILE_NUMBER_EDIT_CTA_TEXT.equalsIgnoreCase(mobileNumberEditCta.getText().trim()));
-//            otpEnterInput.click();
-            // enter otp
             enterOTP(OtpPage.VALID_OTP);
             System.out.println("OTP typed successfully." + OtpPage.VALID_OTP);
         } catch (AssertionError | Exception e) {
@@ -183,9 +170,7 @@ public class AddressPageTest extends BaseTest {
             WebElement email = null;
             if (isNewUser) {
                 email = AddressPage.getEmailField(driver);
-                email.click();
-                email.clear();
-                email.sendKeys(Utility.generateRandomEmail());
+                androidHelper.clearAndSetValueInField(email, Utility.generateRandomEmail());
             }
             WebElement pincode = AddressPage.getPincodeField(driver);
             WebElement city = AddressPage.getCityField(driver);
@@ -193,13 +178,13 @@ public class AddressPageTest extends BaseTest {
             WebElement saveAddress = AddressPage.getProceedButton(driver);
 
             // Clear and set values for fields
-            clearAndSetField(firstName, FIRST_NAME);
-            clearAndSetField(lastName, LAST_NAME);
-            clearAndSetField(phoneNumber, MOBILE_NUMBER == null ? "9500752205 " : MOBILE_NUMBER);
-            clearAndSetField(houseNumber, HOUSE_NO);
-            clearAndSetField(streetName, STREET);
-            clearAndSetField(pincode, PINCODE);
-            clearAndSetField(landmark, LANDMARK);
+            androidHelper.clearAndSetValueInField(firstName, FIRST_NAME);
+            androidHelper.clearAndSetValueInField(lastName, LAST_NAME);
+            androidHelper.clearAndSetValueInField(phoneNumber, MOBILE_NUMBER == null ? "9500752205 " : MOBILE_NUMBER);
+            androidHelper.clearAndSetValueInField(houseNumber, HOUSE_NO);
+            androidHelper.clearAndSetValueInField(streetName, STREET);
+            androidHelper.clearAndSetValueInField(pincode, PINCODE);
+            androidHelper.clearAndSetValueInField(landmark, LANDMARK);
 
             // Select a random address type
             Random random = new Random();
@@ -310,8 +295,7 @@ public class AddressPageTest extends BaseTest {
             // Enter mobile number and proceed to OTP
             WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
             assertNotNull("Mobile number input field not found", mobileInput);
-            mobileInput.click();
-            mobileInput.sendKeys(Utility.getNumber());
+            androidHelper.clearAndSetValueInField(mobileInput, Utility.getNumber());
 
             WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
@@ -333,7 +317,7 @@ public class AddressPageTest extends BaseTest {
             // Enter referral code
             WebElement referralInput = SignUpPage.getReferralInput(driver);
             referralInput.click();
-            referralInput.sendKeys(SignUpPage.GROUP_INVITE_CODE);
+            androidHelper.clearAndSetValueInField(referralInput, SignUpPage.GROUP_INVITE_CODE);
 
             // Apply referral code
             SignUpPage.getReferralApplyBtn(driver).click();
@@ -371,38 +355,22 @@ public class AddressPageTest extends BaseTest {
             WebElement city = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_city"));
             WebElement state = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_state"));
             WebElement saveAddress = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_proceed"));
-            firstName.click();
-            firstName.clear();
-            firstName.sendKeys(addressList.get(addressEntryCount - 1).firstName);
-            driver.navigate().back();
-            lastName.click();
-            lastName.clear();
-            lastName.sendKeys(addressList.get(addressEntryCount - 1).lastName);
-            driver.navigate().back();
-            phoneNumber.click();
-            phoneNumber.clear();
-            phoneNumber.sendKeys(addressList.get(addressEntryCount - 1).phone);
-            driver.navigate().back();
-            houseNumber.click();
-            houseNumber.sendKeys(addressList.get(addressEntryCount - 1).houseNumber);
-            driver.navigate().back();
-            streetName.click();
-            streetName.sendKeys(addressList.get(addressEntryCount - 1).streetName);
-            driver.navigate().back();
-            pincode.click();
-            pincode.clear();
-            pincode.sendKeys(addressList.get(addressEntryCount - 1).pinCode);
-            driver.navigate().back();
-            landmark.click();
-            landmark.sendKeys(addressList.get(addressEntryCount - 1).landmark);
-            driver.navigate().back();
+
+            androidHelper.clearAndSetValueInField(firstName, addressList.get(addressEntryCount - 1).firstName);
+            androidHelper.clearAndSetValueInField(lastName, addressList.get(addressEntryCount - 1).lastName);
+            androidHelper.clearAndSetValueInField(phoneNumber, addressList.get(addressEntryCount - 1).phone);
+            androidHelper.clearAndSetValueInField(houseNumber, addressList.get(addressEntryCount - 1).houseNumber);
+            androidHelper.clearAndSetValueInField(streetName, addressList.get(addressEntryCount - 1).streetName);
+            androidHelper.clearAndSetValueInField(pincode, "635115");
+            androidHelper.clearAndSetValueInField(landmark, addressList.get(addressEntryCount - 1).landmark);
+
             Random random = new Random();
             int randomIndex = random.nextInt(ADDRESS_TYPE.length);
             String randomAddressType = ADDRESS_TYPE[randomIndex];
-            WebElement addressType = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"" + randomAddressType + "\"));"));
+            WebElement addressType = AddressPage.getAddressFieldType(randomAddressType, driver);
             addressType.click();
             if (randomIndex == 1) {
-                WebElement defaultAddress = driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"Make this my default address\"));"));
+                WebElement defaultAddress = AddressPage.getSetDefaultButton(driver);
                 defaultAddress.click();
             }
             assertEquals(city.getText().toLowerCase(), addressList.get(addressEntryCount - 1).city.toLowerCase());
@@ -413,18 +381,5 @@ public class AddressPageTest extends BaseTest {
             Assert.fail("addMultipleAddress assertion failed: " + e.getMessage());
         }
         addressEntryCount++;
-    }
-
-    private void enterOTP(String otp) throws IOException, InterruptedException {
-        Process process = Runtime.getRuntime().exec("adb shell input text " + otp);
-        process.waitFor();
-        System.out.println("OTP typed successfully: " + otp);
-    }
-
-    private void clearAndSetField(WebElement element, String value) {
-        element.click();
-        element.clear();
-        element.sendKeys(value);
-        driver.navigate().back();
     }
 }

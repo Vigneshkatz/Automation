@@ -86,7 +86,7 @@ public class TrialPaymentTest extends BaseTest {
             WebElement bankChoice = AllPaymentPage.bankOption(driver, Bank.ICICI.getValue());
             assertNotNull(bankChoice);
             bankChoice.click();
-            int x = 689,y = 2396;
+            int x = 689, y = 2396;
             touchAction.tap(PointOption.point(x, y)).perform();
             Thread.sleep(5000);
             RazorpayPaymentStatusPage.getSuccessButton(driver).click();
@@ -98,7 +98,7 @@ public class TrialPaymentTest extends BaseTest {
         }
     }
 
-//    @Test(priority = 2)
+    //    @Test(priority = 2)
     public void testCardPayment() {
         try {
             WebElement allOption = PaymentPage.getAllPaymentsOption(driver);
@@ -118,10 +118,10 @@ public class TrialPaymentTest extends BaseTest {
             assertNotNull(cardExpiry);
             assertNotNull(cardCvv);
             assertNotNull(cardNumber);
-            driverHelper.enterValue(cardNumber, PaymentHelper.VISA_NUMBER);
-            driverHelper.enterValue(cardExpiry, PaymentHelper.EXPIRY);
-            driverHelper.enterValue(cardCvv, PaymentHelper.CVV);
-            int x = 689,y = 2396;
+            androidHelper.enterValue(cardNumber, PaymentHelper.VISA_NUMBER);
+            androidHelper.enterValue(cardExpiry, PaymentHelper.EXPIRY);
+            androidHelper.enterValue(cardCvv, PaymentHelper.CVV);
+            int x = 689, y = 2396;
             touchAction.tap(PointOption.point(x, y)).perform();
             RazorpayPaymentStatusPage.getSuccessButton(driver).click();
         } catch (AssertionError | Exception e) {
@@ -129,7 +129,7 @@ public class TrialPaymentTest extends BaseTest {
         }
     }
 
-//    @Test(priority = 4)
+    //    @Test(priority = 4)
     public void testPaytm() {
         try {
             WebElement allOption = PaymentPage.getAllPaymentsOption(driver);
@@ -145,7 +145,7 @@ public class TrialPaymentTest extends BaseTest {
             upiOption.click();
             WebElement upiInputBox = driver.findElement(AppiumBy.id("vpa-upi"));
             assertNotNull(upiInputBox);
-            driverHelper.enterValue(upiInputBox, PaymentHelper.UPI_ID);
+            androidHelper.enterValue(upiInputBox, PaymentHelper.UPI_ID);
             WebElement proceedBtn = AllPaymentPage.proceedPaymentBtn(driver);
             assertNotNull(proceedBtn);
             proceedBtn.click();
@@ -163,7 +163,7 @@ public class TrialPaymentTest extends BaseTest {
         } catch (AssertionError | Exception e) {
             fail("goToOrderDetailPage " + e.getMessage());
         }
-        driverHelper.back();
+        androidHelper.back();
         TrialOrderConfirmation.getCloseConfirmationScreen(driver).click();
         shopFrontPopupCheck();
         signOut();
@@ -174,7 +174,7 @@ public class TrialPaymentTest extends BaseTest {
             return;
         }
         try {
-            if(VerifyElementHelper.isAppWidePopUpPresent(driver)){
+            if (VerifyElementHelper.isAppWidePopUpPresent(driver)) {
                 PopUp.getPopUpClose(driver).click();
             }
             WebElement walletPopUp = ShopFrontPage.getWalletPopup(driver);
@@ -187,19 +187,6 @@ public class TrialPaymentTest extends BaseTest {
         }
     }
 
-    private void signOut() {
-        try {
-            Navigation.getProfileHomeTab(driver).click();
-            driverHelper.scrollToBottom();
-            AccountPage.getSignOut(driver).click();
-            WebElement yesCta = driver.findElement(AppiumBy.id("android:id/button1"));
-            assertNotNull("Yes button not found", yesCta);
-            yesCta.click();
-        } catch (Exception e) {
-            System.out.println("line ->" + Utility.getCurrentLineNo() + "signOut");
-        }
-
-    }
 
     public void initialLandingPageText(boolean isAppOpen) {
         if (isAppOpen) {
@@ -230,40 +217,7 @@ public class TrialPaymentTest extends BaseTest {
             }
 
             if (isSignup) {
-                // Choose gender
-                WebElement maleElement = SignUpPage.getMaleGenderOption(driver);
-                WebElement femaleElement = SignUpPage.getFemaleGenderOption(driver);
-                WebElement chooseGender = (Utility.RANDOMNUMBER == 0) ? maleElement : femaleElement;
-                chooseGender.click();
-
-
-                // Select birth month
-                SignUpPage.getMonthSpinner(driver).click();
-                SignUpPage.getMarchMonthOption(driver).click();
-
-                // Select birth year
-                SignUpPage.getYearSpinner(driver).click();
-                SignUpPage.getYear2009Option(driver).click();
-
-                // Enter referral code
-                WebElement referralInput = SignUpPage.getReferralInput(driver);
-                referralInput.click();
-                referralInput.sendKeys(SignUpPage.GROUP_INVITE_CODE);
-
-                // Apply referral code
-                SignUpPage.getReferralApplyBtn(driver).click();
-
-                // Wait for referral success message
-                WebElement referralSuccessTitle = SignUpPage.getReferralSuccessTitle(driver);
-                assertNotNull("Referral success title not found", referralSuccessTitle);
-                System.out.println("line -> " + Utility.getCurrentLineNo() + referralSuccessTitle.getText());
-
-                // Confirm referral success payment title
-                WebElement referralSuccessPaymentTitle = SignUpPage.getReferralSuccessPaymentTitle(driver);
-                System.out.println("line -> " + Utility.getCurrentLineNo() + referralSuccessPaymentTitle.getText());
-
-                // Confirm signup
-                SignUpPage.getConfirmBtn(driver).click();
+               signUpHelper();
             } else {
                 if (VerifyElementHelper.isAppWidePopUpPresent(driver)) {
                     PopUp.getPopUpClose(driver).click();
@@ -278,7 +232,6 @@ public class TrialPaymentTest extends BaseTest {
     }
 
     public void gotoTrialFront() {
-
         if (VerifyElementHelper.isAppWidePopUpPresent(driver)) {
             PopUp.getPopUpClose(driver).click();
         }
@@ -374,34 +327,15 @@ public class TrialPaymentTest extends BaseTest {
             state = AddressPage.getStateField(driver);
             saveAddress = AddressPage.getProceedButton(driver);
 
-            firstName.click();
-            firstName.clear();
-            firstName.sendKeys(AddressPage.FIRST_NAME);
-            driver.navigate().back();
-            lastName.click();
-            lastName.clear();
-            lastName.sendKeys(AddressPage.LAST_NAME);
-            driver.navigate().back();
-            phoneNumber.click();
-            phoneNumber.clear();
-            phoneNumber.sendKeys(Utility.getNumber());
-            driver.navigate().back();
-            email.click();
-            email.clear();
-            email.sendKeys(Utility.generateRandomEmail());
-            houseNumber.click();
-            houseNumber.sendKeys(AddressPage.HOUSE_NO);
-            driver.navigate().back();
-            streetName.click();
-            streetName.sendKeys(AddressPage.STREET);
-            driver.navigate().back();
-            pincode.click();
-            pincode.clear();
-            pincode.sendKeys(AddressPage.PINCODE);
-            driver.navigate().back();
-            landmark.click();
-            landmark.sendKeys(AddressPage.LANDMARK);
-            driver.navigate().back();
+            androidHelper.clearAndSetValueInField(firstName, Utility.generateRandomString(8));
+            androidHelper.clearAndSetValueInField(lastName, Utility.generateRandomString(8));
+            androidHelper.clearAndSetValueInField(phoneNumber, "9500752205 ");
+            androidHelper.clearAndSetValueInField(email, Utility.generateRandomEmail());
+            androidHelper.clearAndSetValueInField(houseNumber, Utility.generateRandomString(8));
+            androidHelper.clearAndSetValueInField(streetName, Utility.generateRandomString(8));
+            androidHelper.clearAndSetValueInField(pincode, AddressPage.PINCODE);
+            androidHelper.clearAndSetValueInField(landmark, Utility.generateRandomString(8));
+
             Random random = new Random();
             int randomIndex = random.nextInt(AddressPage.ADDRESS_TYPE.length);
             String randomAddressType = AddressPage.ADDRESS_TYPE[randomIndex];

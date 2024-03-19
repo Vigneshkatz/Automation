@@ -13,7 +13,6 @@ import org.smytten.pof.common.PopUp;
 import org.smytten.pof.common.VerifyElementHelper;
 import org.smytten.pof.entry.LandingPage;
 import org.smytten.pof.entry.LoginPage;
-import org.smytten.pof.entry.SignUpPage;
 import org.smytten.pof.payment.PaymentPage;
 import org.smytten.pof.product.TrialProductCard;
 import org.smytten.util.Utility;
@@ -27,6 +26,7 @@ import static org.testng.AssertJUnit.*;
 
 public class TrialOrderTest extends BaseTest {
     private static final String MOBILE_NUMBER = Utility.getNumber();
+
     @Test(priority = 0)
     public void initialLandingPageText() {
         try {
@@ -49,52 +49,19 @@ public class TrialOrderTest extends BaseTest {
 
             WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
-
-            // Choose gender
-            WebElement maleElement = SignUpPage.getMaleGenderOption(driver);
-            WebElement femaleElement = SignUpPage.getFemaleGenderOption(driver);
-            WebElement chooseGender = (Utility.RANDOMNUMBER == 0) ? maleElement : femaleElement;
-            chooseGender.click();
-
-            // Select birth month
-            SignUpPage.getMonthSpinner(driver).click();
-            SignUpPage.getMarchMonthOption(driver).click();
-
-            // Select birth year
-            SignUpPage.getYearSpinner(driver).click();
-            SignUpPage.getYear2009Option(driver).click();
-
-            // Enter referral code
-            WebElement referralInput = SignUpPage.getReferralInput(driver);
-            referralInput.click();
-            referralInput.sendKeys(SignUpPage.GROUP_INVITE_CODE);
-
-            // Apply referral code
-            SignUpPage.getReferralApplyBtn(driver).click();
-
-            // Wait for referral success message
-            WebElement referralSuccessTitle = SignUpPage.getReferralSuccessTitle(driver);
-            assertNotNull("Referral success title not found", referralSuccessTitle);
-            System.out.println(referralSuccessTitle.getText());
-
-            // Confirm referral success payment title
-            WebElement referralSuccessPaymentTitle = SignUpPage.getReferralSuccessPaymentTitle(driver);
-            System.out.println(referralSuccessPaymentTitle.getText());
-
-            // Confirm signup
-            SignUpPage.getConfirmBtn(driver).click();
-        } catch (AssertionError | Exception e){
-            fail("signUp"+ e.getMessage());
+            signUpHelper();
+        } catch (AssertionError | Exception e) {
+            fail("signUp" + e.getMessage());
         }
     }
 
     @Test(priority = 3)
     public void gotoTrialFront() {
         try {
-            if(PopUp.getOfferPopUp(driver).isDisplayed()){
+            if (PopUp.getOfferPopUp(driver).isDisplayed()) {
                 PopUp.getPopUpClose(driver).click();
             }
-        }catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             Utility.printCurrentLine("gotoTrialFront");
         }
 
@@ -119,8 +86,8 @@ public class TrialOrderTest extends BaseTest {
                     break;
                 }
             }
-        }catch (AssertionError | Exception e){
-            fail("failed to open product listing"+e.getMessage());
+        } catch (AssertionError | Exception e) {
+            fail("failed to open product listing" + e.getMessage());
         }
 
 
@@ -140,14 +107,13 @@ public class TrialOrderTest extends BaseTest {
                     } else {
                         System.out.println("No pop-up found");
                     }
-                }catch (NoSuchElementException e)
-                {
+                } catch (NoSuchElementException e) {
                     e.printStackTrace();
                 }
                 break;
             }
-        } catch (AssertionError | Exception e){
-            fail("failed to open product listing"+e.getMessage());
+        } catch (AssertionError | Exception e) {
+            fail("failed to open product listing" + e.getMessage());
         }
     }
 
@@ -162,26 +128,26 @@ public class TrialOrderTest extends BaseTest {
                     TouchAction touchAction = new TouchAction(driver);
                     touchAction.tap(PointOption.point(877, 877)).perform();
                 }
-            }catch (NoSuchElementException e){
+            } catch (NoSuchElementException e) {
                 e.printStackTrace();
             }
-        }catch (AssertionError | Exception e){
-            fail("failed to gotoCart"+e.getMessage());
+        } catch (AssertionError | Exception e) {
+            fail("failed to gotoCart" + e.getMessage());
         }
     }
 
     @Test(priority = 7)
     public void goToPaymentPage() {
         try {
-           driverHelper.scrollToBottom();
+            androidHelper.scrollToBottom();
             WebElement proceedBtn = CartPage.getProceedButton(driver);
             assertNotNull(proceedBtn);
             proceedBtn.click();
             if (VerifyElementHelper.isProductConsentPopupPresent(driver)) {
                 PopUp.getRightCtaConsentPopUp(driver).click();
             }
-        }catch (AssertionError | Exception e){
-            fail("failed to open product listing"+e.getMessage());
+        } catch (AssertionError | Exception e) {
+            fail("failed to open product listing" + e.getMessage());
         }
     }
 
@@ -214,34 +180,15 @@ public class TrialOrderTest extends BaseTest {
             state = AddressPage.getStateField(driver);
             saveAddress = AddressPage.getProceedButton(driver);
 
-            firstName.click();
-            firstName.clear();
-            firstName.sendKeys(AddressPage.FIRST_NAME);
-            driver.navigate().back();
-            lastName.click();
-            lastName.clear();
-            lastName.sendKeys(AddressPage.LAST_NAME);
-            driver.navigate().back();
-            phoneNumber.click();
-            phoneNumber.clear();
-            phoneNumber.sendKeys(Utility.getNumber());
-            driver.navigate().back();
-            email.click();
-            email.clear();
-            email.sendKeys(Utility.generateRandomEmail());
-            houseNumber.click();
-            houseNumber.sendKeys(AddressPage.HOUSE_NO);
-            driver.navigate().back();
-            streetName.click();
-            streetName.sendKeys(AddressPage.STREET);
-            driver.navigate().back();
-            pincode.click();
-            pincode.clear();
-            pincode.sendKeys(AddressPage.PINCODE);
-            driver.navigate().back();
-            landmark.click();
-            landmark.sendKeys(AddressPage.LANDMARK);
-            driver.navigate().back();
+            androidHelper.clearAndSetValueInField(firstName, AddressPage.FIRST_NAME);
+            androidHelper.clearAndSetValueInField(lastName, AddressPage.LAST_NAME);
+            androidHelper.clearAndSetValueInField(phoneNumber, "9500752205 ");
+            androidHelper.clearAndSetValueInField(email, Utility.generateRandomEmail());
+            androidHelper.clearAndSetValueInField(houseNumber, AddressPage.HOUSE_NO);
+            androidHelper.clearAndSetValueInField(streetName, AddressPage.STREET);
+            androidHelper.clearAndSetValueInField(pincode, AddressPage.PINCODE);
+            androidHelper.clearAndSetValueInField(landmark, AddressPage.LANDMARK);
+
             Random random = new Random();
             int randomIndex = random.nextInt(AddressPage.ADDRESS_TYPE.length);
             String randomAddressType = AddressPage.ADDRESS_TYPE[randomIndex];
@@ -267,11 +214,11 @@ public class TrialOrderTest extends BaseTest {
             WebElement proceedBtn = PaymentPage.getProceedBtn(driver);
             assertNotNull(proceedBtn);
             proceedBtn.click();
-                if (VerifyElementHelper.isCodConsentPopUpPresent(driver)) {
-                    PopUp.getCodProceedBtn(driver).click();
-                }
-        } catch (AssertionError | Exception e){
-            fail("failed to codOrder"+e.getMessage());
+            if (VerifyElementHelper.isCodConsentPopUpPresent(driver)) {
+                PopUp.getCodProceedBtn(driver).click();
+            }
+        } catch (AssertionError | Exception e) {
+            fail("failed to codOrder" + e.getMessage());
         }
     }
 
@@ -281,8 +228,8 @@ public class TrialOrderTest extends BaseTest {
             WebElement orderDetail = TrialOrderConfirmation.getViewOrderDetailButton(driver);
             orderDetail.click();
             assertNotNull(orderDetail);
-        } catch (AssertionError | Exception e){
-            fail("goToOrderDetailPage "+ e.getMessage());
+        } catch (AssertionError | Exception e) {
+            fail("goToOrderDetailPage " + e.getMessage());
         }
     }
 

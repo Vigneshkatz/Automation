@@ -10,7 +10,6 @@ import static org.testng.Assert.*;
 public class LandingPageTest extends BaseTest {
 
     @Test(priority = 1)
-
     public void testInitialLandingPageText() {
         try {
             WebElement startCta = LandingPage.getStartCtaElement(driver);

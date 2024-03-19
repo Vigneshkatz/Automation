@@ -1,6 +1,7 @@
 package luxe;
 
 import base.BaseTest;
+import com.beust.ah.A;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.touch.offset.PointOption;
@@ -23,7 +24,6 @@ import static org.testng.AssertJUnit.*;
 
 
 public class LuxeMemberShipTest extends BaseTest {
-    private static TouchAction touchAction;
 
     @Test(priority = 0)
     public void verifyStartCtaOnInitialLandingPage() {
@@ -47,40 +47,7 @@ public class LuxeMemberShipTest extends BaseTest {
 
             WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
-
-            // Choose gender
-            WebElement maleElement = SignUpPage.getMaleGenderOption(driver);
-            WebElement femaleElement = SignUpPage.getFemaleGenderOption(driver);
-            WebElement chooseGender = (Utility.RANDOMNUMBER == 0) ? maleElement : femaleElement;
-            chooseGender.click();
-
-            // Select birth month
-            SignUpPage.getMonthSpinner(driver).click();
-            SignUpPage.getMarchMonthOption(driver).click();
-
-            // Select birth year
-            SignUpPage.getYearSpinner(driver).click();
-            SignUpPage.getYear2009Option(driver).click();
-
-            // Enter referral code
-            WebElement referralInput = SignUpPage.getReferralInput(driver);
-            referralInput.click();
-            referralInput.sendKeys(SignUpPage.GROUP_INVITE_CODE);
-
-            // Apply referral code
-            SignUpPage.getReferralApplyBtn(driver).click();
-
-            // Wait for referral success message
-            WebElement referralSuccessTitle = SignUpPage.getReferralSuccessTitle(driver);
-            assertNotNull("Referral success title not found", referralSuccessTitle);
-            System.out.println(referralSuccessTitle.getText());
-
-            // Confirm referral success payment title
-            WebElement referralSuccessPaymentTitle = SignUpPage.getReferralSuccessPaymentTitle(driver);
-            System.out.println(referralSuccessPaymentTitle.getText());
-
-            // Confirm signup
-            SignUpPage.getConfirmBtn(driver).click();
+            signUpHelper();
         } catch (AssertionError | Exception e) {
             fail("signUp" + e.getMessage());
         }
@@ -155,28 +122,15 @@ public class LuxeMemberShipTest extends BaseTest {
             WebElement addressType;
             WebElement defaultAddress;
 
-            // Fill in address details
-            firstName.click();
-            firstName.clear();
-            firstName.sendKeys(AddressPage.FIRST_NAME);
-            lastName.click();
-            lastName.clear();
-            lastName.sendKeys(AddressPage.LAST_NAME);
-            phoneNumber.click();
-            phoneNumber.clear();
-            phoneNumber.sendKeys(Utility.getNumber());
-            email.click();
-            email.clear();
-            email.sendKeys(Utility.generateRandomEmail());
-            houseNumber.click();
-            houseNumber.sendKeys(AddressPage.HOUSE_NO);
-            streetName.click();
-            streetName.sendKeys(AddressPage.STREET);
-            pincode.click();
-            pincode.clear();
-            pincode.sendKeys(AddressPage.PINCODE);
-            landmark.click();
-            landmark.sendKeys(AddressPage.LANDMARK);
+            androidHelper.clearAndSetValueInField(firstName, AddressPage.FIRST_NAME);
+            androidHelper.clearAndSetValueInField(lastName, AddressPage.LAST_NAME);
+            androidHelper.clearAndSetValueInField(phoneNumber, "9500752205 ");
+            androidHelper.clearAndSetValueInField(email, Utility.generateRandomEmail());
+            androidHelper.clearAndSetValueInField(houseNumber, AddressPage.HOUSE_NO);
+            androidHelper.clearAndSetValueInField(streetName, AddressPage.STREET);
+            androidHelper.clearAndSetValueInField(pincode, AddressPage.PINCODE);
+            androidHelper.clearAndSetValueInField(landmark, AddressPage.LANDMARK);
+
 
             // Select random address type and set as default
             Random random = new Random();

@@ -13,12 +13,10 @@ import org.smytten.pof.luxe.LuxeLandingPage;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-
 import static org.testng.AssertJUnit.*;
 
 public class AccountRedirectionTest extends BaseTest {
-    private Boolean isEmpty = true;
+    private final Boolean isEmpty = true;
 
     @Test(priority = 1)
     public void testLoginWithCorrectOTP() {
@@ -26,8 +24,7 @@ public class AccountRedirectionTest extends BaseTest {
             WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
             assertNotNull("Mobile input field not found", mobileInput);
             mobileInput.click();
-            mobileInput.sendKeys(LoginPage.getMOBILE_NUMBER(1));
-
+            androidHelper.clearAndSetValueInField(mobileInput, LoginPage.getMOBILE_NUMBER(1));
             WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
 
@@ -36,19 +33,10 @@ public class AccountRedirectionTest extends BaseTest {
 
             WebElement otpEnterInput = OtpPage.getOtpEnterInput(driver);
             otpEnterInput.click();
-
-            //  otpLabel = OtpPage.getOtpLabel(driver);
-//            mobileNumberLabel = OtpPage.getMobileNumberLabel(driver);
-//            mobileNumberEditCta = OtpPage.getMobileNumberEditCta(driver);
-//            otpEnterInput = OtpPage.getOtpEnterInput(driver);
-//            assertTrue(OtpPage.OTP_NOT_RECEIVED_LABEL_TEXT.equalsIgnoreCase(otpLabel.getText().trim()));
-//            assertTrue(OtpPage.CONTACT_US_EMAIL_LABEL_TEXT.equalsIgnoreCase(mobileNumberLabel.getText().trim()));
-//            assertTrue(OtpPage.MOBILE_NUMBER_EDIT_CTA_TEXT.equalsIgnoreCase(mobileNumberEditCta.getText().trim()));
-//            otpEnterInput.click();
             // enter otp
             enterOTP(OtpPage.VALID_OTP);
             System.out.println("OTP typed successfully." + OtpPage.VALID_OTP);
-        }catch (AssertionError | Exception e) {
+        } catch (AssertionError | Exception e) {
             fail("loginWithCrtOTP assertion failed: " + e.getMessage());
         }
     }
@@ -303,7 +291,7 @@ public class AccountRedirectionTest extends BaseTest {
             gotoAccountPage();
             driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToBeginning(100000)"));
             AccountPage.getReferBanner(driver);
-        } catch (AssertionError |Exception e) {
+        } catch (AssertionError | Exception e) {
             fail("openReferAndEarn assertion failed: " + e.getMessage());
         }
     }
@@ -439,7 +427,7 @@ public class AccountRedirectionTest extends BaseTest {
             assertEquals("Description text is as expected", "Tap ❤️ on your favourite products to find them here.", description.getText());
             assertEquals("Explore CTA text is as expected", "Explore Now", exploreCta.getText());
 
-        } catch (AssertionError |Exception e) {
+        } catch (AssertionError | Exception e) {
             fail("Assertion failed: " + e.getMessage());
         } finally {
             driver.navigate().back();
@@ -497,9 +485,9 @@ public class AccountRedirectionTest extends BaseTest {
             WebElement closeIcon = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_close"));
             assertNotNull("Close icon element is not null", closeIcon);
 
-        } catch (AssertionError  | Exception e) {
+        } catch (AssertionError | Exception e) {
             fail("Assertion failed: " + e.getMessage());
-        }  finally {
+        } finally {
             driver.navigate().back();
         }
     }
@@ -562,9 +550,9 @@ public class AccountRedirectionTest extends BaseTest {
             WebElement closeIcon = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_close"));
             assertNotNull("Close icon element is not null", closeIcon);
 
-        }  catch (AssertionError | Exception e) {
+        } catch (AssertionError | Exception e) {
             fail("Assertion failed: " + e.getMessage());
-        }finally {
+        } finally {
             driver.navigate().back();
         }
     }
@@ -584,7 +572,7 @@ public class AccountRedirectionTest extends BaseTest {
 
             WebElement closeIcon = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_close"));
             assertNotNull("Close icon element is not null", closeIcon);
-        }  catch (AssertionError | Exception e) {
+        } catch (AssertionError | Exception e) {
             fail("Assertion failed: " + e.getMessage());
         } finally {
             driver.navigate().back();
@@ -593,30 +581,18 @@ public class AccountRedirectionTest extends BaseTest {
 
 
     @Test(priority = 21)
-    public void signOut() {
+    public void testSignOut() {
         testCheckPopUp();
         gotoAccountPage();
         driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(100000)"));
         WebElement yesCta = null;
         try {
-            WebElement signOut  = AccountPage.getSignOut(driver);
+            WebElement signOut = AccountPage.getSignOut(driver);
             signOut.click();
             yesCta = driver.findElement(AppiumBy.id("android:id/button1"));
             yesCta.click();
         } catch (AssertionError | Exception e) {
             Assert.fail("signOut assertion failed: " + e.getMessage());
         }
-    }
-
-    private void enterOTP(String otp) throws IOException, InterruptedException {
-        Process process = Runtime.getRuntime().exec("adb shell input text " + otp);
-        process.waitFor();
-        System.out.println("OTP typed successfully: " + otp);
-    }
-
-    private void gotoAccountPage() {
-        WebElement menu = Navigation.getProfileHomeTab(driver);
-        assertNotNull("Menu element is not null", menu);
-        menu.click();
     }
 }

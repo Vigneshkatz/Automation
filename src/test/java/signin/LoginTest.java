@@ -6,21 +6,13 @@ import io.appium.java_client.TouchAction;
 import io.appium.java_client.clipboard.ClipboardContentType;
 import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.WebElement;
-import org.smytten.pof.account.AccountPage;
-import org.smytten.pof.common.Navigation;
-import org.smytten.pof.common.PopUp;
-import org.smytten.pof.common.VerifyElementHelper;
 import org.smytten.pof.entry.LandingPage;
 import org.smytten.pof.entry.LoginPage;
 import org.smytten.pof.entry.OtpPage;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
-import java.util.Base64;
-
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
 import static org.testng.AssertJUnit.assertNotNull;
-import static org.testng.AssertJUnit.assertTrue;
 import static org.testng.AssertJUnit.fail;
 
 
@@ -64,7 +56,7 @@ public class LoginTest extends BaseTest {
 
             // Tap on the screen to go back
             touchAction.tap(PointOption.point(544, 211)).perform();
-        } catch (AssertionError | Exception e){
+        } catch (AssertionError | Exception e) {
             fail("openTermsAndPolicy" + e.getMessage());
         }
     }
@@ -74,8 +66,7 @@ public class LoginTest extends BaseTest {
         try {
             WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
             assertNotNull("Mobile input field not found", mobileInput);
-            mobileInput.click();
-            mobileInput.sendKeys(LoginPage.getMOBILE_NUMBER(1));
+            androidHelper.clearAndSetValueInField(mobileInput, LoginPage.getMOBILE_NUMBER(1));
 
             WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
@@ -88,7 +79,7 @@ public class LoginTest extends BaseTest {
 
             enterOTP(OtpPage.VALID_OTP);
             System.out.println("OTP typed successfully." + OtpPage.VALID_OTP);
-        }catch (AssertionError | Exception e) {
+        } catch (AssertionError | Exception e) {
             fail("loginWithCrtOTP assertion failed: " + e.getMessage());
         }
         signOut();
@@ -99,8 +90,7 @@ public class LoginTest extends BaseTest {
         try {
             WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
             assertNotNull("Mobile input field not found", mobileInput);
-            mobileInput.click();
-            mobileInput.sendKeys(LoginPage.getMOBILE_NUMBER(1));
+            androidHelper.clearAndSetValueInField(mobileInput, LoginPage.getMOBILE_NUMBER(1));
 
             WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
@@ -128,7 +118,7 @@ public class LoginTest extends BaseTest {
             WebElement otpToastMessage = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/snackbar_text"));
             assertEquals("Invalid Otp Message", OtpPage.INVALID_OTP_MESSAGE, otpToastMessage.getText());
 
-        } catch (AssertionError | Exception e){
+        } catch (AssertionError | Exception e) {
             fail("loginWithWrongOTP assertion failed: " + e.getMessage());
         }
     }
@@ -140,8 +130,8 @@ public class LoginTest extends BaseTest {
 
             WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
             assertNotNull("Mobile input field not found", mobileInput);
-            mobileInput.click();
-            mobileInput.sendKeys(LoginPage.getMOBILE_NUMBER(2));
+            androidHelper.clearAndSetValueInField(mobileInput, LoginPage.getMOBILE_NUMBER(2));
+
 
             WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
@@ -186,7 +176,6 @@ public class LoginTest extends BaseTest {
         }
     }
 
-
     @Test(priority = 5)
     public void testResendOtp() {
         try {
@@ -194,8 +183,7 @@ public class LoginTest extends BaseTest {
 
             WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
             assertNotNull("Mobile input field not found", mobileInput);
-            mobileInput.click();
-            mobileInput.sendKeys(LoginPage.getMOBILE_NUMBER(0));
+            androidHelper.clearAndSetValueInField(mobileInput, LoginPage.getMOBILE_NUMBER(0));
 
             WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
@@ -237,59 +225,14 @@ public class LoginTest extends BaseTest {
                     }
                 }
             }
-        }catch (AssertionError | Exception e){
+        } catch (AssertionError | Exception e) {
             fail("resentOtp " + e.getMessage());
-        }
-    }
-
-    private void testCheckPopUp() {
-        try {
-            if (VerifyElementHelper.isPopupPresent(driver)) {
-                WebElement popUpClose = PopUp.getPopUpClose(driver);
-                assertNotNull("Popup close button not found", popUpClose);
-                popUpClose.click();
-                assertTrue("Popup successfully closed", true);
-            } else {
-                assertTrue("No popUp present", true);
-            }
-        } catch (AssertionError |Exception e) {
-            fail("checkPopUp " + e.getMessage());
-        }
-    }
-
-
-    private void testGotoAccountPage() {
-        try {
-            WebElement profileHomeTab = Navigation.getProfileHomeTab(driver);
-            assertNotNull("Profile home tab not found", profileHomeTab);
-            profileHomeTab.click();
-        } catch (AssertionError e) {
-            fail("gotoAccountPage " + e.getMessage());
-        } catch (Exception e) {
-            fail("gotoAccountPage " + e.getMessage());
-        }
-    }
-
-    private void signOut() {
-        try {
-            testCheckPopUp();
-            testGotoAccountPage();
-            driverHelper.scrollToBottom();
-            WebElement signOut = AccountPage.getSignOut(driver);
-            assertNotNull("Sign out button not found", signOut);
-            signOut.click();
-
-            WebElement yesCta = driver.findElement(AppiumBy.id("android:id/button1"));
-            assertNotNull("Yes button not found", yesCta);
-            yesCta.click();
-        }catch (AssertionError | Exception e){
-            fail("signOut " + e.getMessage());
         }
     }
 
     public void copyOtp() {
         try {
-            clearNotifications();
+            androidHelper.clearNotifications();
             testLoginWithCorrectOTP();
             WebElement actionContainer = driver.findElement(AppiumBy.id("android:id/actions_container_layout"));
             assertNotNull("Action container not found", actionContainer);
@@ -301,31 +244,15 @@ public class LoginTest extends BaseTest {
             String otp = driver.getClipboard(ClipboardContentType.PLAINTEXT);
             System.out.println("Copied OTP: " + otp);
 
-            String decodedOtp = decodeOtp(otp);
+            String decodedOtp = androidHelper.decodeOtp(otp);
             System.out.println("Decoded OTP: " + decodedOtp);
 
-            clearNotifications();
+            androidHelper.clearNotifications();
         } catch (Exception e) {
             System.out.println("Error occurred: " + e.getMessage());
             fail("copyOtp failed");
         } finally {
             signOut();
-        }
-    }
-
-    private void enterOTP(String otp) throws IOException, InterruptedException {
-        Process process = Runtime.getRuntime().exec("adb shell input text " + otp);
-        process.waitFor();
-        System.out.println("OTP typed successfully: " + otp);
-    }
-
-    private void clearNotifications() {
-        try {
-            driver.openNotifications();
-            WebElement clearNotification = driver.findElement(AppiumBy.id("com.android.systemui:id/clear_all_port"));
-            clearNotification.click();
-        }catch (AssertionError | Exception e) {
-            System.out.println("No new notification");
         }
     }
 
@@ -335,13 +262,8 @@ public class LoginTest extends BaseTest {
             WebElement mobileNumberEditCta = OtpPage.getMobileNumberEditCta(driver);
             assertNotNull("Mobile number edit CTA not found", mobileNumberEditCta);
             mobileNumberEditCta.click();
-        } catch (AssertionError | Exception e){
+        } catch (AssertionError | Exception e) {
             fail("openMobileNumberEntryScreen " + e);
         }
-    }
-
-    private String decodeOtp(String otp) {
-        byte[] decodedBytes = Base64.getDecoder().decode(otp);
-        return new String(decodedBytes);
     }
 }

@@ -3,8 +3,6 @@ package accountsection;
 import base.BaseTest;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.TouchAction;
-import io.appium.java_client.clipboard.ClipboardContentType;
-import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.WebElement;
 import org.smytten.pof.account.AccountPage;
 import org.smytten.pof.account.ProfileUpdatePage;
@@ -13,16 +11,14 @@ import org.smytten.pof.common.PopUp;
 import org.smytten.pof.common.VerifyElementHelper;
 import org.smytten.pof.entry.LandingPage;
 import org.smytten.pof.entry.LoginPage;
-import org.smytten.pof.entry.SignUpPage;
 import org.smytten.util.Utility;
 import org.testng.annotations.Test;
-
-import java.util.Base64;
 
 import static org.testng.AssertJUnit.*;
 
 public class AccountPageTest extends BaseTest {
-    private Boolean isEmpty = true;
+    private final Boolean isEmpty = true;
+
     @Test(priority = 0)
     public void initialLandingPageText() {
         try {
@@ -45,44 +41,10 @@ public class AccountPageTest extends BaseTest {
             WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
             assertNotNull("Mobile number input field not found", mobileInput);
             mobileInput.click();
-            mobileInput.sendKeys(Utility.getNumber());
-
+            androidHelper.clearAndSetValueInField(mobileInput, Utility.getNumber());
             WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
-
-            // Choose gender
-            WebElement maleElement = SignUpPage.getMaleGenderOption(driver);
-            WebElement femaleElement = SignUpPage.getFemaleGenderOption(driver);
-            WebElement chooseGender = (Utility.RANDOMNUMBER == 0) ? maleElement : femaleElement;
-            chooseGender.click();
-
-            // Select birth month
-            SignUpPage.getMonthSpinner(driver).click();
-            SignUpPage.getMarchMonthOption(driver).click();
-
-            // Select birth year
-            SignUpPage.getYearSpinner(driver).click();
-            SignUpPage.getYear2009Option(driver).click();
-
-            // Enter referral code
-            WebElement referralInput = SignUpPage.getReferralInput(driver);
-            referralInput.click();
-            referralInput.sendKeys(SignUpPage.GROUP_INVITE_CODE);
-
-            // Apply referral code
-            SignUpPage.getReferralApplyBtn(driver).click();
-
-            // Wait for referral success message
-            WebElement referralSuccessTitle = SignUpPage.getReferralSuccessTitle(driver);
-            assertNotNull("Referral success title not found", referralSuccessTitle);
-            System.out.println(referralSuccessTitle.getText());
-
-            // Confirm referral success payment title
-            WebElement referralSuccessPaymentTitle = SignUpPage.getReferralSuccessPaymentTitle(driver);
-            System.out.println(referralSuccessPaymentTitle.getText());
-
-            // Confirm signup
-            SignUpPage.getConfirmBtn(driver).click();
+            signUpHelper();
         } catch (AssertionError | Exception e) {
             fail("signUp" + e.getMessage());
         }
@@ -164,7 +126,7 @@ public class AccountPageTest extends BaseTest {
     @Test(priority = 6)
     public void updateProfile() {
         try {
-            driverHelper.scrollToTop();
+            androidHelper.scrollToTop();
             updateName();
             updateEmail();
             driver.hideKeyboard();
@@ -182,7 +144,7 @@ public class AccountPageTest extends BaseTest {
         try {
             WebElement pincodeInput = ProfileUpdatePage.getPincodeInput(driver);
             pincodeInput.click();
-            pincodeInput.sendKeys("635115");
+            androidHelper.clearAndSetValueInField(pincodeInput, "635115");
         } catch (AssertionError | Exception e) {
             fail("updatePincode assertion failed: " + e.getMessage());
         } finally {
@@ -193,7 +155,7 @@ public class AccountPageTest extends BaseTest {
 
     private void updateDOB() {
         try {
-            WebElement chooseMonth  = ProfileUpdatePage.getBirthdateInput(driver);
+            WebElement chooseMonth = ProfileUpdatePage.getBirthdateInput(driver);
             chooseMonth.click();
             WebElement selectMonth = ProfileUpdatePage.getSelectMarch(driver);
             selectMonth.click();
@@ -223,7 +185,7 @@ public class AccountPageTest extends BaseTest {
         try {
             WebElement emailInput = ProfileUpdatePage.getEmailInput(driver);
             emailInput.click();
-            emailInput.sendKeys(email);
+            androidHelper.clearAndSetValueInField(emailInput, email);
         } catch (AssertionError | Exception e) {
             fail("updateEmail assertion failed: " + e.getMessage());
         }
@@ -233,54 +195,9 @@ public class AccountPageTest extends BaseTest {
         String name = "Not Guest User";
         try {
             WebElement nameInput = ProfileUpdatePage.getNameInput(driver);
-            nameInput.click();
-            nameInput.sendKeys(name);
+            androidHelper.clearAndSetValueInField(nameInput, name);
         } catch (AssertionError | Exception e) {
             fail("updateName assertion failed: " + e.getMessage());
-        }
-    }
-
-    //    @Test
-    public void copyOtp() {
-        String decodedOtp = null;
-        WebElement clearNotification = null;
-        WebElement actionContainer = null;
-        WebElement copyAction = null;
-        try {
-            driver.openNotifications();
-            clearNotification = driver.findElement(AppiumBy.id("com.android.systemui:id/clear_all_port"));
-            clearNotification.click();
-        } catch (Exception e) {
-            TouchAction touchAction = new TouchAction(driver);
-            int xCoordinate = 627;
-            int yCoordinate = 1608;
-            touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
-            System.out.println("no new notification");
-        }
-        testSignUp();
-        try {
-            driver.openNotifications();
-            actionContainer = driver.findElement(AppiumBy.id("android:id/actions_container_layout"));
-            assertNotNull(actionContainer);
-            copyAction = driver.findElement(AppiumBy.xpath("//android.widget.Button[@content-desc=\"Copy Verification Code\"]"));
-            copyAction.click();
-            System.out.println("copied otp");
-            String otp = driver.getClipboard(ClipboardContentType.PLAINTEXT);
-            System.out.println(otp);
-            byte[] decodedBytes = Base64.getDecoder().decode(otp);
-            String decodedText = new String(decodedBytes);
-            System.out.println(decodedOtp);
-            try {
-                clearNotification = driver.findElement(AppiumBy.id("com.android.systemui:id/clear_all_port"));
-                clearNotification.click();
-            } catch (Exception e) {
-                int xCoordinate = 627;
-                int yCoordinate = 1608;
-                touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
-                System.out.println("no new notification");
-            }
-        } catch (AssertionError | Exception e) {
-            fail("copyOtp assertion failed: " + e.getMessage());
         }
     }
 }
