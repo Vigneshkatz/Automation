@@ -106,6 +106,5 @@ public class SignUpPage {
     public static WebElement getConfirmBtn(AndroidDriver driver) {
         return confirmBtn =  driver.findElement(AppiumBy.id("com.app.smytten.debug:id/signup_manual"));
     }
-
    
 }

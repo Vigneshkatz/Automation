@@ -47,5 +47,12 @@ public class Utility {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
         return now.format(formatter);
     }
+    public static int getCurrentLineNo() {
+        return Thread.currentThread().getStackTrace()[2].getLineNumber();
+    }
+
+    public static void printCurrentLine(String methodName){
+        System.out.println("line no :"+getCurrentLineNo());
+    }
 
 }

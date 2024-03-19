@@ -14,11 +14,9 @@ import org.smytten.pof.common.VerifyElementHelper;
 import org.smytten.pof.entry.LandingPage;
 import org.smytten.pof.entry.LoginPage;
 import org.smytten.pof.entry.SignUpPage;
-import org.smytten.pof.payment.Payment;
+import org.smytten.pof.payment.PaymentPage;
 import org.smytten.pof.product.TrialProductCard;
 import org.smytten.util.Utility;
-import org.smytten.util.driver.DriverHelper;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -92,6 +90,14 @@ public class TrialOrderTest extends BaseTest {
 
     @Test(priority = 3)
     public void gotoTrialFront() {
+        try {
+            if(PopUp.getOfferPopUp(driver).isDisplayed()){
+                PopUp.getPopUpClose(driver).click();
+            }
+        }catch (NoSuchElementException e){
+            Utility.printCurrentLine("gotoTrialFront");
+        }
+
         try {
             WebElement trialFront = Navigation.getTrialHomeTab(driver);
             assertNotNull(trialFront);
@@ -171,7 +177,7 @@ public class TrialOrderTest extends BaseTest {
             WebElement proceedBtn = CartPage.getProceedButton(driver);
             assertNotNull(proceedBtn);
             proceedBtn.click();
-            if (VerifyElementHelper.isConsentPopupPresent(driver)) {
+            if (VerifyElementHelper.isProductConsentPopupPresent(driver)) {
                 PopUp.getRightCtaConsentPopUp(driver).click();
             }
         }catch (AssertionError | Exception e){
@@ -255,14 +261,13 @@ public class TrialOrderTest extends BaseTest {
     @Test(priority = 9)
     public void codOrder() {
         try {
-            WebElement codOption = Payment.getCodOption(driver);
+            WebElement codOption = PaymentPage.getCodOption(driver);
             assertNotNull(codOption);
             codOption.click();
-            WebElement proceedBtn = Payment.getProceedBtn(driver);
+            WebElement proceedBtn = PaymentPage.getProceedBtn(driver);
             assertNotNull(proceedBtn);
             proceedBtn.click();
-
-                if (VerifyElementHelper.isCodCouponPopUpPresent(driver)) {
+                if (VerifyElementHelper.isCodConsentPopUpPresent(driver)) {
                     PopUp.getCodProceedBtn(driver).click();
                 }
         } catch (AssertionError | Exception e){

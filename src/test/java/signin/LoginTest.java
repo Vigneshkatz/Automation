@@ -86,15 +86,6 @@ public class LoginTest extends BaseTest {
             WebElement otpEnterInput = OtpPage.getOtpEnterInput(driver);
             otpEnterInput.click();
 
-            //  otpLabel = OtpPage.getOtpLabel(driver);
-//            mobileNumberLabel = OtpPage.getMobileNumberLabel(driver);
-//            mobileNumberEditCta = OtpPage.getMobileNumberEditCta(driver);
-//            otpEnterInput = OtpPage.getOtpEnterInput(driver);
-//            assertTrue(OtpPage.OTP_NOT_RECEIVED_LABEL_TEXT.equalsIgnoreCase(otpLabel.getText().trim()));
-//            assertTrue(OtpPage.CONTACT_US_EMAIL_LABEL_TEXT.equalsIgnoreCase(mobileNumberLabel.getText().trim()));
-//            assertTrue(OtpPage.MOBILE_NUMBER_EDIT_CTA_TEXT.equalsIgnoreCase(mobileNumberEditCta.getText().trim()));
-//            otpEnterInput.click();
-            // enter otp
             enterOTP(OtpPage.VALID_OTP);
             System.out.println("OTP typed successfully." + OtpPage.VALID_OTP);
         }catch (AssertionError | Exception e) {

@@ -5,7 +5,7 @@ import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.AndroidDriver;
 import org.openqa.selenium.WebElement;
 
-public class Payment {
+public class PaymentPage {
     public static WebElement getAllPaymentsOption(AndroidDriver driver) {
         return driver.findElement(AppiumBy.androidUIAutomator(("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"UPI/ DEBIT / CREDIT CARDS / NET BANKING / WALLETS \"));")));
 

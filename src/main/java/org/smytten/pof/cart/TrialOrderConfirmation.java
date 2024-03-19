@@ -43,5 +43,9 @@ public class TrialOrderConfirmation {
     public static WebElement getReferBanner(AndroidDriver driver) {
     return driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_banner_bottom"));
     }
+    public static WebElement getCloseConfirmationScreen(AndroidDriver driver) {
+        return driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_close"));
+    }
+
 
 }

@@ -32,8 +32,7 @@ public class BaseTest {
         try {
             driver = initializeDriver();
             assertNotNull("Driver initialization failed", driver);
-
-            long implicitWaitTime = 10;
+            long implicitWaitTime = 15;
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(implicitWaitTime));
             touchAction = new TouchAction<>(driver);
             driverHelper = new DriverHelper(driver);
