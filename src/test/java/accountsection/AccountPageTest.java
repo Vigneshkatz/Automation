@@ -44,7 +44,7 @@ public class AccountPageTest extends BaseTest {
             androidHelper.clearAndSetValueInField(mobileInput, Utility.getNumber());
             WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
-            signUpHelper();
+            smyttenHelper.signUpHelper();
         } catch (AssertionError | Exception e) {
             fail("signUp" + e.getMessage());
         }

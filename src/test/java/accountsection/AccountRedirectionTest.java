@@ -34,7 +34,7 @@ public class AccountRedirectionTest extends BaseTest {
             WebElement otpEnterInput = OtpPage.getOtpEnterInput(driver);
             otpEnterInput.click();
             // enter otp
-            enterOTP(OtpPage.VALID_OTP);
+           androidHelper.enterValue(OtpPage.VALID_OTP);
             System.out.println("OTP typed successfully." + OtpPage.VALID_OTP);
         } catch (AssertionError | Exception e) {
             fail("loginWithCrtOTP assertion failed: " + e.getMessage());
@@ -108,7 +108,7 @@ public class AccountRedirectionTest extends BaseTest {
     public void openTrialHowTo() {
         try {
             // Navigate to the Account page
-            gotoAccountPage();
+           smyttenHelper.gotoAccountPage();
 
             // Scroll to the beginning of the page
             driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToBeginning(100000)"));
@@ -144,7 +144,7 @@ public class AccountRedirectionTest extends BaseTest {
     public void openShopHowTo() {
         try {
             // Navigate to the Account page
-            gotoAccountPage();
+           smyttenHelper.gotoAccountPage();
 
             // Scroll to the beginning of the page
             driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToBeginning(100000)"));
@@ -180,7 +180,7 @@ public class AccountRedirectionTest extends BaseTest {
     public void openRewardsHowTo() {
         try {
             // Navigate to the Account page
-            gotoAccountPage();
+           smyttenHelper.gotoAccountPage();
 
             // Scroll to the beginning of the page
             driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToBeginning(100000)"));
@@ -216,7 +216,7 @@ public class AccountRedirectionTest extends BaseTest {
     public void myOrders() {
         try {
             // Navigate to the Account page
-            gotoAccountPage();
+           smyttenHelper.gotoAccountPage();
 
             // Scroll to the beginning of the page
             driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToBeginning(100000)"));
@@ -248,7 +248,7 @@ public class AccountRedirectionTest extends BaseTest {
     public void openHelp() {
         try {
             // Navigate to the Account page
-            gotoAccountPage();
+           smyttenHelper.gotoAccountPage();
 
             // Scroll to the beginning of the page
             driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToBeginning(100000)"));
@@ -288,7 +288,7 @@ public class AccountRedirectionTest extends BaseTest {
     @Test(priority = 10)
     public void openReferAndEarn() {
         try {
-            gotoAccountPage();
+           smyttenHelper.gotoAccountPage();
             driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToBeginning(100000)"));
             AccountPage.getReferBanner(driver);
         } catch (AssertionError | Exception e) {
@@ -300,7 +300,7 @@ public class AccountRedirectionTest extends BaseTest {
     public void openReview() {
         try {
             // Navigate to the Account page
-            gotoAccountPage();
+           smyttenHelper.gotoAccountPage();
 
             // Find elements
             WebElement reviewSection = AccountPage.getReviewSection(driver);
@@ -329,7 +329,7 @@ public class AccountRedirectionTest extends BaseTest {
     public void openSurvey() {
         try {
             // Navigate to the Account page
-            gotoAccountPage();
+           smyttenHelper.gotoAccountPage();
 
             // Find elements
             WebElement surveySection = AccountPage.getSurveySection(driver);
@@ -389,7 +389,7 @@ public class AccountRedirectionTest extends BaseTest {
     public void openWishList() {
         try {
             // Navigate to the account page
-            gotoAccountPage();
+           smyttenHelper.gotoAccountPage();
 
             // Scroll to the end of the page
             driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(100000)"));
@@ -439,7 +439,7 @@ public class AccountRedirectionTest extends BaseTest {
     public void openSmyttenLuxe() {
         try {
             // Navigate to the account page
-            gotoAccountPage();
+           smyttenHelper.gotoAccountPage();
 
             // Find and click on the Smytten Luxe element
             WebElement smyttenLuxe = AccountPage.getSmyttenLuxe(driver);
@@ -467,7 +467,7 @@ public class AccountRedirectionTest extends BaseTest {
     public void openSmyttenBlog() {
         try {
             // Navigate to the account page
-            gotoAccountPage();
+           smyttenHelper.gotoAccountPage();
 
             // Scroll to the end of the page
             driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(100000)"));
@@ -502,7 +502,7 @@ public class AccountRedirectionTest extends BaseTest {
     public void openTermsAndCondition() {
         try {
             // Navigate to the account page
-            gotoAccountPage();
+           smyttenHelper.gotoAccountPage();
 
             // Scroll to the end of the page
             driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(100000)"));
@@ -532,7 +532,7 @@ public class AccountRedirectionTest extends BaseTest {
     public void openPrivacyPolicy() {
         try {
             // Navigate to the account page
-            gotoAccountPage();
+           smyttenHelper.gotoAccountPage();
 
             // Scroll to the end of the page
             driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(100000)"));
@@ -561,7 +561,7 @@ public class AccountRedirectionTest extends BaseTest {
     @Test(priority = 20)
     public void openFaqs() {
         try {
-            gotoAccountPage();
+            smyttenHelper.gotoAccountPage();
             driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(100000)"));
             WebElement faqs = AccountPage.getFaqs(driver);
             assertNotNull("FAQs element is not null", faqs);
@@ -583,10 +583,10 @@ public class AccountRedirectionTest extends BaseTest {
     @Test(priority = 21)
     public void testSignOut() {
         testCheckPopUp();
-        gotoAccountPage();
-        driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(100000)"));
         WebElement yesCta = null;
         try {
+            smyttenHelper.gotoAccountPage();
+            driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(100000)"));
             WebElement signOut = AccountPage.getSignOut(driver);
             signOut.click();
             yesCta = driver.findElement(AppiumBy.id("android:id/button1"));

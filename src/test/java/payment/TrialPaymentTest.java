@@ -4,16 +4,10 @@ import base.BaseTest;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.WebElement;
-import org.smytten.pof.account.AccountPage;
-import org.smytten.pof.account.AddressPage;
-import org.smytten.pof.cart.CartPage;
 import org.smytten.pof.cart.TrialOrderConfirmation;
-import org.smytten.pof.common.Navigation;
 import org.smytten.pof.common.PopUp;
 import org.smytten.pof.common.VerifyElementHelper;
 import org.smytten.pof.entry.LandingPage;
-import org.smytten.pof.entry.LoginPage;
-import org.smytten.pof.entry.SignUpPage;
 import org.smytten.pof.payment.AllPaymentPage;
 import org.smytten.pof.payment.CardPaymentPage;
 import org.smytten.pof.payment.PaymentPage;
@@ -28,7 +22,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.List;
-import java.util.Random;
 
 import static org.testng.AssertJUnit.*;
 
@@ -38,15 +31,20 @@ public class TrialPaymentTest extends BaseTest {
     private boolean isAppOpen = true;
 
     @BeforeMethod
-    public void goToPaymentPage() {
-        initialLandingPageText(isAppOpen);
-        testSignUp();
-        gotoTrialFront();
-        openProductListing();
-        addProductToCart();
-        gotoCart();
-        openPaymentPage();
-        updateAddress();
+    public void initialSetUp() {
+        try {
+            initialLandingPageText(isAppOpen);
+            smyttenHelper.signUp(isSignup,isAppOpen);
+            smyttenHelper.gotoTrialFront();
+            openProductListing();
+            addProductToCart();
+            smyttenHelper.gotoCart();
+            smyttenHelper.openPaymentPage();
+            smyttenHelper.updateAddress();
+        }catch (Exception e){
+            fail("initialSetup fail"+e.getMessage());
+        }
+
     }
 
     @Test(priority = 0)
@@ -160,13 +158,14 @@ public class TrialPaymentTest extends BaseTest {
             WebElement orderDetail = TrialOrderConfirmation.getViewOrderDetailButton(driver);
             orderDetail.click();
             assertNotNull(orderDetail);
-        } catch (AssertionError | Exception e) {
-            fail("goToOrderDetailPage " + e.getMessage());
-        }
+
         androidHelper.back();
         TrialOrderConfirmation.getCloseConfirmationScreen(driver).click();
         shopFrontPopupCheck();
-        signOut();
+        smyttenHelper.signOut();
+        } catch (AssertionError | Exception e) {
+            fail("goToOrderDetailPage " + e.getMessage());
+        }
     }
 
     private void shopFrontPopupCheck() {
@@ -187,7 +186,6 @@ public class TrialPaymentTest extends BaseTest {
         }
     }
 
-
     public void initialLandingPageText(boolean isAppOpen) {
         if (isAppOpen) {
             this.isAppOpen = false;
@@ -198,50 +196,6 @@ public class TrialPaymentTest extends BaseTest {
             } catch (AssertionError | Exception e) {
                 fail("landing page" + e.getMessage());
             }
-        }
-    }
-
-    public void testSignUp() {
-        try {
-            // Enter mobile number and proceed to OTP
-            WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
-            assertNotNull("Mobile number input field not found", mobileInput);
-            mobileInput.click();
-            mobileInput.sendKeys(Utility.getNumber());
-
-            WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
-            proceedBtn.click();
-            Thread.sleep(5000);
-            if (!(VerifyElementHelper.isSignUpPopUpPresent(driver))) {
-                isSignup = false;
-            }
-
-            if (isSignup) {
-               signUpHelper();
-            } else {
-                if (VerifyElementHelper.isAppWidePopUpPresent(driver)) {
-                    PopUp.getPopUpClose(driver).click();
-                }
-                signOut();
-                isAppOpen = false;
-                testSignUp();
-            }
-        } catch (AssertionError | Exception e) {
-            fail("signUp" + e.getMessage());
-        }
-    }
-
-    public void gotoTrialFront() {
-        if (VerifyElementHelper.isAppWidePopUpPresent(driver)) {
-            PopUp.getPopUpClose(driver).click();
-        }
-
-        try {
-            WebElement trialFront = Navigation.getTrialHomeTab(driver);
-            assertNotNull(trialFront);
-            trialFront.click();
-        } catch (AssertionError | Exception e) {
-            fail("gotoTrialFront failed: " + e.getMessage());
         }
     }
 
@@ -282,91 +236,4 @@ public class TrialPaymentTest extends BaseTest {
         }
     }
 
-    public void gotoCart() {
-        try {
-            WebElement cart = Navigation.getCartView(driver);
-            assertNotNull(cart);
-            cart.click();
-            try {
-                if (VerifyElementHelper.isAutoApplyCouponPresent(driver)) {
-                    touchAction.tap(PointOption.point(877, 877)).perform();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } catch (AssertionError | Exception e) {
-            fail("failed to gotoCart" + e.getMessage());
-        }
-    }
-
-    public void updateAddress() {
-        WebElement firstName = null;
-        WebElement lastName = null;
-        WebElement phoneNumber = null;
-        WebElement houseNumber = null;
-        WebElement streetName = null;
-        WebElement landmark = null;
-        WebElement email = null;
-        WebElement pincode = null;
-        WebElement city = null;
-        WebElement state = null;
-        WebElement saveAddress = null;
-        WebElement addressType = null;
-        WebElement defaultAddress = null;
-
-        try {
-            firstName = AddressPage.getFirstNameField(driver);
-            lastName = AddressPage.getLastNameField(driver);
-            phoneNumber = AddressPage.getMobileElement(driver);
-            houseNumber = AddressPage.getHouseField(driver);
-            streetName = AddressPage.getStreetField(driver);
-            landmark = AddressPage.getLandmarkField(driver);
-            email = AddressPage.getEmailField(driver);
-            pincode = AddressPage.getPincodeField(driver);
-            city = AddressPage.getCityField(driver);
-            state = AddressPage.getStateField(driver);
-            saveAddress = AddressPage.getProceedButton(driver);
-
-            androidHelper.clearAndSetValueInField(firstName, Utility.generateRandomString(8));
-            androidHelper.clearAndSetValueInField(lastName, Utility.generateRandomString(8));
-            androidHelper.clearAndSetValueInField(phoneNumber, "9500752205 ");
-            androidHelper.clearAndSetValueInField(email, Utility.generateRandomEmail());
-            androidHelper.clearAndSetValueInField(houseNumber, Utility.generateRandomString(8));
-            androidHelper.clearAndSetValueInField(streetName, Utility.generateRandomString(8));
-            androidHelper.clearAndSetValueInField(pincode, AddressPage.PINCODE);
-            androidHelper.clearAndSetValueInField(landmark, Utility.generateRandomString(8));
-
-            Random random = new Random();
-            int randomIndex = random.nextInt(AddressPage.ADDRESS_TYPE.length);
-            String randomAddressType = AddressPage.ADDRESS_TYPE[randomIndex];
-            addressType = AddressPage.getAddressFieldType(randomAddressType, driver);
-            addressType.click();
-            defaultAddress = AddressPage.getDefaultAddressCheckbox(driver);
-            defaultAddress.click();
-            assertEquals(city.getText().toLowerCase(), AddressPage.CITY.toLowerCase());
-            assertEquals(state.getText().toLowerCase(), AddressPage.STATE.toLowerCase());
-            saveAddress.click();
-            Thread.sleep(2000);
-        } catch (AssertionError | Exception e) {
-            fail("updateAddress assertion failed: " + e.getMessage());
-        }
-    }
-
-    public void openPaymentPage() {
-        try {
-            WebElement proceedBtn = CartPage.getProceedButton(driver);
-            assertNotNull(proceedBtn);
-            proceedBtn.click();
-            try {
-                if (VerifyElementHelper.isPaymentConsentPopupPresent(driver)) {
-                    PopUp.getRightCtaConsentPopUp(driver).click();
-                }
-            } catch (Exception e) {
-                System.out.println("line -> " + Utility.getCurrentLineNo() + " No consent popUp found");
-            }
-
-        } catch (AssertionError | Exception e) {
-            fail("failed to open product listing" + e.getMessage());
-        }
-    }
 }

@@ -77,12 +77,17 @@ public class LoginTest extends BaseTest {
             WebElement otpEnterInput = OtpPage.getOtpEnterInput(driver);
             otpEnterInput.click();
 
-            enterOTP(OtpPage.VALID_OTP);
+            androidHelper.enterValue(OtpPage.VALID_OTP);
             System.out.println("OTP typed successfully." + OtpPage.VALID_OTP);
         } catch (AssertionError | Exception e) {
             fail("loginWithCrtOTP assertion failed: " + e.getMessage());
         }
-        signOut();
+        try {
+            smyttenHelper.signOut();
+
+        }catch (Exception e){
+            fail("signout failed"+e.getMessage());
+        }
     }
 
     @Test(priority = 3)
@@ -114,7 +119,7 @@ public class LoginTest extends BaseTest {
 
             otpEnterInput.click();
             // enter otp
-            enterOTP(OtpPage.INVALID_OTP);
+            androidHelper.enterValue(OtpPage.INVALID_OTP);
             WebElement otpToastMessage = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/snackbar_text"));
             assertEquals("Invalid Otp Message", OtpPage.INVALID_OTP_MESSAGE, otpToastMessage.getText());
 
@@ -252,7 +257,12 @@ public class LoginTest extends BaseTest {
             System.out.println("Error occurred: " + e.getMessage());
             fail("copyOtp failed");
         } finally {
-            signOut();
+            try {
+                smyttenHelper.signOut();
+
+            }catch (Exception e){
+                fail("signout failed"+e.getMessage());
+            }
         }
     }
 

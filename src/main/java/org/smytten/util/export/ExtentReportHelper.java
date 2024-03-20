@@ -8,7 +8,7 @@ public class ExtentReportHelper {
 
     public static  ExtentReports extentReports;
 
-    static String path = "/Users/Vignesh/Desktop/Automation/report/index"+ Utility.getCurrentDateTime() +".html";
+    private static final String path = "/Users/Vignesh/Desktop/Automation/report/index_"+ Utility.getCurrentDateTime() +".html";
     public static ExtentReports getReports(){
         ExtentSparkReporter reporter = new ExtentSparkReporter(path);
         reporter.config().setReportName("Smytten");

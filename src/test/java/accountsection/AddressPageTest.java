@@ -78,7 +78,7 @@ public class AddressPageTest extends BaseTest {
             WebElement otpEnterInput = OtpPage.getOtpEnterInput(driver);
             otpEnterInput.click();
 
-            enterOTP(OtpPage.VALID_OTP);
+            androidHelper.enterValue(OtpPage.VALID_OTP);
             System.out.println("OTP typed successfully." + OtpPage.VALID_OTP);
         } catch (AssertionError | Exception e) {
             fail("loginWithCrtOTP assertion failed: " + e.getMessage());

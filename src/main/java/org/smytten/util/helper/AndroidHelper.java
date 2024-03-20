@@ -1,10 +1,11 @@
-package org.smytten.util.driver;
+package org.smytten.util.helper;
 
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.AndroidDriver;
 import org.openqa.selenium.WebElement;
 import org.smytten.util.payment.PaymentHelper;
 
+import java.io.IOException;
 import java.util.Base64;
 
 public class AndroidHelper {
@@ -51,4 +52,12 @@ public class AndroidHelper {
         element.sendKeys(value);
         driver.hideKeyboard();
     }
+
+    public void enterValue(String value) throws IOException, InterruptedException {
+        Process process = Runtime.getRuntime().exec("adb shell input text " + value);
+        process.waitFor();
+        System.out.println("Value typed successfully: " + value);
+    }
+
+
 }

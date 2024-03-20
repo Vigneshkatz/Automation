@@ -35,7 +35,7 @@ public class SignUpTest extends BaseTest {
 
             WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
-            signUpHelper();
+            smyttenHelper.signUpHelper();
 
         } catch (AssertionError | Exception e) {
             fail("signUp" + e.getMessage());

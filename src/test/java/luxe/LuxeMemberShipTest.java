@@ -1,9 +1,7 @@
 package luxe;
 
 import base.BaseTest;
-import com.beust.ah.A;
 import io.appium.java_client.AppiumBy;
-import io.appium.java_client.TouchAction;
 import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.WebElement;
 import org.smytten.pof.account.AddressPage;
@@ -12,7 +10,6 @@ import org.smytten.pof.common.PopUp;
 import org.smytten.pof.common.VerifyElementHelper;
 import org.smytten.pof.entry.LandingPage;
 import org.smytten.pof.entry.LoginPage;
-import org.smytten.pof.entry.SignUpPage;
 import org.smytten.pof.luxe.LuxeLandingPage;
 import org.smytten.pof.luxe.LuxeOrderConfirmation;
 import org.smytten.util.Utility;
@@ -47,7 +44,7 @@ public class LuxeMemberShipTest extends BaseTest {
 
             WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
-            signUpHelper();
+            smyttenHelper.signUpHelper();
         } catch (AssertionError | Exception e) {
             fail("signUp" + e.getMessage());
         }
