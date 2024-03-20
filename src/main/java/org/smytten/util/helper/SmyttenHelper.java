@@ -3,10 +3,12 @@ package org.smytten.util.helper;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.clipboard.ClipboardContentType;
 import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.WebElement;
 import org.smytten.pof.account.AccountPage;
 import org.smytten.pof.account.AddressPage;
+import org.smytten.pof.account.ProfileUpdatePage;
 import org.smytten.pof.cart.CartPage;
 import org.smytten.pof.cart.TrialOrderConfirmation;
 import org.smytten.pof.common.Navigation;
@@ -233,7 +235,7 @@ public class SmyttenHelper {
         signUp(true, true);
     }
 
-    private void openLoginPage() throws AssertionError, NoSuchElementException, Exception {
+    public void openLoginPage() throws AssertionError, NoSuchElementException, Exception {
         try {
             touchAction = new TouchAction<>(driver);
             WebElement startCta = LandingPage.getStartCtaElement(driver);
@@ -298,4 +300,96 @@ public class SmyttenHelper {
             throw e;
         }
     }
+
+    public void copyOtp() {
+        try {
+            androidHelper.clearNotifications();
+//            testLoginWithCorrectOTP();
+            WebElement actionContainer = driver.findElement(AppiumBy.id("android:id/actions_container_layout"));
+            assertNotNull("Action container not found", actionContainer);
+
+            WebElement copyAction = driver.findElement(AppiumBy.xpath("//android.widget.Button[@content-desc=\"Copy Verification Code\"]"));
+            copyAction.click();
+            System.out.println("OTP copied successfully");
+
+            String otp = driver.getClipboard(ClipboardContentType.PLAINTEXT);
+            System.out.println("Copied OTP: " + otp);
+
+            String decodedOtp = androidHelper.decodeOtp(otp);
+            System.out.println("Decoded OTP: " + decodedOtp);
+
+            androidHelper.clearNotifications();
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e.getMessage());
+            fail("copyOtp failed");
+        } finally {
+            try {
+                signOut();
+            }catch (Exception e){
+                fail("signout failed"+e.getMessage());
+            }
+        }
+    }
+
+    public void updatePincode() {
+        try {
+            WebElement pincodeInput = ProfileUpdatePage.getPincodeInput(driver);
+            pincodeInput.click();
+            androidHelper.clearAndSetValueInField(pincodeInput, "635115");
+        } catch (AssertionError | Exception e) {
+            fail("updatePincode assertion failed: " + e.getMessage());
+        } finally {
+            driver.navigate().back();
+        }
+
+    }
+
+    public void updateDOB() {
+        try {
+            WebElement chooseMonth = ProfileUpdatePage.getBirthdateInput(driver);
+            chooseMonth.click();
+            WebElement selectMonth = ProfileUpdatePage.getSelectMarch(driver);
+            selectMonth.click();
+
+            WebElement chooseYear = ProfileUpdatePage.getChooseYear(driver);
+            chooseYear.click();
+
+            WebElement selectYear = ProfileUpdatePage.getSelectYear(driver);
+            selectYear.click();
+
+        } catch (AssertionError | Exception e) {
+            fail("updateDOB assertion failed: " + e.getMessage());
+        }
+    }
+
+    public void updateGender() {
+        try {
+            WebElement otherGender = ProfileUpdatePage.getOthersOption(driver);
+            otherGender.click();
+        } catch (AssertionError | Exception e) {
+            fail("updateGender assertion failed: " + e.getMessage());
+        }
+    }
+
+    public void updateEmail() {
+        String email = Utility.generateRandomEmail();
+        try {
+            WebElement emailInput = ProfileUpdatePage.getEmailInput(driver);
+            emailInput.click();
+            androidHelper.clearAndSetValueInField(emailInput, email);
+        } catch (AssertionError | Exception e) {
+            fail("updateEmail assertion failed: " + e.getMessage());
+        }
+    }
+
+    public void updateName() {
+        String name = "Not Guest User";
+        try {
+            WebElement nameInput = ProfileUpdatePage.getNameInput(driver);
+            androidHelper.clearAndSetValueInField(nameInput, name);
+        } catch (AssertionError | Exception e) {
+            fail("updateName assertion failed: " + e.getMessage());
+        }
+    }
+
 }

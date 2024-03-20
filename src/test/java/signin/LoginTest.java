@@ -9,6 +9,7 @@ import org.openqa.selenium.WebElement;
 import org.smytten.pof.entry.LandingPage;
 import org.smytten.pof.entry.LoginPage;
 import org.smytten.pof.entry.OtpPage;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
@@ -17,19 +18,14 @@ import static org.testng.AssertJUnit.fail;
 
 
 public class LoginTest extends BaseTest {
-    @Test(priority = 0)
-    public void verifyStartCtaOnInitialLandingPage() {
-        try {
-            touchAction = new TouchAction<>(driver);
-            WebElement startCta = LandingPage.getStartCtaElement(driver);
-            assertNotNull("Start CTA element not found", startCta);
-            startCta.click();
-        } catch (AssertionError e) {
-            fail("verifyStartCtaOnInitialLandingPage " + e.getMessage());
-        } catch (Exception e) {
-            fail("Error occurred while clicking Start CTA: " + e.getMessage());
-        }
-    }
+   @BeforeClass
+   public void loginTestSetUp(){
+       try {
+           smyttenHelper.openLoginPage();
+       }catch (Exception e){
+           fail("LoginTestSetup fail : "+e.getMessage());
+       }
+   }
 
     @Test(priority = 1)
     public void testOpenTermsAndPolicy() {
@@ -235,36 +231,6 @@ public class LoginTest extends BaseTest {
         }
     }
 
-    public void copyOtp() {
-        try {
-            androidHelper.clearNotifications();
-            testLoginWithCorrectOTP();
-            WebElement actionContainer = driver.findElement(AppiumBy.id("android:id/actions_container_layout"));
-            assertNotNull("Action container not found", actionContainer);
-
-            WebElement copyAction = driver.findElement(AppiumBy.xpath("//android.widget.Button[@content-desc=\"Copy Verification Code\"]"));
-            copyAction.click();
-            System.out.println("OTP copied successfully");
-
-            String otp = driver.getClipboard(ClipboardContentType.PLAINTEXT);
-            System.out.println("Copied OTP: " + otp);
-
-            String decodedOtp = androidHelper.decodeOtp(otp);
-            System.out.println("Decoded OTP: " + decodedOtp);
-
-            androidHelper.clearNotifications();
-        } catch (Exception e) {
-            System.out.println("Error occurred: " + e.getMessage());
-            fail("copyOtp failed");
-        } finally {
-            try {
-                smyttenHelper.signOut();
-
-            }catch (Exception e){
-                fail("signout failed"+e.getMessage());
-            }
-        }
-    }
 
     private void openMobileNumberEntryScreen() {
         try {

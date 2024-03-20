@@ -6,6 +6,7 @@ import org.openqa.selenium.WebElement;
 import org.smytten.pof.entry.LandingPage;
 import org.smytten.pof.entry.LoginPage;
 import org.smytten.util.Utility;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static org.testng.AssertJUnit.assertNotNull;
@@ -13,19 +14,16 @@ import static org.testng.AssertJUnit.fail;
 
 public class SignUpTest extends BaseTest {
 
-    @Test(priority = 0)
-    public void verifyStartCtaOnInitialLandingPage() {
+    @BeforeClass
+    public void signUpTestSetup(){
         try {
-            touchAction = new TouchAction<>(driver);
-            WebElement startCta = LandingPage.getStartCtaElement(driver);
-            assertNotNull("Start CTA element not found", startCta);
-            startCta.click();
-        } catch (AssertionError | Exception e) {
-            fail("verifyStartCtaOnInitialLandingPage " + e.getMessage());
+            smyttenHelper.openLoginPage();
+        }catch (Exception e){
+            fail("signUpSetUp failed : "+e.getMessage());
         }
     }
 
-    @Test(priority = 1)
+    @Test(priority = 0)
     public void testSignUp() {
         try {
             // Enter mobile number and proceed to OTP

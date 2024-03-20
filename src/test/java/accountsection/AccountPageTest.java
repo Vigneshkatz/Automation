@@ -12,6 +12,7 @@ import org.smytten.pof.common.VerifyElementHelper;
 import org.smytten.pof.entry.LandingPage;
 import org.smytten.pof.entry.LoginPage;
 import org.smytten.util.Utility;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static org.testng.AssertJUnit.*;
@@ -19,54 +20,20 @@ import static org.testng.AssertJUnit.*;
 public class AccountPageTest extends BaseTest {
     private final Boolean isEmpty = true;
 
+    @BeforeClass
+    public void accountPageSetup(){
+        try {
+            smyttenHelper.openLoginPage();
+            smyttenHelper.signUp(true,true);
+            smyttenHelper.checkPopUp();
+            smyttenHelper.gotoAccountPage();
+        }catch (Exception e){
+            fail("accountPageSetup :"+e.getMessage());
+        }
+
+    }
+
     @Test(priority = 0)
-    public void initialLandingPageText() {
-        try {
-            touchAction = new TouchAction<>(driver);
-            WebElement startCta = LandingPage.getStartCtaElement(driver);
-            assertNotNull(startCta);
-            startCta.click();
-
-        } catch (AssertionError e) {
-            fail("initialLandingPageText assertion failed: " + e.getMessage());
-        } catch (Exception e) {
-            fail("initialLandingPageText failed: " + e.getMessage());
-        }
-    }
-
-    @Test(priority = 1)
-    public void testSignUp() {
-        try {
-            // Enter mobile number and proceed to OTP
-            WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
-            assertNotNull("Mobile number input field not found", mobileInput);
-            mobileInput.click();
-            androidHelper.clearAndSetValueInField(mobileInput, Utility.getNumber());
-            WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
-            proceedBtn.click();
-            smyttenHelper.signUpHelper();
-        } catch (AssertionError | Exception e) {
-            fail("signUp" + e.getMessage());
-        }
-    }
-
-    @Test(priority = 2)
-    public void testCheckPopUp() {
-        try {
-            if (VerifyElementHelper.isPopupPresent(driver)) {
-                WebElement popUpClose = PopUp.getPopUpClose(driver);
-                assertNotNull("Popup close button not found", popUpClose);
-                popUpClose.click();
-                assertTrue("Popup successfully closed", true);
-            } else {
-                assertTrue("No popUp present", true);
-            }
-        } catch (AssertionError | Exception e) {
-            fail("checkPopUp " + e.getMessage());
-        }
-    }
-
-    @Test(priority = 3)
     public void gotoAddressPage() {
         try {
             WebElement menu = Navigation.getProfileHomeTab(driver);
@@ -84,7 +51,7 @@ public class AccountPageTest extends BaseTest {
         }
     }
 
-    @Test(priority = 4)
+    @Test(priority = 1)
     public void verifyAddressPage() {
         try {
             WebElement addressTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
@@ -112,7 +79,7 @@ public class AccountPageTest extends BaseTest {
         }
     }
 
-    @Test(priority = 5)
+    @Test(priority = 2)
     public void openEditProfile() {
         try {
             WebElement editIcon = AccountPage.getEditIcon(driver);
@@ -123,81 +90,20 @@ public class AccountPageTest extends BaseTest {
         }
     }
 
-    @Test(priority = 6)
+    @Test(priority = 3)
     public void updateProfile() {
         try {
             androidHelper.scrollToTop();
-            updateName();
-            updateEmail();
+            smyttenHelper.updateName();
+            smyttenHelper.updateEmail();
             driver.hideKeyboard();
-            updateGender();
-            updateDOB();
-            updatePincode();
+            smyttenHelper.updateGender();
+            smyttenHelper.updateDOB();
+            smyttenHelper.updatePincode();
             WebElement saveBtn = ProfileUpdatePage.getProceedButton(driver);
             saveBtn.click();
         } catch (AssertionError | Exception e) {
             fail("updateProfile assertion failed: " + e.getMessage());
-        }
-    }
-
-    private void updatePincode() {
-        try {
-            WebElement pincodeInput = ProfileUpdatePage.getPincodeInput(driver);
-            pincodeInput.click();
-            androidHelper.clearAndSetValueInField(pincodeInput, "635115");
-        } catch (AssertionError | Exception e) {
-            fail("updatePincode assertion failed: " + e.getMessage());
-        } finally {
-            driver.navigate().back();
-        }
-
-    }
-
-    private void updateDOB() {
-        try {
-            WebElement chooseMonth = ProfileUpdatePage.getBirthdateInput(driver);
-            chooseMonth.click();
-            WebElement selectMonth = ProfileUpdatePage.getSelectMarch(driver);
-            selectMonth.click();
-
-            WebElement chooseYear = ProfileUpdatePage.getChooseYear(driver);
-            chooseYear.click();
-
-            WebElement selectYear = ProfileUpdatePage.getSelectYear(driver);
-            selectYear.click();
-
-        } catch (AssertionError | Exception e) {
-            fail("updateDOB assertion failed: " + e.getMessage());
-        }
-    }
-
-    private void updateGender() {
-        try {
-            WebElement otherGender = ProfileUpdatePage.getOthersOption(driver);
-            otherGender.click();
-        } catch (AssertionError | Exception e) {
-            fail("updateGender assertion failed: " + e.getMessage());
-        }
-    }
-
-    private void updateEmail() {
-        String email = Utility.generateRandomEmail();
-        try {
-            WebElement emailInput = ProfileUpdatePage.getEmailInput(driver);
-            emailInput.click();
-            androidHelper.clearAndSetValueInField(emailInput, email);
-        } catch (AssertionError | Exception e) {
-            fail("updateEmail assertion failed: " + e.getMessage());
-        }
-    }
-
-    private void updateName() {
-        String name = "Not Guest User";
-        try {
-            WebElement nameInput = ProfileUpdatePage.getNameInput(driver);
-            androidHelper.clearAndSetValueInField(nameInput, name);
-        } catch (AssertionError | Exception e) {
-            fail("updateName assertion failed: " + e.getMessage());
         }
     }
 }
