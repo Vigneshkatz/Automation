@@ -25,7 +25,7 @@ public class BaseTest{
     public TouchAction touchAction;
     public AndroidHelper androidHelper;
     public SmyttenHelper smyttenHelper;
-
+    private static final long implicitWaitTime = 10;
 
     @BeforeSuite
     public void setUp() {
@@ -35,7 +35,6 @@ public class BaseTest{
         try {
             driver = initializeDriver();
             assertNotNull("Driver initialization failed", driver);
-            long implicitWaitTime = 15;
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(implicitWaitTime));
             touchAction = new TouchAction<>(driver);
             androidHelper = new AndroidHelper(driver);
@@ -61,10 +60,11 @@ public class BaseTest{
         capabilities.setCapability("platformName", "Android");
         capabilities.setCapability("deviceName", "OnePlus LE2111");
         capabilities.setCapability("platformVersion", "14");
+        capabilities.setCapability("newCommandTimeout", 30000);
         capabilities.setCapability("automationName", "UiAutomator2");
         capabilities.setCapability(AndroidMobileCapabilityType.AUTO_GRANT_PERMISSIONS, true);
         capabilities.setCapability("enforceAppInstall", true);
-        capabilities.setCapability("app", "/Users/Vignesh/Desktop/Automation/src/main/resources/Smytten-169-debug (1).apk");
+        capabilities.setCapability("app", "/Users/Vignesh/Desktop/Automation/src/main/resources/Smytten-173-debug.apk");
         return new AndroidDriver(new URL("http://127.0.0.1:4723/"), capabilities);
     }
 

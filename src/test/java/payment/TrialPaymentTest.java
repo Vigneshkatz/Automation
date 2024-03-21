@@ -12,7 +12,7 @@ import org.smytten.pof.payment.AllPaymentPage;
 import org.smytten.pof.payment.CardPaymentPage;
 import org.smytten.pof.payment.PaymentPage;
 import org.smytten.pof.payment.RazorpayPaymentStatusPage;
-import org.smytten.pof.product.ShopFrontPage;
+import org.smytten.pof.shopfront.ShopFrontPage;
 import org.smytten.pof.product.TrialProductCard;
 import org.smytten.util.Utility;
 import org.smytten.util.contants.Bank;
@@ -50,19 +50,9 @@ public class TrialPaymentTest extends BaseTest {
     @Test(priority = 0)
     public void testCod() {
         try {
-            WebElement codOption = PaymentPage.getCodOption(driver);
-            assertNotNull(codOption);
-            codOption.click();
-            PaymentPage.getProceedBtn(driver).click();
-            try {
-                if (VerifyElementHelper.isCodConsentPopUpPresent(driver)) {
-                    PopUp.getCodProceedBtn(driver).click();
-                }
-            } catch (Exception e) {
-                System.out.println("line -> " + Utility.getCurrentLineNo() + " No consent popup");
-            }
-        } catch (AssertionError | Exception e) {
-            fail("Cod Test Fail " + e.getMessage());
+            smyttenHelper.placeCodOrder();
+        }catch (Exception e){
+            fail("Cod failed "+e.getMessage());
         }
     }
 

@@ -11,7 +11,7 @@ public class VerifyElementHelper {
    public static boolean isPopupPresent(AndroidDriver driver) {
         try {
             return PopUp.getPopUpClose(driver).isDisplayed();
-        } catch (NoSuchElementException e) {
+        } catch (Exception e) {
             return false;
         }
     }

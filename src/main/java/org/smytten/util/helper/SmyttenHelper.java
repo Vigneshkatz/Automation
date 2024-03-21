@@ -11,15 +11,20 @@ import org.smytten.pof.account.AddressPage;
 import org.smytten.pof.account.ProfileUpdatePage;
 import org.smytten.pof.cart.CartPage;
 import org.smytten.pof.cart.TrialOrderConfirmation;
+import org.smytten.pof.common.Header;
 import org.smytten.pof.common.Navigation;
 import org.smytten.pof.common.PopUp;
 import org.smytten.pof.common.VerifyElementHelper;
 import org.smytten.pof.entry.LandingPage;
 import org.smytten.pof.entry.LoginPage;
 import org.smytten.pof.entry.SignUpPage;
+import org.smytten.pof.listing.ShopListingPage;
 import org.smytten.pof.payment.PaymentPage;
+import org.smytten.pof.product.ShopProductCard;
+import org.smytten.pof.shopfront.ShopFrontPage;
 import org.smytten.util.Utility;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
@@ -36,7 +41,7 @@ public class SmyttenHelper {
         this.touchAction = touchAction;
     }
 
-    public void signOut() throws AssertionError, NoSuchElementException, Exception {
+    public void signOut() throws AssertionError, Exception {
         try {
             checkPopUp();
             gotoAccountPage();
@@ -53,7 +58,7 @@ public class SmyttenHelper {
         }
     }
 
-    public void checkPopUp() throws AssertionError, NoSuchElementException, Exception {
+    public void checkPopUp() throws AssertionError, Exception {
         try {
             if (VerifyElementHelper.isPopupPresent(driver)) {
                 WebElement popUpClose = PopUp.getPopUpClose(driver);
@@ -63,12 +68,15 @@ public class SmyttenHelper {
             } else {
                 assertTrue("No popUp present", true);
             }
-        } catch (AssertionError | Exception e) {
+        }catch (NoSuchElementException e){
+            System.out.println(" no popUp plz check");
+        }
+        catch (AssertionError | Exception e) {
             throw e;
         }
     }
 
-    public void gotoAccountPage() throws AssertionError, NoSuchElementException, Exception {
+    public void gotoAccountPage() throws AssertionError, Exception {
         try {
             WebElement profileHomeTab = Navigation.getProfileHomeTab(driver);
             assertNotNull("Profile home tab not found", profileHomeTab);
@@ -80,7 +88,7 @@ public class SmyttenHelper {
         }
     }
 
-    public void signUpHelper() throws AssertionError, NoSuchElementException, Exception {
+    public void signUpHelper() throws AssertionError, Exception {
         try {
             WebElement maleElement = SignUpPage.getMaleGenderOption(driver);
             WebElement femaleElement = SignUpPage.getFemaleGenderOption(driver);
@@ -105,7 +113,7 @@ public class SmyttenHelper {
         }
     }
 
-    public void gotoTrialFront() throws AssertionError, NoSuchElementException, Exception {
+    public void gotoTrialFront() throws AssertionError, Exception {
         if (VerifyElementHelper.isAppWidePopUpPresent(driver)) {
             PopUp.getPopUpClose(driver).click();
         }
@@ -118,7 +126,7 @@ public class SmyttenHelper {
         }
     }
 
-    public void gotoCart() throws AssertionError, NoSuchElementException, Exception {
+    public void gotoCart() throws AssertionError, Exception {
         try {
             WebElement cart = Navigation.getCartView(driver);
             assertNotNull(cart);
@@ -129,7 +137,7 @@ public class SmyttenHelper {
         }
     }
 
-    public void openPaymentPage() throws AssertionError, NoSuchElementException, Exception {
+    public void openPaymentPage() throws AssertionError, Exception {
         try {
             WebElement proceedBtn = CartPage.getProceedButton(driver);
             assertNotNull(proceedBtn);
@@ -148,7 +156,7 @@ public class SmyttenHelper {
         }
     }
 
-    public void updateAddress() throws AssertionError, NoSuchElementException, Exception {
+    public void updateAddress() throws AssertionError, Exception {
         WebElement firstName = null;
         WebElement lastName = null;
         WebElement phoneNumber = null;
@@ -201,7 +209,7 @@ public class SmyttenHelper {
         }
     }
 
-    public void signUp(boolean isSignup, boolean isAppOpen) throws AssertionError, NoSuchElementException, Exception {
+    public void signUp(boolean isSignup, boolean isAppOpen) throws AssertionError, Exception {
         try {
             // Enter mobile number and proceed to OTP
             WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
@@ -230,12 +238,12 @@ public class SmyttenHelper {
         }
     }
 
-    public void initiateSignUp() throws AssertionError, NoSuchElementException, Exception {
+    public void initiateSignUp() throws AssertionError, Exception {
         openLoginPage();
         signUp(true, true);
     }
 
-    public void openLoginPage() throws AssertionError, NoSuchElementException, Exception {
+    public void openLoginPage() throws AssertionError, Exception {
         try {
             touchAction = new TouchAction<>(driver);
             WebElement startCta = LandingPage.getStartCtaElement(driver);
@@ -249,7 +257,7 @@ public class SmyttenHelper {
         }
     }
 
-    public void openShopFront() throws AssertionError, NoSuchElementException, Exception {
+    public void openShopFront() throws AssertionError, Exception {
         try {
             WebElement shopHomeTab = Navigation.getShopHomeTab(driver);
             assertNotNull(shopHomeTab);
@@ -273,7 +281,7 @@ public class SmyttenHelper {
         }
     }
 
-    public void placeCodOrder() throws AssertionError, NoSuchElementException, Exception {
+    public void placeCodOrder() throws AssertionError, Exception {
         try {
             WebElement codOption = PaymentPage.getCodOption(driver);
             assertNotNull(codOption);
@@ -291,14 +299,11 @@ public class SmyttenHelper {
         }
     }
 
-    public void openOrderDetailPageFromOrderConfirmationPage() throws AssertionError, NoSuchElementException, Exception {
-        try {
+    public void openOrderDetailPageFromOrderConfirmationPage() throws AssertionError, Exception {
             WebElement orderDetail = TrialOrderConfirmation.getViewOrderDetailButton(driver);
             orderDetail.click();
             assertNotNull(orderDetail);
-        } catch (Exception e) {
-            throw e;
-        }
+
     }
 
     public void copyOtp() {
@@ -325,8 +330,8 @@ public class SmyttenHelper {
         } finally {
             try {
                 signOut();
-            }catch (Exception e){
-                fail("signout failed"+e.getMessage());
+            } catch (Exception e) {
+                fail("signout failed" + e.getMessage());
             }
         }
     }
@@ -392,4 +397,56 @@ public class SmyttenHelper {
         }
     }
 
+    public void openShopFrontMenu(int menuId) throws AssertionError, Exception {
+
+        List<WebElement> menuList = ShopFrontPage.getMenuList(driver);
+        assertNotNull(menuList);
+        if (menuId > menuList.size()) {
+            throw new NoSuchElementException();
+        }
+        for (WebElement menu : menuList) {
+            if (menuId == 0) {
+                menu.click();
+            }
+            menuId--;
+        }
+
+    }
+
+    public void addShopProductToCart(int numberOfProduct) throws AssertionError, Exception {
+        List<WebElement> productCardList = ShopProductCard.getAllProductCard(driver);
+//        assertNotNull(productCardList);
+        if (numberOfProduct > productCardList.size()) {
+            throw new NoSuchElementException();
+        }
+        for (WebElement productCard : productCardList) {
+            if (numberOfProduct <= 0) {
+                break;
+            }
+            ShopProductCard.addProductToCard(productCard);
+            WebElement snackBar = Header.getSnackBar(driver);
+            assertNotNull(snackBar);
+            try{
+                PopUp.getFreebieFrenzyPopUp(driver);
+                Thread.sleep(5000);
+            }catch (Exception e){
+                System.out.println("no popUp");
+            }
+            System.out.println(snackBar.getText());
+            numberOfProduct--;
+        }
+    }
+
+    public void changeShopSubcategory(int i)  throws AssertionError, Exception {
+        WebElement subCatergory = ShopListingPage.getSubCategory(driver);
+        List<WebElement> subCatergoryList = ShopListingPage.getAllSubCategory(subCatergory);
+        assertNotNull(subCatergoryList);
+        for(WebElement subCategory : subCatergoryList){
+            if(i == 1){
+                subCategory.click();
+                System.out.println(subCategory.getText());
+            }
+            i--;
+        }
+    }
 }

@@ -45,4 +45,16 @@ public class PopUp {
     public static WebElement getSignUpPopup(AndroidDriver driver) {
         return popUpClose = driver.findElement(AppiumBy.id ("com.app.smytten.debug:id/cv_dialog"));
     }
+
+    public static WebElement getFreebieFrenzyPopUp(AndroidDriver driver) {
+        return popUpClose = driver.findElement(AppiumBy.id ("com.app.smytten.debug:id/iv_bg"));
+    }
+
+    public static WebElement getFreebieFrenzyPopUpAnimation(AndroidDriver driver) {
+        return popUpClose = driver.findElement(AppiumBy.id ("com.app.smytten.debug:id/iv_animation"));
+    }
+
+    public static WebElement getFreebieFrenzyPopUpHeader(AndroidDriver driver) {
+        return popUpClose = driver.findElement(AppiumBy.id ("com.app.smytten.debug:id/iv_bg_head_h"));
+    }
 }
