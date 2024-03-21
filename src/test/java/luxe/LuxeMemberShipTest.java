@@ -77,7 +77,6 @@ public class LuxeMemberShipTest extends BaseTest {
         }
     }
 
-
     @Test(priority = 4)
     public void testOpenLuxeMembershipPage() {
         try {
@@ -150,7 +149,6 @@ public class LuxeMemberShipTest extends BaseTest {
         }
     }
 
-
     @Test(priority = 6)
     public void completePayment() {
         try {
@@ -189,9 +187,8 @@ public class LuxeMemberShipTest extends BaseTest {
         }
     }
 
-
     @Test(priority = 7)
-    public void verifyOrderConfirmScreen() throws InterruptedException {
+    public void verifyOrderConfirmScreen() {
         try {
             WebElement fullPage = LuxeOrderConfirmation.getRootLayout(driver);
             WebElement header = LuxeOrderConfirmation.getHeaderImageView(driver);

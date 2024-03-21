@@ -1,9 +1,7 @@
 package signin;
 
 import base.BaseTest;
-import io.appium.java_client.TouchAction;
 import org.openqa.selenium.WebElement;
-import org.smytten.pof.entry.LandingPage;
 import org.smytten.pof.entry.LoginPage;
 import org.smytten.util.Utility;
 import org.testng.annotations.BeforeClass;
@@ -15,11 +13,11 @@ import static org.testng.AssertJUnit.fail;
 public class SignUpTest extends BaseTest {
 
     @BeforeClass
-    public void signUpTestSetup(){
+    public void signUpTestSetup() {
         try {
             smyttenHelper.openLoginPage();
-        }catch (Exception e){
-            fail("signUpSetUp failed : "+e.getMessage());
+        } catch (Exception e) {
+            fail("signUpSetUp failed : " + e.getMessage());
         }
     }
 

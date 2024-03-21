@@ -18,14 +18,14 @@ import static org.testng.AssertJUnit.fail;
 
 
 public class LoginTest extends BaseTest {
-   @BeforeClass
-   public void loginTestSetUp(){
-       try {
-           smyttenHelper.openLoginPage();
-       }catch (Exception e){
-           fail("LoginTestSetup fail : "+e.getMessage());
-       }
-   }
+    @BeforeClass
+    public void loginTestSetUp() {
+        try {
+            smyttenHelper.openLoginPage();
+        } catch (Exception e) {
+            fail("LoginTestSetup fail : " + e.getMessage());
+        }
+    }
 
     @Test(priority = 1)
     public void testOpenTermsAndPolicy() {
@@ -81,8 +81,8 @@ public class LoginTest extends BaseTest {
         try {
             smyttenHelper.signOut();
 
-        }catch (Exception e){
-            fail("signout failed"+e.getMessage());
+        } catch (Exception e) {
+            fail("signout failed" + e.getMessage());
         }
     }
 

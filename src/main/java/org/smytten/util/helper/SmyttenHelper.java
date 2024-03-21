@@ -4,7 +4,9 @@ import io.appium.java_client.AppiumBy;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.clipboard.ClipboardContentType;
+import io.appium.java_client.touch.offset.ElementOption;
 import io.appium.java_client.touch.offset.PointOption;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
 import org.smytten.pof.account.AccountPage;
 import org.smytten.pof.account.AddressPage;
@@ -42,20 +44,18 @@ public class SmyttenHelper {
     }
 
     public void signOut() throws AssertionError, Exception {
-        try {
-            checkPopUp();
-            gotoAccountPage();
-            androidHelper.scrollToBottom();
-            WebElement signOut = AccountPage.getSignOut(driver);
-            assertNotNull("Sign out button not found", signOut);
-            signOut.click();
 
-            WebElement yesCta = driver.findElement(AppiumBy.id("android:id/button1"));
-            assertNotNull("Yes button not found", yesCta);
-            yesCta.click();
-        } catch (AssertionError | Exception e) {
-            throw e;
-        }
+        checkPopUp();
+        gotoAccountPage();
+        androidHelper.scrollToBottom();
+        WebElement signOut = AccountPage.getSignOut(driver);
+        assertNotNull("Sign out button not found", signOut);
+        signOut.click();
+
+        WebElement yesCta = driver.findElement(AppiumBy.id("android:id/button1"));
+        assertNotNull("Yes button not found", yesCta);
+        yesCta.click();
+
     }
 
     public void checkPopUp() throws AssertionError, Exception {
@@ -68,174 +68,133 @@ public class SmyttenHelper {
             } else {
                 assertTrue("No popUp present", true);
             }
-        }catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             System.out.println(" no popUp plz check");
-        }
-        catch (AssertionError | Exception e) {
+            throw e;
+        } catch (AssertionError | Exception e) {
             throw e;
         }
     }
 
     public void gotoAccountPage() throws AssertionError, Exception {
-        try {
-            WebElement profileHomeTab = Navigation.getProfileHomeTab(driver);
-            assertNotNull("Profile home tab not found", profileHomeTab);
-            profileHomeTab.click();
-        } catch (AssertionError e) {
-            throw e;
-        } catch (NoSuchElementException e) {
-            throw e;
-        }
+        WebElement profileHomeTab = Navigation.getProfileHomeTab(driver);
+        assertNotNull("Profile home tab not found", profileHomeTab);
+        profileHomeTab.click();
     }
 
     public void signUpHelper() throws AssertionError, Exception {
-        try {
-            WebElement maleElement = SignUpPage.getMaleGenderOption(driver);
-            WebElement femaleElement = SignUpPage.getFemaleGenderOption(driver);
-            WebElement chooseGender = (Utility.RANDOMNUMBER == 0) ? maleElement : femaleElement;
-            chooseGender.click();
-            SignUpPage.getMonthSpinner(driver).click();
-            SignUpPage.getMarchMonthOption(driver).click();
-            SignUpPage.getYearSpinner(driver).click();
-            SignUpPage.getYear2009Option(driver).click();
-            WebElement referralInput = SignUpPage.getReferralInput(driver);
-            referralInput.click();
-            referralInput.sendKeys(SignUpPage.GROUP_INVITE_CODE);
-            SignUpPage.getReferralApplyBtn(driver).click();
-            WebElement referralSuccessTitle = SignUpPage.getReferralSuccessTitle(driver);
-            assertNotNull("Referral success title not found", referralSuccessTitle);
-            System.out.println(referralSuccessTitle.getText());
-            WebElement referralSuccessPaymentTitle = SignUpPage.getReferralSuccessPaymentTitle(driver);
-            System.out.println(referralSuccessPaymentTitle.getText());
-            SignUpPage.getConfirmBtn(driver).click();
-        } catch (Exception e) {
-            throw e;
-        }
+        WebElement maleElement = SignUpPage.getMaleGenderOption(driver);
+        WebElement femaleElement = SignUpPage.getFemaleGenderOption(driver);
+        WebElement chooseGender = (Utility.RANDOMNUMBER == 0) ? maleElement : femaleElement;
+        chooseGender.click();
+        SignUpPage.getMonthSpinner(driver).click();
+        SignUpPage.getMarchMonthOption(driver).click();
+        SignUpPage.getYearSpinner(driver).click();
+        SignUpPage.getYear2009Option(driver).click();
+        WebElement referralInput = SignUpPage.getReferralInput(driver);
+        referralInput.click();
+        referralInput.sendKeys(SignUpPage.GROUP_INVITE_CODE);
+        SignUpPage.getReferralApplyBtn(driver).click();
+        WebElement referralSuccessTitle = SignUpPage.getReferralSuccessTitle(driver);
+        assertNotNull("Referral success title not found", referralSuccessTitle);
+        System.out.println(referralSuccessTitle.getText());
+        WebElement referralSuccessPaymentTitle = SignUpPage.getReferralSuccessPaymentTitle(driver);
+        System.out.println(referralSuccessPaymentTitle.getText());
+        SignUpPage.getConfirmBtn(driver).click();
     }
 
     public void gotoTrialFront() throws AssertionError, Exception {
         if (VerifyElementHelper.isAppWidePopUpPresent(driver)) {
             PopUp.getPopUpClose(driver).click();
         }
-        try {
-            WebElement trialFront = Navigation.getTrialHomeTab(driver);
-            assertNotNull(trialFront);
-            trialFront.click();
-        } catch (AssertionError | Exception e) {
-            throw e;
-        }
+        WebElement trialFront = Navigation.getTrialHomeTab(driver);
+        assertNotNull(trialFront);
+        trialFront.click();
     }
 
     public void gotoCart() throws AssertionError, Exception {
-        try {
-            WebElement cart = Navigation.getCartView(driver);
-            assertNotNull(cart);
-            cart.click();
-            checkAutoApplyCoupon();
-        } catch (AssertionError | Exception e) {
-            throw e;
-        }
+        WebElement cart = Navigation.getCartView(driver);
+        assertNotNull(cart);
+        cart.click();
+        checkAutoApplyCoupon();
+
     }
 
     public void openPaymentPage() throws AssertionError, Exception {
+        WebElement proceedBtn = CartPage.getProceedButton(driver);
+        assertNotNull(proceedBtn);
+        proceedBtn.click();
         try {
-            WebElement proceedBtn = CartPage.getProceedButton(driver);
-            assertNotNull(proceedBtn);
-            proceedBtn.click();
-            try {
-                if (VerifyElementHelper.isPaymentConsentPopupPresent(driver)) {
-                    PopUp.getRightCtaConsentPopUp(driver).click();
-                }
-            } catch (Exception e) {
-                System.out.println("line -> " + Utility.getCurrentLineNo() + " No consent popUp found");
+            if (VerifyElementHelper.isPaymentConsentPopupPresent(driver)) {
+                PopUp.getRightCtaConsentPopUp(driver).click();
             }
-
-        } catch (AssertionError | Exception e) {
-            throw e;
-
+        } catch (Exception e) {
+            System.out.println("line -> " + Utility.getCurrentLineNo() + " No consent popUp found");
         }
+
     }
 
     public void updateAddress() throws AssertionError, Exception {
-        WebElement firstName = null;
-        WebElement lastName = null;
-        WebElement phoneNumber = null;
-        WebElement houseNumber = null;
-        WebElement streetName = null;
-        WebElement landmark = null;
-        WebElement email = null;
-        WebElement pincode = null;
-        WebElement city = null;
-        WebElement state = null;
-        WebElement saveAddress = null;
-        WebElement addressType = null;
-        WebElement defaultAddress = null;
+        WebElement firstName = AddressPage.getFirstNameField(driver);
+        WebElement lastName = AddressPage.getLastNameField(driver);
+        WebElement phoneNumber = AddressPage.getMobileElement(driver);
+        WebElement houseNumber = AddressPage.getHouseField(driver);
+        WebElement streetName = AddressPage.getStreetField(driver);
+        WebElement landmark = AddressPage.getLandmarkField(driver);
+        WebElement email = AddressPage.getEmailField(driver);
+        WebElement pincode = AddressPage.getPincodeField(driver);
+        WebElement city = AddressPage.getCityField(driver);
+        WebElement state = AddressPage.getStateField(driver);
+        WebElement saveAddress = AddressPage.getProceedButton(driver);
 
-        try {
-            firstName = AddressPage.getFirstNameField(driver);
-            lastName = AddressPage.getLastNameField(driver);
-            phoneNumber = AddressPage.getMobileElement(driver);
-            houseNumber = AddressPage.getHouseField(driver);
-            streetName = AddressPage.getStreetField(driver);
-            landmark = AddressPage.getLandmarkField(driver);
-            email = AddressPage.getEmailField(driver);
-            pincode = AddressPage.getPincodeField(driver);
-            city = AddressPage.getCityField(driver);
-            state = AddressPage.getStateField(driver);
-            saveAddress = AddressPage.getProceedButton(driver);
+        androidHelper.clearAndSetValueInField(firstName, Utility.generateRandomString(8));
+        androidHelper.clearAndSetValueInField(lastName, Utility.generateRandomString(8));
+        androidHelper.clearAndSetValueInField(phoneNumber, "9500752205 ");
+        androidHelper.clearAndSetValueInField(email, Utility.generateRandomEmail());
+        androidHelper.clearAndSetValueInField(houseNumber, Utility.generateRandomString(8));
+        androidHelper.clearAndSetValueInField(streetName, Utility.generateRandomString(8));
+        androidHelper.clearAndSetValueInField(pincode, AddressPage.PINCODE);
+        androidHelper.clearAndSetValueInField(landmark, Utility.generateRandomString(8));
 
-            androidHelper.clearAndSetValueInField(firstName, Utility.generateRandomString(8));
-            androidHelper.clearAndSetValueInField(lastName, Utility.generateRandomString(8));
-            androidHelper.clearAndSetValueInField(phoneNumber, "9500752205 ");
-            androidHelper.clearAndSetValueInField(email, Utility.generateRandomEmail());
-            androidHelper.clearAndSetValueInField(houseNumber, Utility.generateRandomString(8));
-            androidHelper.clearAndSetValueInField(streetName, Utility.generateRandomString(8));
-            androidHelper.clearAndSetValueInField(pincode, AddressPage.PINCODE);
-            androidHelper.clearAndSetValueInField(landmark, Utility.generateRandomString(8));
+        Random random = new Random();
+        int randomIndex = random.nextInt(AddressPage.ADDRESS_TYPE.length);
+        String randomAddressType = AddressPage.ADDRESS_TYPE[randomIndex];
+        WebElement addressType = AddressPage.getAddressFieldType(randomAddressType, driver);
+        addressType.click();
+        WebElement defaultAddress = AddressPage.getDefaultAddressCheckbox(driver);
+        defaultAddress.click();
+        assertEquals(city.getText().toLowerCase(), AddressPage.CITY.toLowerCase());
+        assertEquals(state.getText().toLowerCase(), AddressPage.STATE.toLowerCase());
+        saveAddress.click();
+        Thread.sleep(2000);
 
-            Random random = new Random();
-            int randomIndex = random.nextInt(AddressPage.ADDRESS_TYPE.length);
-            String randomAddressType = AddressPage.ADDRESS_TYPE[randomIndex];
-            addressType = AddressPage.getAddressFieldType(randomAddressType, driver);
-            addressType.click();
-            defaultAddress = AddressPage.getDefaultAddressCheckbox(driver);
-            defaultAddress.click();
-            assertEquals(city.getText().toLowerCase(), AddressPage.CITY.toLowerCase());
-            assertEquals(state.getText().toLowerCase(), AddressPage.STATE.toLowerCase());
-            saveAddress.click();
-            Thread.sleep(2000);
-        } catch (AssertionError | Exception e) {
-            throw e;
-        }
     }
 
     public void signUp(boolean isSignup, boolean isAppOpen) throws AssertionError, Exception {
-        try {
-            // Enter mobile number and proceed to OTP
-            WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
-            assertNotNull("Mobile number input field not found", mobileInput);
-            mobileInput.click();
-            mobileInput.sendKeys(Utility.getNumber());
 
-            WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
-            proceedBtn.click();
-            Thread.sleep(5000);
-            if (!(VerifyElementHelper.isSignUpPopUpPresent(driver))) {
-                isSignup = false;
-            }
+        // Enter mobile number and proceed to OTP
+        WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
+        assertNotNull("Mobile number input field not found", mobileInput);
+        mobileInput.click();
+        mobileInput.sendKeys(Utility.getNumber());
 
-            if (isSignup) {
-                signUpHelper();
-            } else {
-                if (VerifyElementHelper.isAppWidePopUpPresent(driver)) {
-                    PopUp.getPopUpClose(driver).click();
-                }
-                signOut();
-                signUp(true, false);
-            }
-        } catch (AssertionError | Exception e) {
-            throw e;
+        WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
+        proceedBtn.click();
+        Thread.sleep(5000);
+        if (!(VerifyElementHelper.isSignUpPopUpPresent(driver))) {
+            isSignup = false;
         }
+
+        if (isSignup) {
+            signUpHelper();
+        } else {
+            if (VerifyElementHelper.isAppWidePopUpPresent(driver)) {
+                PopUp.getPopUpClose(driver).click();
+            }
+            signOut();
+            signUp(true, false);
+        }
+
     }
 
     public void initiateSignUp() throws AssertionError, Exception {
@@ -244,30 +203,20 @@ public class SmyttenHelper {
     }
 
     public void openLoginPage() throws AssertionError, Exception {
-        try {
-            touchAction = new TouchAction<>(driver);
-            WebElement startCta = LandingPage.getStartCtaElement(driver);
-            assertNotNull(startCta);
-            startCta.click();
 
-        } catch (AssertionError e) {
-            throw e;
-        } catch (Exception e) {
-            throw e;
-        }
+        touchAction = new TouchAction<>(driver);
+        WebElement startCta = LandingPage.getStartCtaElement(driver);
+        assertNotNull(startCta);
+        startCta.click();
+
     }
 
     public void openShopFront() throws AssertionError, Exception {
-        try {
-            WebElement shopHomeTab = Navigation.getShopHomeTab(driver);
-            assertNotNull(shopHomeTab);
-            shopHomeTab.click();
-            checkPopUp();
-        } catch (AssertionError e) {
-            throw e;
-        } catch (Exception e) {
-            throw e;
-        }
+        WebElement shopHomeTab = Navigation.getShopHomeTab(driver);
+        assertNotNull(shopHomeTab);
+        shopHomeTab.click();
+        checkPopUp();
+
     }
 
     public boolean checkAutoApplyCoupon() {
@@ -282,27 +231,25 @@ public class SmyttenHelper {
     }
 
     public void placeCodOrder() throws AssertionError, Exception {
+
+        WebElement codOption = PaymentPage.getCodOption(driver);
+        assertNotNull(codOption);
+        codOption.click();
+        PaymentPage.getProceedBtn(driver).click();
         try {
-            WebElement codOption = PaymentPage.getCodOption(driver);
-            assertNotNull(codOption);
-            codOption.click();
-            PaymentPage.getProceedBtn(driver).click();
-            try {
-                if (VerifyElementHelper.isCodConsentPopUpPresent(driver)) {
-                    PopUp.getCodProceedBtn(driver).click();
-                }
-            } catch (Exception e) {
-                System.out.println("line -> " + Utility.getCurrentLineNo() + " No consent popup");
+            if (VerifyElementHelper.isCodConsentPopUpPresent(driver)) {
+                PopUp.getCodProceedBtn(driver).click();
             }
-        } catch (AssertionError | Exception e) {
-            throw e;
+        } catch (Exception e) {
+            System.out.println("line -> " + Utility.getCurrentLineNo() + " No consent popup");
         }
+
     }
 
     public void openOrderDetailPageFromOrderConfirmationPage() throws AssertionError, Exception {
-            WebElement orderDetail = TrialOrderConfirmation.getViewOrderDetailButton(driver);
-            orderDetail.click();
-            assertNotNull(orderDetail);
+        WebElement orderDetail = TrialOrderConfirmation.getViewOrderDetailButton(driver);
+        orderDetail.click();
+        assertNotNull(orderDetail);
 
     }
 
@@ -336,65 +283,44 @@ public class SmyttenHelper {
         }
     }
 
-    public void updatePincode() {
-        try {
-            WebElement pincodeInput = ProfileUpdatePage.getPincodeInput(driver);
-            pincodeInput.click();
-            androidHelper.clearAndSetValueInField(pincodeInput, "635115");
-        } catch (AssertionError | Exception e) {
-            fail("updatePincode assertion failed: " + e.getMessage());
-        } finally {
-            driver.navigate().back();
-        }
+    public void updatePincode() throws AssertionError, Exception {
 
+        WebElement pincodeInput = ProfileUpdatePage.getPincodeInput(driver);
+        pincodeInput.click();
+        androidHelper.clearAndSetValueInField(pincodeInput, "635115");
+        driver.navigate().back();
     }
 
-    public void updateDOB() {
-        try {
-            WebElement chooseMonth = ProfileUpdatePage.getBirthdateInput(driver);
-            chooseMonth.click();
-            WebElement selectMonth = ProfileUpdatePage.getSelectMarch(driver);
-            selectMonth.click();
+    public void updateDOB() throws AssertionError, Exception {
+        WebElement chooseMonth = ProfileUpdatePage.getBirthdateInput(driver);
+        chooseMonth.click();
+        WebElement selectMonth = ProfileUpdatePage.getSelectMarch(driver);
+        selectMonth.click();
 
-            WebElement chooseYear = ProfileUpdatePage.getChooseYear(driver);
-            chooseYear.click();
+        WebElement chooseYear = ProfileUpdatePage.getChooseYear(driver);
+        chooseYear.click();
 
-            WebElement selectYear = ProfileUpdatePage.getSelectYear(driver);
-            selectYear.click();
-
-        } catch (AssertionError | Exception e) {
-            fail("updateDOB assertion failed: " + e.getMessage());
-        }
+        WebElement selectYear = ProfileUpdatePage.getSelectYear(driver);
+        selectYear.click();
     }
 
-    public void updateGender() {
-        try {
-            WebElement otherGender = ProfileUpdatePage.getOthersOption(driver);
-            otherGender.click();
-        } catch (AssertionError | Exception e) {
-            fail("updateGender assertion failed: " + e.getMessage());
-        }
+    public void updateGender() throws AssertionError, Exception {
+
+        WebElement otherGender = ProfileUpdatePage.getOthersOption(driver);
+        otherGender.click();
     }
 
-    public void updateEmail() {
+    public void updateEmail() throws AssertionError, Exception {
         String email = Utility.generateRandomEmail();
-        try {
-            WebElement emailInput = ProfileUpdatePage.getEmailInput(driver);
-            emailInput.click();
-            androidHelper.clearAndSetValueInField(emailInput, email);
-        } catch (AssertionError | Exception e) {
-            fail("updateEmail assertion failed: " + e.getMessage());
-        }
+        WebElement emailInput = ProfileUpdatePage.getEmailInput(driver);
+        emailInput.click();
+        androidHelper.clearAndSetValueInField(emailInput, email);
     }
 
-    public void updateName() {
+    public void updateName() throws AssertionError, Exception {
         String name = "Not Guest User";
-        try {
-            WebElement nameInput = ProfileUpdatePage.getNameInput(driver);
-            androidHelper.clearAndSetValueInField(nameInput, name);
-        } catch (AssertionError | Exception e) {
-            fail("updateName assertion failed: " + e.getMessage());
-        }
+        WebElement nameInput = ProfileUpdatePage.getNameInput(driver);
+        androidHelper.clearAndSetValueInField(nameInput, name);
     }
 
     public void openShopFrontMenu(int menuId) throws AssertionError, Exception {
@@ -423,13 +349,14 @@ public class SmyttenHelper {
             if (numberOfProduct <= 0) {
                 break;
             }
+            scrollElementToCenter(productCard);
             ShopProductCard.addProductToCard(productCard);
             WebElement snackBar = Header.getSnackBar(driver);
             assertNotNull(snackBar);
-            try{
+            try {
                 PopUp.getFreebieFrenzyPopUp(driver);
                 Thread.sleep(5000);
-            }catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("no popUp");
             }
             System.out.println(snackBar.getText());
@@ -437,16 +364,23 @@ public class SmyttenHelper {
         }
     }
 
-    public void changeShopSubcategory(int i)  throws AssertionError, Exception {
+    public void changeShopSubcategory(int i) throws AssertionError, Exception {
         WebElement subCatergory = ShopListingPage.getSubCategory(driver);
         List<WebElement> subCatergoryList = ShopListingPage.getAllSubCategory(subCatergory);
         assertNotNull(subCatergoryList);
-        for(WebElement subCategory : subCatergoryList){
-            if(i == 1){
+        for (WebElement subCategory : subCatergoryList) {
+            if (i == 1) {
                 subCategory.click();
                 System.out.println(subCategory.getText());
             }
             i--;
         }
+    }
+
+    public void scrollElementToCenter(WebElement element) {
+        Dimension size = driver.manage().window().getSize();
+        int centerX = size.width / 2;
+        int centerY = size.height / 2;
+        touchAction.press(ElementOption.element(element)).moveTo(PointOption.point(centerX, centerY)).release().perform();
     }
 }
