@@ -1,4 +1,4 @@
-package signin;
+package entry;
 
 import base.BaseTest;
 import org.openqa.selenium.WebElement;
