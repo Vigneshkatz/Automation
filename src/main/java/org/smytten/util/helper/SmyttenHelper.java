@@ -19,6 +19,7 @@ import org.smytten.pof.common.PopUp;
 import org.smytten.pof.common.VerifyElementHelper;
 import org.smytten.pof.entry.LandingPage;
 import org.smytten.pof.entry.LoginPage;
+import org.smytten.pof.entry.OtpPage;
 import org.smytten.pof.entry.SignUpPage;
 import org.smytten.pof.listing.ShopListingPage;
 import org.smytten.pof.payment.PaymentPage;
@@ -202,8 +203,24 @@ public class SmyttenHelper {
         signUp(true, true);
     }
 
-    public void openLoginPage() throws AssertionError, Exception {
+    public void initiateLogin(String mobileNumber,String otp) throws NoSuchElementException,Exception{
+        WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
+        assertNotNull("Mobile input field not found", mobileInput);
+        mobileInput.click();
+        androidHelper.clearAndSetValueInField(mobileInput, mobileNumber);
+        WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
+        proceedBtn.click();
 
+        WebElement otpContainer = OtpPage.getOtpContainer(driver);
+        assertNotNull("OTP container not found", otpContainer);
+
+        WebElement otpEnterInput = OtpPage.getOtpEnterInput(driver);
+        otpEnterInput.click();
+        androidHelper.enterValue(otp);
+        System.out.println("OTP typed successfully." + OtpPage.VALID_OTP);
+    }
+
+    public void openLoginPage() throws AssertionError, Exception {
         touchAction = new TouchAction<>(driver);
         WebElement startCta = LandingPage.getStartCtaElement(driver);
         assertNotNull(startCta);
@@ -284,11 +301,9 @@ public class SmyttenHelper {
     }
 
     public void updatePincode() throws AssertionError, Exception {
-
         WebElement pincodeInput = ProfileUpdatePage.getPincodeInput(driver);
         pincodeInput.click();
         androidHelper.clearAndSetValueInField(pincodeInput, "635115");
-        driver.navigate().back();
     }
 
     public void updateDOB() throws AssertionError, Exception {
@@ -382,5 +397,20 @@ public class SmyttenHelper {
         int centerX = size.width / 2;
         int centerY = size.height / 2;
         touchAction.press(ElementOption.element(element)).moveTo(PointOption.point(centerX, centerY)).release().perform();
+    }
+
+    public void updateUserProfile() throws AssertionError, Exception {
+        updateName();
+        updateEmail();
+        updateGender();
+        updateDOB();
+        updatePincode();
+        WebElement saveBtn = ProfileUpdatePage.getProceedButton(driver);
+        saveBtn.click();
+    }
+
+    public void loginWithValidOTP(String mobileNumber,String otp) throws AssertionError,NoSuchElementException,Exception{
+        openLoginPage();
+        initiateLogin(mobileNumber,otp);
     }
 }

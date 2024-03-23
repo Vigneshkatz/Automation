@@ -1,6 +1,7 @@
 package base;
 
 import io.appium.java_client.TouchAction;
+import io.appium.java_client.android.Activity;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.remote.AndroidMobileCapabilityType;
 import io.appium.java_client.touch.offset.ElementOption;
@@ -9,6 +10,7 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.smytten.naviation.AccountPageNavigation;
 import org.smytten.util.helper.AndroidHelper;
 import org.smytten.util.helper.SmyttenHelper;
 import org.testng.annotations.AfterSuite;
@@ -26,10 +28,12 @@ import static org.testng.AssertJUnit.*;
 public class BaseTest{
 
     private static final Logger LOGGER = Logger.getLogger(BaseTest.class.getName());
-    public AndroidDriver driver;
+    public static  AndroidDriver driver;
     public TouchAction touchAction;
     public AndroidHelper androidHelper;
     public SmyttenHelper smyttenHelper;
+
+    public AccountPageNavigation accountPageNavigation;
     private static final long implicitWaitTime = 10;
 
     @BeforeSuite
@@ -44,6 +48,7 @@ public class BaseTest{
             touchAction = new TouchAction<>(driver);
             androidHelper = new AndroidHelper(driver);
             smyttenHelper = new SmyttenHelper(driver,androidHelper,touchAction);
+            accountPageNavigation = new AccountPageNavigation(driver,androidHelper,touchAction);
         } catch (MalformedURLException e) {
             LOGGER.log(Level.SEVERE, "Invalid Appium server URL: " + e.getMessage());
         }
@@ -56,7 +61,6 @@ public class BaseTest{
             driver.quit();
             LOGGER.info("Driver quit successfully");
         }
-
         stopAppiumServer();
     }
 
@@ -64,6 +68,7 @@ public class BaseTest{
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("platformName", "Android");
         capabilities.setCapability("deviceName", "OnePlus LE2111");
+//        capabilities.setCapability("deviceName", "realme RMX1971");
         capabilities.setCapability("platformVersion", "14");
         capabilities.setCapability("newCommandTimeout", 30000);
         capabilities.setCapability("automationName", "UiAutomator2");
@@ -94,6 +99,11 @@ public class BaseTest{
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to stop Appium server: " + e.getMessage());
         }
+    }
+
+    public static void startFromLoginScreen(){
+        driver.startActivity(new Activity("com.app.smytten.debug", "com.app.smytten.ui.auth.PreLoginActivity"));
+
     }
 
 }

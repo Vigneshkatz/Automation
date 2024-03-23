@@ -4,6 +4,7 @@ import base.BaseTest;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.TouchAction;
 import org.openqa.selenium.WebElement;
+import org.smytten.naviation.AccountPageNavigation;
 import org.smytten.pof.account.AccountPage;
 import org.smytten.pof.account.ProfileUpdatePage;
 import org.smytten.pof.common.Navigation;
@@ -12,6 +13,7 @@ import org.smytten.pof.common.VerifyElementHelper;
 import org.smytten.pof.entry.LandingPage;
 import org.smytten.pof.entry.LoginPage;
 import org.smytten.util.Utility;
+import org.smytten.util.helper.AndroidHelper;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -36,16 +38,7 @@ public class AccountPageTest extends BaseTest {
     @Test(priority = 0)
     public void gotoAddressPage() {
         try {
-            WebElement menu = Navigation.getProfileHomeTab(driver);
-            assertNotNull("Menu element is not null", menu);
-
-            WebElement savedAddress = AccountPage.getSavedAddress(driver);
-            if (savedAddress != null) {
-                savedAddress.click();
-                assertTrue("Saved address tapped successfully.", true);
-            } else {
-                fail("No saved address found");
-            }
+          AccountPageNavigation.openAddressPage(driver);
         } catch (AssertionError | Exception e) {
             fail("gotoAddressPage" + "Saved address element not found." + e.getMessage());
         }
@@ -66,25 +59,22 @@ public class AccountPageTest extends BaseTest {
                 WebElement placeholderImage = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/img_msg_placeholder"));
 
                 assertNotNull("Placeholder image is displayed", placeholderImage);
-                assertEquals("Sorry, you have no saved address.", noAddressWarning.getText().toLowerCase());
+                assertEquals("sorry, you have no saved address.", noAddressWarning.getText().toLowerCase());
 
-                Thread.sleep(2000);
-                addNewAddressCta.click();
             } else {
-                Thread.sleep(1000);
                 addNewAddressCta.click();
             }
         } catch (AssertionError | Exception e) {
-            fail("verifyAddressPag" + "Address page elements not found. " + e.getMessage());
+            fail("verifyAddressPage" + "Address page elements not found. " + e.getMessage());
+        }finally {
+            androidHelper.back();
         }
     }
 
     @Test(priority = 2)
     public void openEditProfile() {
         try {
-            WebElement editIcon = AccountPage.getEditIcon(driver);
-            editIcon.click();
-
+            AccountPageNavigation.openEditProfile(driver);
         } catch (AssertionError | Exception e) {
             fail("openEditProfile assertion failed: " + e.getMessage());
         }
@@ -93,15 +83,7 @@ public class AccountPageTest extends BaseTest {
     @Test(priority = 3)
     public void updateProfile() {
         try {
-            androidHelper.scrollToTop();
-            smyttenHelper.updateName();
-            smyttenHelper.updateEmail();
-            driver.hideKeyboard();
-            smyttenHelper.updateGender();
-            smyttenHelper.updateDOB();
-            smyttenHelper.updatePincode();
-            WebElement saveBtn = ProfileUpdatePage.getProceedButton(driver);
-            saveBtn.click();
+            smyttenHelper.updateUserProfile();
         } catch (AssertionError | Exception e) {
             fail("updateProfile assertion failed: " + e.getMessage());
         }

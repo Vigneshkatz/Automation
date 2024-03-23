@@ -2,10 +2,13 @@ package entry;
 
 import base.BaseTest;
 import io.appium.java_client.AppiumBy;
+import io.appium.java_client.android.Activity;
 import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.WebElement;
 import org.smytten.pof.entry.LoginPage;
 import org.smytten.pof.entry.OtpPage;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -59,7 +62,7 @@ public class LoginTest extends BaseTest {
         try {
             WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
             assertNotNull("Mobile input field not found", mobileInput);
-            androidHelper.clearAndSetValueInField(mobileInput, LoginPage.getMOBILE_NUMBER(1));
+            androidHelper.clearAndSetValueInField(mobileInput, LoginPage.getMOBILE_NUMBER(5));
 
             WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
             proceedBtn.click();
@@ -70,14 +73,13 @@ public class LoginTest extends BaseTest {
             WebElement otpEnterInput = OtpPage.getOtpEnterInput(driver);
             otpEnterInput.click();
 
-            androidHelper.enterValue(OtpPage.VALID_OTP);
+             androidHelper.enterValue(OtpPage.VALID_OTP);
             System.out.println("OTP typed successfully." + OtpPage.VALID_OTP);
         } catch (AssertionError | Exception e) {
             fail("loginWithCrtOTP assertion failed: " + e.getMessage());
         }
         try {
             smyttenHelper.signOut();
-
         } catch (Exception e) {
             fail("signout failed" + e.getMessage());
         }
@@ -98,23 +100,13 @@ public class LoginTest extends BaseTest {
 
             WebElement otpEnterInput = OtpPage.getOtpEnterInput(driver);
             otpEnterInput.click();
-//            mobileNumberLabel = OtpPage.getMobileNumberLabel(driver);
-//            mobileNumberEditCta = OtpPage.getMobileNumberEditCta(driver);
             otpEnterInput = OtpPage.getOtpEnterInput(driver);
-//
-//            String expectedOtpLabelText = "Enter OTP sent via SMS";
-//            String expectedMobileNumberLabelText = "+91-" + LoginPage.MOBILE_NUMBER;
-//            String expectedMobileNumberEditCtaText = "Edit";
-//
-//            assertTrue(expectedOtpLabelText.trim().equalsIgnoreCase(otpLabel.getText().trim()));
-//            assertTrue(expectedMobileNumberLabelText.trim().equalsIgnoreCase(mobileNumberLabel.getText().trim()));
-//            assertTrue(expectedMobileNumberEditCtaText.trim().equalsIgnoreCase(mobileNumberEditCta.getText().trim()));
 
             otpEnterInput.click();
             // enter otp
             androidHelper.enterValue(OtpPage.INVALID_OTP);
             WebElement otpToastMessage = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/snackbar_text"));
-            assertEquals("Invalid Otp Message", OtpPage.INVALID_OTP_MESSAGE, otpToastMessage.getText());
+            assertEquals( OtpPage.INVALID_OTP_MESSAGE, otpToastMessage.getText());
 
         } catch (AssertionError | Exception e) {
             fail("loginWithWrongOTP assertion failed: " + e.getMessage());
@@ -159,8 +151,7 @@ public class LoginTest extends BaseTest {
 
             for (int i = 1; i <= OtpPage.OTP_MAX_LIMIT; i++) {
                 otpEnterInput.click();
-                Process process = Runtime.getRuntime().exec("adb shell input text " + OtpPage.INVALID_OTP);
-                process.waitFor();
+                androidHelper.enterValue(OtpPage.INVALID_OTP);
                 WebElement otpToastMessage = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/snackbar_text"));
                 String otpToastText = otpToastMessage.getText();
                 System.out.println("OTP typed successfully: " + OtpPage.INVALID_OTP);

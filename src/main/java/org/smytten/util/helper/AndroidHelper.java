@@ -8,6 +8,7 @@ import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.smytten.pof.entry.OtpPage;
 import org.smytten.util.payment.PaymentHelper;
 
 import java.io.IOException;
@@ -61,7 +62,7 @@ public class AndroidHelper {
     public void enterValue(String value) throws IOException, InterruptedException {
         Process process = Runtime.getRuntime().exec("adb shell input text " + value);
         process.waitFor();
-        System.out.println("Value typed successfully: " + value);
+        System.out.println("OTP typed successfully." + value);
     }
 
 }
