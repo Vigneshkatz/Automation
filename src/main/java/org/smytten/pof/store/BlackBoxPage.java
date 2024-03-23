@@ -4,6 +4,8 @@ import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.AndroidDriver;
 import org.openqa.selenium.WebElement;
 
+import java.util.List;
+
 public class BlackBoxPage {
 
     public static WebElement getLandingPageToolbarLayout(AndroidDriver driver) {
@@ -75,6 +77,10 @@ public class BlackBoxPage {
         return driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cl_root"));
     }
 
+    public static List<WebElement> getListingPageRootLayoutList(AndroidDriver driver) {
+        return driver.findElements(AppiumBy.id("com.app.smytten.debug:id/cl_root"));
+    }
+
     public static WebElement getListingPageAddToCartButton(AndroidDriver driver) {
         return driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_add_cart"));
     }
@@ -95,7 +101,7 @@ public class BlackBoxPage {
         return driver.findElement(AppiumBy.id("com.app.smytten.debug:id/ll_footers"));
     }
 
-    public static WebElement getListingPageReviewBuyText(AndroidDriver driver) {
+    public static WebElement getGoToCart(AndroidDriver driver) {
         return driver.findElement(AppiumBy.id("com.app.smytten.debug:id/review_buy_txt"));
     }
 
@@ -119,7 +125,7 @@ public class BlackBoxPage {
         return driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cl_root"));
     }
 
-    public static WebElement getBlackBoxProceedCtaButton(AndroidDriver driver) {
+    public static WebElement getProceedToPaymentPage(AndroidDriver driver) {
         return driver.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_cta"));
     }
 
