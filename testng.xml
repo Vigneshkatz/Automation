@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="All Test Suite">
+    <listeners>
+        <listener class-name="org.smytten.util.listener.ListenerHelper"/>
+    </listeners>
+    <test verbose="2" preserve-order="true" name="/Users/Vignesh/Desktop/Automation">
+        <classes>
+            <class name="entry.LandingPageTest">
+                <methods>
+                    <include name="testInitialLandingPageText"/>
+                    <include name="testVerifyLandingPageElements"/>
+                </methods>
+            </class>
+            <class name="entry.LoginTest">
+                <methods>
+                    <include name="testOpenTermsAndPolicy"/>
+                    <include name="testLoginWithCorrectOTP"/>
+                    <include name="testLoginWithWrongOTP"/>
+                    <include name="testOtpMaxLimitCheck"/>
+                    <include name="testResendOtp"/>
+                </methods>
+            </class>
+            <class name="entry.SignUpTest">
+                <methods>
+                    <include name="testSignUp"/>
+                </methods>
+            </class>
+            <class name="accountsection.AccountPageTest">
+                <methods>
+                    <include name="gotoAddressPage"/>
+                    <include name="verifyAddressPage"/>
+                    <include name="openEditProfile"/>
+                    <include name="updateProfile"/>
+                </methods>
+            </class>
+            <class name="accountsection.AccountRedirectionTest">
+                <methods>
+                    <include name="testLoginWithCorrectOTP"/>
+                    <include name="testRedirectionTOAccountPage"/>
+                    <include name="gotoAddressPage"/>
+                    <include name="verifyAddressPage"/>
+                    <include name="openTrialHowTo"/>
+                    <include name="openShopHowTo"/>
+                    <include name="openRewardsHowTo"/>
+                    <include name="myOrders"/>
+                    <include name="openHelp"/>
+                    <include name="openReferAndEarn"/>
+                    <include name="openReview"/>
+                    <include name="openSurvey"/>
+                    <include name="openSavedAddress"/>
+                    <include name="openWishList"/>
+                    <include name="openSmyttenLuxe"/>
+                    <include name="openSmyttenBlog"/>
+                    <include name="openTermsAndCondition"/>
+                    <include name="openPrivacyPolicy"/>
+                    <include name="openFaqs"/>
+                    <include name="testSignOut"/>
+                </methods>
+            </class>
+            <class name="accountsection.AddressPageTest">
+                <methods>
+                    <include name="testLoginWithCorrectOTP"/>
+                    <include name="testCheckPopUp"/>
+                    <include name="testAccountPageNavigation"/>
+                    <include name="gotoAddressPage"/>
+                    <include name="verifyAddressPage"/>
+                    <include name="testUpdateAddress"/>
+                    <include name="testChangeDefaultAddress"/>
+                    <include name="deleteAddress"/>
+                </methods>
+            </class>
+            <class name="luxe.LuxeMemberShipTest">
+                <methods>
+                    <include name="verifyStartCtaOnInitialLandingPage"/>
+                    <include name="testSignUp"/>
+                    <include name="testCheckPopUp"/>
+                    <include name="testGotoTrialFront"/>
+                    <include name="testOpenLuxeMembershipPage"/>
+                    <include name="testUpdateAddress"/>
+                    <include name="completePayment"/>
+                    <include name="verifyOrderConfirmScreen"/>
+                </methods>
+            </class>
+            <class name="order.ShopOrderTest">
+                <methods>
+                    <include name="testOpenShopListing"/>
+                    <include name="testAddProductToCart"/>
+                    <include name="testOpenCart"/>
+                    <include name="testPlaceOrder"/>
+                    <include name="testOrderConfirmation"/>
+                </methods>
+            </class>
+            <class name="order.TrialOrderTest">
+                <methods>
+                    <include name="initialLandingPageText"/>
+                    <include name="testSignUp"/>
+                    <include name="gotoTrialFront"/>
+                    <include name="openProductListing"/>
+                    <include name="addProductToCart"/>
+                    <include name="gotoCart"/>
+                    <include name="goToPaymentPage"/>
+                    <include name="updateAddress"/>
+                    <include name="codOrder"/>
+                    <include name="goToOrderDetailPage"/>
+                </methods>
+            </class>
+            <class name="payment.TrialPaymentTest">
+                <methods>
+                    <include name="testCod"/>
+                    <include name="testNetBanking"/>
+                </methods>
+            </class>
+            <class name="store.BlackBoxStoreTest">
+                <methods>
+                    <include name="openBlackBoxStore"/>
+                    <include name="verifyBlackBoxLandingPage"/>
+                    <include name="verifyBlackBoxListingPage"/>
+                    <include name="addProductsToBlackBoxCart"/>
+                    <include name="verifyBlackBoxCart"/>
+                    <include name="placeOrder"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

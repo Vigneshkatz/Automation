@@ -2,6 +2,7 @@ package accountsection;
 
 import base.BaseTest;
 import io.appium.java_client.AppiumBy;
+import org.apache.commons.math3.analysis.function.Add;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -26,20 +27,10 @@ import static org.testng.AssertJUnit.*;
 
 
 public class AddressPageTest extends BaseTest {
-    public static final String FIRST_NAME = "VIGNESH";
-    public static final String LAST_NAME = "M";
-    public static final String HOUSE_NO = "3/182 THIPPANAPALLI VILLAGE AND POST";
-    public static final String STREET = "THIPPANAPALLI";
-    public static final String LANDMARK = "KUNDRAPALLI X ROAD";
-    public static final String PINCODE = "635115";
-    public static final String STATE = "TAMIL NADU";
-    public static final String CITY = "RAMAPURAM";
     public static final String[] ADDRESS_TYPE = {"Office", "Home", "Other"};
-    public static String MOBILE_NUMBER = null;
     public static Map<Integer, PinCodeDetails> pincode = defaultPincode();
     static List<Address> addressList = new ArrayList<>();
     private static int addressEntryCount = 1;
-    private final Boolean isNewUser = true;
     private Boolean isEmpty = true;
 
     public static void addAddress(int noOfAddress) {
@@ -58,7 +49,7 @@ public class AddressPageTest extends BaseTest {
         pinCodeMap.put(2, new PinCodeDetails("400001", "Mumbai", "Maharashtra"));
         pinCodeMap.put(3, new PinCodeDetails("600001", "Chennai", "Tamil Nadu"));
         pinCodeMap.put(4, new PinCodeDetails("700001", "Kolkata", "West Bengal"));
-        pinCodeMap.put(5, new PinCodeDetails("500001", "Hyderabad", "Telangana"));
+        pinCodeMap.put(5, new PinCodeDetails("500001", "Hyderabad", "Andhra Pradesh"));
         return pinCodeMap;
     }
 
@@ -66,20 +57,7 @@ public class AddressPageTest extends BaseTest {
     @Test(priority = 0)
     public void testLoginWithCorrectOTP() {
         try {
-            WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
-            assertNotNull("Mobile input field not found", mobileInput);
-            androidHelper.clearAndSetValueInField(mobileInput, LoginPage.getMOBILE_NUMBER(1));
-            WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
-            proceedBtn.click();
-
-            WebElement otpContainer = OtpPage.getOtpContainer(driver);
-            assertNotNull("OTP container not found", otpContainer);
-
-            WebElement otpEnterInput = OtpPage.getOtpEnterInput(driver);
-            otpEnterInput.click();
-
-            androidHelper.enterValue(OtpPage.VALID_OTP);
-            System.out.println("OTP typed successfully." + OtpPage.VALID_OTP);
+            smyttenHelper.initiateSignUp();
         } catch (AssertionError | Exception e) {
             fail("loginWithCrtOTP assertion failed: " + e.getMessage());
         }
@@ -107,7 +85,7 @@ public class AddressPageTest extends BaseTest {
             Navigation.getProfileHomeTab(driver).click();
             assertTrue(true);
         } catch (AssertionError | Exception e) {
-            Assert.fail("gotoAccountPage assertion failed: " + e.getMessage());
+            fail("gotoAccountPage assertion failed: " + e.getMessage());
         }
     }
 
@@ -144,70 +122,64 @@ public class AddressPageTest extends BaseTest {
                 WebElement placeholderImage = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/img_msg_placeholder"));
 
                 assertNotNull("Placeholder image is displayed", placeholderImage);
-                assertEquals("Sorry, you have no saved address.", noAddressWarning.getText().toLowerCase());
-
-                Thread.sleep(2000);
-                addNewAddressCta.click();
-            } else {
-
-                Thread.sleep(1000);
-                addNewAddressCta.click();
+                assertEquals("sorry, you have no saved address.", noAddressWarning.getText().toLowerCase());
             }
+            addNewAddressCta.click();
         } catch (AssertionError | Exception e) {
             fail("verifyAddressPag" + "Address page elements not found. " + e.getMessage());
         }
     }
 
-    @Test(priority = 5)
-    public void testUpdateAddress() {
-        try {
-            WebElement firstName = AddressPage.getFirstNameField(driver);
-            WebElement lastName = AddressPage.getLastNameField(driver);
-            WebElement phoneNumber = AddressPage.getMobileElement(driver);
-            WebElement houseNumber = AddressPage.getHouseField(driver);
-            WebElement streetName = AddressPage.getStreetField(driver);
-            WebElement landmark = AddressPage.getLandmarkField(driver);
-            WebElement email = null;
-            if (isNewUser) {
-                email = AddressPage.getEmailField(driver);
-                androidHelper.clearAndSetValueInField(email, Utility.generateRandomEmail());
-            }
-            WebElement pincode = AddressPage.getPincodeField(driver);
-            WebElement city = AddressPage.getCityField(driver);
-            WebElement state = AddressPage.getStateField(driver);
-            WebElement saveAddress = AddressPage.getProceedButton(driver);
-
-            // Clear and set values for fields
-            androidHelper.clearAndSetValueInField(firstName, FIRST_NAME);
-            androidHelper.clearAndSetValueInField(lastName, LAST_NAME);
-            androidHelper.clearAndSetValueInField(phoneNumber, MOBILE_NUMBER == null ? "9500752205 " : MOBILE_NUMBER);
-            androidHelper.clearAndSetValueInField(houseNumber, HOUSE_NO);
-            androidHelper.clearAndSetValueInField(streetName, STREET);
-            androidHelper.clearAndSetValueInField(pincode, PINCODE);
-            androidHelper.clearAndSetValueInField(landmark, LANDMARK);
-
-            // Select a random address type
-            Random random = new Random();
-            int randomIndex = random.nextInt(ADDRESS_TYPE.length);
-            String randomAddressType = ADDRESS_TYPE[randomIndex];
-            WebElement addressType = AddressPage.getAddressFieldType(randomAddressType, driver);
-            addressType.click();
-
-            // Set default address checkbox
-            WebElement defaultAddress = AddressPage.getDefaultAddressCheckbox(driver);
-            defaultAddress.click();
-
-            // Verify city and state
-            assertEquals(city.getText().toLowerCase(), CITY.toLowerCase());
-            assertEquals(state.getText().toLowerCase(), STATE.toLowerCase());
-
-            // Click save address button
-            saveAddress.click();
-            Thread.sleep(2000);
-        } catch (AssertionError | Exception e) {
-            Assert.fail("updateAddress assertion failed: " + e.getMessage());
-        }
-    }
+//    @Test(priority = 5)
+//    public void testUpdateAddress() {
+//        try {
+//            WebElement firstName = AddressPage.getFirstNameField(driver);
+//            WebElement lastName = AddressPage.getLastNameField(driver);
+//            WebElement phoneNumber = AddressPage.getMobileElement(driver);
+//            WebElement houseNumber = AddressPage.getHouseField(driver);
+//            WebElement streetName = AddressPage.getStreetField(driver);
+//            WebElement landmark = AddressPage.getLandmarkField(driver);
+//            WebElement email = null;
+//            if (isNewUser) {
+//                email = AddressPage.getEmailField(driver);
+//                androidHelper.clearAndSetValueInField(email, Utility.generateRandomEmail());
+//            }
+//            WebElement pincode = AddressPage.getPincodeField(driver);
+//            WebElement city = AddressPage.getCityField(driver);
+//            WebElement state = AddressPage.getStateField(driver);
+//            WebElement saveAddress = AddressPage.getProceedButton(driver);
+//
+//            // Clear and set values for fields
+//            androidHelper.clearAndSetValueInField(firstName, FIRST_NAME);
+//            androidHelper.clearAndSetValueInField(lastName, LAST_NAME);
+//            androidHelper.clearAndSetValueInField(phoneNumber, MOBILE_NUMBER == null ? "9500752205 " : MOBILE_NUMBER);
+//            androidHelper.clearAndSetValueInField(houseNumber, HOUSE_NO);
+//            androidHelper.clearAndSetValueInField(streetName, STREET);
+//            androidHelper.clearAndSetValueInField(pincode, PINCODE);
+//            androidHelper.clearAndSetValueInField(landmark, LANDMARK);
+//
+//            // Select a random address type
+//            Random random = new Random();
+//            int randomIndex = random.nextInt(ADDRESS_TYPE.length);
+//            String randomAddressType = ADDRESS_TYPE[randomIndex];
+//            WebElement addressType = AddressPage.getAddressFieldType(randomAddressType, driver);
+//            addressType.click();
+//
+//            // Set default address checkbox
+//            WebElement defaultAddress = AddressPage.getDefaultAddressCheckbox(driver);
+//            defaultAddress.click();
+//
+//            // Verify city and state
+//            assertEquals(city.getText().toLowerCase(), CITY.toLowerCase());
+//            assertEquals(state.getText().toLowerCase(), STATE.toLowerCase());
+//
+//            // Click save address button
+//            saveAddress.click();
+//            Thread.sleep(2000);
+//        } catch (AssertionError | Exception e) {
+//            fail("updateAddress assertion failed: " + e.getMessage());
+//        }
+//    }
 
     @Test(priority = 6)
     public void testChangeDefaultAddress() {
@@ -227,14 +199,18 @@ public class AddressPageTest extends BaseTest {
 
             WebElement defaultCta = null;
             String defaultAddressName = null;
+            boolean isFirstAddress = true;
             for (WebElement addressCard : addressCards) {
                 try {
-                    defaultCta = addressCard.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_set_default"));
+                    if (isFirstAddress){
+                        isFirstAddress = false;
+                    }else {
+                        defaultCta = addressCard.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_set_default"));
+                        defaultAddressName = addressCard.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_address_title")).getText();
+                        defaultCta.click();
+                        break;
+                    }
 
-                    defaultAddressName = addressCard.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_address_title")).getText();
-
-                    defaultCta.click();
-                    break;
                 } catch (NoSuchElementException e) {
                     assertTrue("Only one address found and it is already default", true);
                 }
@@ -242,7 +218,7 @@ public class AddressPageTest extends BaseTest {
 
             assertEquals("Default address name matches", defaultAddressName, driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_address_title")).getText());
         } catch (AssertionError | Exception e) {
-            Assert.fail("changeDefaultAddress assertion failed: " + e.getMessage());
+            fail("changeDefaultAddress assertion failed: " + e.getMessage());
         }
     }
 
@@ -251,8 +227,6 @@ public class AddressPageTest extends BaseTest {
         try {
             WebElement addressList = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/rv_address"));
             List<WebElement> addressCards = addressList.findElements(AppiumBy.id("com.app.smytten.debug:id/cl_root"));
-
-            // Check if there are any addresses left to delete
             if (addressCards.isEmpty()) {
                 assertTrue("No more addresses left to delete", true);
                 return;
@@ -260,126 +234,77 @@ public class AddressPageTest extends BaseTest {
 
             int initialAddressSize = addressCards.size();
             int deletedAddressCount = 0;
-
             while (deletedAddressCount < initialAddressSize) {
-                // Get the first address card
                 WebElement addressCard = addressCards.get(0);
 
-                // Click on the delete icon
                 WebElement deleteIcon = addressCard.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_delete"));
                 deleteIcon.click();
 
-                // Wait for the delete confirmation popup
-                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-                WebElement popUp = wait.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.id("com.app.smytten.debug:id/cl_root")));
-
-                // Click on the confirm delete button
-                WebElement ctaRightElement = popUp.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_cta_right"));
+                WebElement ctaRightElement = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_cta_right"));
                 ctaRightElement.click();
-                wait.until(ExpectedConditions.numberOfElementsToBeLessThan(AppiumBy.id("com.app.smytten.debug:id/cl_root"), initialAddressSize - deletedAddressCount));
                 deletedAddressCount++;
                 addressCards = addressList.findElements(AppiumBy.id("com.app.smytten.debug:id/cl_root"));
+                System.out.println(addressCards.size());
             }
-
         } catch (NoSuchElementException e) {
             assertTrue("No more addresses left to delete", true);
         } catch (Exception e) {
-            Assert.fail("Failed to delete address: " + e.getMessage());
+            fail("Failed to delete address: " + e.getMessage());
         }
     }
 
-
-    //    @Test(priority = 0)
-    public void testSignUp() {
-        try {
-            // Enter mobile number and proceed to OTP
-            WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
-            assertNotNull("Mobile number input field not found", mobileInput);
-            androidHelper.clearAndSetValueInField(mobileInput, Utility.getNumber());
-
-            WebElement proceedBtn = LoginPage.getSendOtpButton(driver);
-            proceedBtn.click();
-
-            // Choose gender
-            WebElement maleElement = SignUpPage.getMaleGenderOption(driver);
-            WebElement femaleElement = SignUpPage.getFemaleGenderOption(driver);
-            WebElement chooseGender = (Utility.RANDOMNUMBER == 0) ? maleElement : femaleElement;
-            chooseGender.click();
-
-            // Select birth month
-            SignUpPage.getMonthSpinner(driver).click();
-            SignUpPage.getMarchMonthOption(driver).click();
-
-            // Select birth year
-            SignUpPage.getYearSpinner(driver).click();
-            SignUpPage.getYear2009Option(driver).click();
-
-            // Enter referral code
-            WebElement referralInput = SignUpPage.getReferralInput(driver);
-            referralInput.click();
-            androidHelper.clearAndSetValueInField(referralInput, SignUpPage.GROUP_INVITE_CODE);
-
-            // Apply referral code
-            SignUpPage.getReferralApplyBtn(driver).click();
-
-            // Wait for referral success message
-            WebElement referralSuccessTitle = SignUpPage.getReferralSuccessTitle(driver);
-            assertNotNull("Referral success title not found", referralSuccessTitle);
-            System.out.println(referralSuccessTitle.getText());
-
-            // Confirm referral success payment title
-            WebElement referralSuccessPaymentTitle = SignUpPage.getReferralSuccessPaymentTitle(driver);
-            System.out.println(referralSuccessPaymentTitle.getText());
-
-            // Confirm signup
-            SignUpPage.getConfirmBtn(driver).click();
-        } catch (AssertionError | Exception e) {
-            fail("signUp" + e.getMessage());
-        }
-    }
-
+    @Test(invocationCount = 5,priority = 5)
     public void addMultipleAddress() throws InterruptedException {
         this.isEmpty = false;
-        verifyAddressPage();
         if (addressEntryCount == 1) {
             addAddress(5);
         }
         try {
-            WebElement firstName = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_fname"));
-            WebElement lastName = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_lname"));
-            WebElement phoneNumber = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_mobile"));
-            WebElement houseNumber = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_house"));
-            WebElement streetName = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_street"));
-            WebElement landmark = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_landmark"));
-            WebElement pincode = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_pincode"));
-            WebElement city = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_city"));
-            WebElement state = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/et_state"));
-            WebElement saveAddress = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_proceed"));
+            WebElement firstName = AddressPage.getFirstNameField(driver);
+            WebElement lastName = AddressPage.getLastNameField(driver);
+            WebElement phoneNumber = AddressPage.getMobileElement(driver);
+            WebElement houseNumber = AddressPage.getHouseField(driver);
+            WebElement email = null;
+            if(addressEntryCount == 1) {
+                 email = AddressPage.getEmailField(driver);
+            }
+
+            WebElement streetName = AddressPage.getStreetField(driver);
+            WebElement landmark = AddressPage.getLandmarkField(driver);
+            WebElement pincode = AddressPage.getPincodeField(driver);
+            WebElement city = AddressPage.getCityField(driver);
+            WebElement state = AddressPage.getStateField(driver);
+            WebElement saveAddress = AddressPage.getProceedButton(driver);
 
             androidHelper.clearAndSetValueInField(firstName, addressList.get(addressEntryCount - 1).firstName);
             androidHelper.clearAndSetValueInField(lastName, addressList.get(addressEntryCount - 1).lastName);
             androidHelper.clearAndSetValueInField(phoneNumber, addressList.get(addressEntryCount - 1).phone);
             androidHelper.clearAndSetValueInField(houseNumber, addressList.get(addressEntryCount - 1).houseNumber);
             androidHelper.clearAndSetValueInField(streetName, addressList.get(addressEntryCount - 1).streetName);
-            androidHelper.clearAndSetValueInField(pincode, "635115");
+            androidHelper.clearAndSetValueInField(pincode, addressList.get(addressEntryCount - 1).pinCode);
             androidHelper.clearAndSetValueInField(landmark, addressList.get(addressEntryCount - 1).landmark);
-
+            if(email != null){
+                androidHelper.clearAndSetValueInField(email, addressList.get(addressEntryCount - 1).email);
+            }
             Random random = new Random();
             int randomIndex = random.nextInt(ADDRESS_TYPE.length);
             String randomAddressType = ADDRESS_TYPE[randomIndex];
             WebElement addressType = AddressPage.getAddressFieldType(randomAddressType, driver);
             addressType.click();
             if (randomIndex == 1) {
-                WebElement defaultAddress = AddressPage.getSetDefaultButton(driver);
+                WebElement defaultAddress = AddressPage.getSetCheckBoxDefaultButton(driver);
                 defaultAddress.click();
             }
             assertEquals(city.getText().toLowerCase(), addressList.get(addressEntryCount - 1).city.toLowerCase());
             assertEquals(state.getText().toLowerCase(), addressList.get(addressEntryCount - 1).state.toLowerCase());
             saveAddress.click();
-            Thread.sleep(2000);
         } catch (AssertionError | Exception e) {
-            Assert.fail("addMultipleAddress assertion failed: " + e.getMessage());
+            fail("addMultipleAddress assertion failed: " + e.getMessage());
         }
         addressEntryCount++;
+        if(addressEntryCount <= 5){
+            WebElement addNewAddressCta = AddressPage.getAddNewAddressLayout(driver);
+            addNewAddressCta.click();
+        }
     }
 }

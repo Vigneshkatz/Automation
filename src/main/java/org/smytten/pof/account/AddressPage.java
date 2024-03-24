@@ -142,6 +142,11 @@ public class AddressPage {
         return setDefaultButton = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_set_default"));
     }
 
+    public static WebElement getSetCheckBoxDefaultButton(AndroidDriver driver) {
+        return setDefaultButton = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/cb_default_address"));
+    }
+
+
     public static WebElement getHomeDefaultTextView(AndroidDriver driver) {
         return homeDefaultTextView = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_home_default"));
     }
