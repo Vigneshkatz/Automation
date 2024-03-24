@@ -6,12 +6,15 @@
     </listeners>
     <test verbose="2" preserve-order="true" name="/Users/Vignesh/Desktop/Automation">
         <classes>
+            <!-- Include LandingPageTest class -->
             <class name="entry.LandingPageTest">
                 <methods>
                     <include name="testInitialLandingPageText"/>
                     <include name="testVerifyLandingPageElements"/>
                 </methods>
             </class>
+            <class name="base.BaseTest"/>
+            <!-- Include LoginTest class -->
             <class name="entry.LoginTest">
                 <methods>
                     <include name="testOpenTermsAndPolicy"/>

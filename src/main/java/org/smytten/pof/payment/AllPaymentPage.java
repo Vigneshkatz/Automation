@@ -24,6 +24,6 @@ public class AllPaymentPage {
     }
 
     public static WebElement proceedPaymentBtn(AndroidDriver driver){
-        return  driver.findElement(AppiumBy.id("redesign-v15-cta"));
+        return  driver.findElement(AppiumBy.androidUIAutomator("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().text(\"Pay Now\"));"));
     }
 }

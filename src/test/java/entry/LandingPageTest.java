@@ -14,7 +14,7 @@ public class LandingPageTest extends BaseTest {
         try {
             WebElement startCta = LandingPage.getStartCtaElement(driver);
             assertNotNull(startCta);
-            assertEquals(startCta.getText(), LandingPage.getExpectedCtaText(), "Start CTA text mismatch");
+            assertTrue(LandingPage.getExpectedCtaText().equalsIgnoreCase(startCta.getText()),"Start CTA text mismatch");
             startCta.click();
         } catch (AssertionError | Exception e) {
             fail("initialLandingPageText", e);

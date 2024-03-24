@@ -22,10 +22,14 @@ import org.smytten.pof.entry.LoginPage;
 import org.smytten.pof.entry.OtpPage;
 import org.smytten.pof.entry.SignUpPage;
 import org.smytten.pof.listing.ShopListingPage;
+import org.smytten.pof.payment.AllPaymentPage;
 import org.smytten.pof.payment.PaymentPage;
+import org.smytten.pof.payment.RazorpayPaymentStatusPage;
 import org.smytten.pof.product.ShopProductCard;
+import org.smytten.pof.rewards.RewardProductCard;
 import org.smytten.pof.shopfront.ShopFrontPage;
 import org.smytten.util.Utility;
+import org.smytten.util.contants.Bank;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -203,7 +207,7 @@ public class SmyttenHelper {
         signUp(true, true);
     }
 
-    public void initiateLogin(String mobileNumber,String otp) throws NoSuchElementException,Exception{
+    public void initiateLogin(String mobileNumber, String otp) throws Exception {
         WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
         assertNotNull("Mobile input field not found", mobileInput);
         mobileInput.click();
@@ -409,8 +413,57 @@ public class SmyttenHelper {
         saveBtn.click();
     }
 
-    public void loginWithValidOTP(String mobileNumber,String otp) throws AssertionError,NoSuchElementException,Exception{
+    public void loginWithValidOTP(String mobileNumber, String otp) throws AssertionError, Exception {
         openLoginPage();
-        initiateLogin(mobileNumber,otp);
+        initiateLogin(mobileNumber, otp);
+    }
+
+    public void addRewardProductToCart(int noOfProducts) throws AssertionError, Exception {
+        List<WebElement> productList = RewardProductCard.getAllRProductCard(driver);
+        assertNotNull(productList);
+        for (WebElement product : productList) {
+            if (noOfProducts <= 0){
+                return;
+            }
+            WebElement cartCta = RewardProductCard.getRProductAddToCartCta(product);
+            assertNotNull(cartCta);
+            cartCta.click();
+            try {
+                PopUp.getProductConsentOkButton(driver);
+                PopUp.getProductConsentOkButton(driver).click();
+            } catch (Exception e) {
+                System.out.println("No pop-up found");
+            }
+            System.out.println("product added to cart " + RewardProductCard.getRProductName(product).getText());
+            noOfProducts--;
+        }
+    }
+
+    public void placeOrderViaNetBanking() {
+        try {
+            WebElement allOption = PaymentPage.getAllPaymentsOption(driver);
+            assertNotNull(allOption);
+            allOption.click();
+            PaymentPage.getProceedBtn(driver).click();
+            if (VerifyElementHelper.isPaymentConsentPopupPresent(driver)) {
+                PopUp.getRightCtaConsentPopUp(driver).click();
+            }
+            Thread.sleep(5000);
+            WebElement netBanking = AllPaymentPage.netBankingOption(driver);
+            assertNotNull(netBanking);
+            netBanking.click();
+            WebElement bankChoice = AllPaymentPage.bankOption(driver, Bank.ICICI.getValue());
+            assertNotNull(bankChoice);
+            bankChoice.click();
+            AllPaymentPage.proceedPaymentBtn(driver).click();
+            Thread.sleep(5000);
+            RazorpayPaymentStatusPage.getSuccessButton(driver).click();
+            Thread.sleep(5000);
+
+
+        } catch (AssertionError | Exception e) {
+            fail("Net Banking failed" + e.getMessage());
+        }
+
     }
 }

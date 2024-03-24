@@ -14,6 +14,7 @@ import org.smytten.naviation.AccountPageNavigation;
 import org.smytten.util.helper.AndroidHelper;
 import org.smytten.util.helper.SmyttenHelper;
 import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 
 import java.net.MalformedURLException;
@@ -31,16 +32,16 @@ public class BaseTest{
     public static  AndroidDriver driver;
     public TouchAction touchAction;
     public AndroidHelper androidHelper;
+
     public SmyttenHelper smyttenHelper;
 
     public AccountPageNavigation accountPageNavigation;
     private static final long implicitWaitTime = 10;
 
-    @BeforeSuite
+    @BeforeClass
     public void setUp() {
         LOGGER.info("Setting up test environment...");
-//        startAppiumServer();
-
+        startAppiumServer();
         try {
             driver = initializeDriver();
             assertNotNull("Driver initialization failed", driver);
@@ -90,9 +91,7 @@ public class BaseTest{
         try {
             ProcessBuilder builder = new ProcessBuilder("pkill", "-9", "node");
             Process process = builder.start();
-
             boolean completed = process.waitFor(5, TimeUnit.SECONDS);
-
             if (!completed) {
                 process.destroy();
             }
@@ -105,5 +104,4 @@ public class BaseTest{
         driver.startActivity(new Activity("com.app.smytten.debug", "com.app.smytten.ui.auth.PreLoginActivity"));
 
     }
-
 }

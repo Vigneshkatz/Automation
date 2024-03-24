@@ -5,6 +5,8 @@ import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.Activity;
 import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.WebElement;
+import org.smytten.naviation.SmyttenNavigation;
+import org.smytten.pof.entry.LandingPage;
 import org.smytten.pof.entry.LoginPage;
 import org.smytten.pof.entry.OtpPage;
 import org.testng.annotations.AfterMethod;
@@ -30,28 +32,22 @@ public class LoginTest extends BaseTest {
     @Test(priority = 1)
     public void testOpenTermsAndPolicy() {
         try {
-            int xCoordinate = 355;
-            int yCoordinate = 565;
-            // Tap on the screen to open privacy policy
-            touchAction.tap(PointOption.point(xCoordinate, yCoordinate)).perform();
+
             touchAction.tap(PointOption.point(LoginPage.PRIVACY_X_COORDINATE, LoginPage.PRIVACY_Y_COORDINATE)).perform();
 
-            // Verify privacy policy title
             WebElement privacyTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
             assertEquals(LoginPage.getPRIVACY_POLICY_TITLE(), privacyTitle.getText(), "Privacy policy title mismatch");
 
-            // Tap on the screen to go back
-            touchAction.tap(PointOption.point(544, 211)).perform();
+            SmyttenNavigation.closePopUp(driver);
 
-            // Tap on the screen to open terms and conditions
+
             touchAction.tap(PointOption.point(LoginPage.TERMS_X_COORDINATE, LoginPage.TERMS_Y_COORDINATE)).perform();
 
-            // Verify terms and conditions title
             WebElement termsTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
             assertEquals(LoginPage.getTNC_TITLE(), termsTitle.getText(), "Terms and conditions title mismatch");
 
             // Tap on the screen to go back
-            touchAction.tap(PointOption.point(544, 211)).perform();
+            SmyttenNavigation.closePopUp(driver);
         } catch (AssertionError | Exception e) {
             fail("openTermsAndPolicy" + e.getMessage());
         }
@@ -158,7 +154,7 @@ public class LoginTest extends BaseTest {
                 System.out.println("OTP Toast message: " + otpToastText);
 
                 String expectedMessage = (i == OtpPage.OTP_MAX_LIMIT) ? OtpPage.OTP_MAX_LIMIT_MESSAGE : OtpPage.INVALID_OTP_MESSAGE;
-                assertEquals("Invalid Otp Message", expectedMessage, otpToastText);
+                assertEquals( expectedMessage, otpToastText,"Invalid Otp Message");
             }
         } catch (AssertionError | Exception e) {
             fail("otpMaxLimitCheck" + e.getMessage());

@@ -57,4 +57,11 @@ public class PopUp {
     public static WebElement getFreebieFrenzyPopUpHeader(AndroidDriver driver) {
         return popUpClose = driver.findElement(AppiumBy.id ("com.app.smytten.debug:id/iv_bg_head_h"));
     }
+
+    public static WebElement getProductConsentPopUpDesc(AndroidDriver driver) {
+        return driver.findElement((AppiumBy.id(("com.app.smytten.debug:id/wv_desc"))));
+    }
+    public static WebElement getProductConsentOkButton(AndroidDriver driver) {
+        return driver.findElement((AppiumBy.id(("com.app.smytten.debug:id/okButton"))));
+    }
 }
