@@ -6,7 +6,6 @@ import com.aventstack.extentreports.Status;
 import io.appium.java_client.android.AndroidDriver;
 import org.smytten.util.FileUtil;
 import org.smytten.util.export.ExtentReportHelper;
-import org.smytten.util.helper.SmyttenHelper;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;

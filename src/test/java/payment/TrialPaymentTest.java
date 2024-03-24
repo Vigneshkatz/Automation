@@ -2,8 +2,8 @@ package payment;
 
 import base.BaseTest;
 import io.appium.java_client.AppiumBy;
-import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.WebElement;
+import org.smytten.helper.PaymentHelper;
 import org.smytten.pof.cart.TrialOrderConfirmation;
 import org.smytten.pof.common.PopUp;
 import org.smytten.pof.common.VerifyElementHelper;
@@ -12,18 +12,18 @@ import org.smytten.pof.payment.AllPaymentPage;
 import org.smytten.pof.payment.CardPaymentPage;
 import org.smytten.pof.payment.PaymentPage;
 import org.smytten.pof.payment.RazorpayPaymentStatusPage;
-import org.smytten.pof.shopfront.ShopFrontPage;
 import org.smytten.pof.product.TrialProductCard;
+import org.smytten.pof.shopfront.ShopFrontPage;
 import org.smytten.util.Utility;
 import org.smytten.util.contants.Bank;
-import org.smytten.util.payment.PaymentHelper;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.List;
 
-import static org.testng.AssertJUnit.*;
+import static org.testng.AssertJUnit.assertNotNull;
+import static org.testng.AssertJUnit.fail;
 
 public class TrialPaymentTest extends BaseTest {
     boolean isSignup = true;
@@ -34,15 +34,15 @@ public class TrialPaymentTest extends BaseTest {
     public void initialSetUp() {
         try {
             initialLandingPageText(isAppOpen);
-            smyttenHelper.signUp(isSignup,isAppOpen);
+            smyttenHelper.signUp(isSignup, isAppOpen);
             smyttenHelper.gotoTrialFront();
             openProductListing();
             addProductToCart();
             smyttenHelper.gotoCart();
             smyttenHelper.openPaymentPage();
             smyttenHelper.updateAddress();
-        }catch (Exception e){
-            fail("initialSetup fail"+e.getMessage());
+        } catch (Exception e) {
+            fail("initialSetup fail" + e.getMessage());
         }
 
     }
@@ -51,8 +51,8 @@ public class TrialPaymentTest extends BaseTest {
     public void testCod() {
         try {
             smyttenHelper.placeCodOrder();
-        }catch (Exception e){
-            fail("Cod failed "+e.getMessage());
+        } catch (Exception e) {
+            fail("Cod failed " + e.getMessage());
         }
     }
 
@@ -75,12 +75,9 @@ public class TrialPaymentTest extends BaseTest {
             assertNotNull(bankChoice);
             bankChoice.click();
             int x = 689, y = 2396;
-            touchAction.tap(PointOption.point(x, y)).perform();
+            smyttenHelper.tap(x, y);
             Thread.sleep(5000);
             RazorpayPaymentStatusPage.getSuccessButton(driver).click();
-//            WebElement proceedBtn = AllPaymentPage.proceedPaymentBtn(driver);
-//            assertNotNull(proceedBtn);
-//            proceedBtn.click();
         } catch (AssertionError | Exception e) {
             fail("Net Banking failed" + e.getMessage());
         }
@@ -110,7 +107,7 @@ public class TrialPaymentTest extends BaseTest {
             androidHelper.enterValue(cardExpiry, PaymentHelper.EXPIRY);
             androidHelper.enterValue(cardCvv, PaymentHelper.CVV);
             int x = 689, y = 2396;
-            touchAction.tap(PointOption.point(x, y)).perform();
+            smyttenHelper.tap(x, y);
             RazorpayPaymentStatusPage.getSuccessButton(driver).click();
         } catch (AssertionError | Exception e) {
             fail("Card failed " + e.getMessage());
@@ -149,10 +146,10 @@ public class TrialPaymentTest extends BaseTest {
             orderDetail.click();
             assertNotNull(orderDetail);
 
-        androidHelper.back();
-        TrialOrderConfirmation.getCloseConfirmationScreen(driver).click();
-        shopFrontPopupCheck();
-        smyttenHelper.signOut();
+            androidHelper.back();
+            TrialOrderConfirmation.getCloseConfirmationScreen(driver).click();
+            shopFrontPopupCheck();
+            smyttenHelper.signOut();
         } catch (AssertionError | Exception e) {
             fail("goToOrderDetailPage " + e.getMessage());
         }

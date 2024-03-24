@@ -2,18 +2,8 @@ package accountsection;
 
 import base.BaseTest;
 import io.appium.java_client.AppiumBy;
-import io.appium.java_client.TouchAction;
 import org.openqa.selenium.WebElement;
 import org.smytten.naviation.AccountPageNavigation;
-import org.smytten.pof.account.AccountPage;
-import org.smytten.pof.account.ProfileUpdatePage;
-import org.smytten.pof.common.Navigation;
-import org.smytten.pof.common.PopUp;
-import org.smytten.pof.common.VerifyElementHelper;
-import org.smytten.pof.entry.LandingPage;
-import org.smytten.pof.entry.LoginPage;
-import org.smytten.util.Utility;
-import org.smytten.util.helper.AndroidHelper;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -23,14 +13,14 @@ public class AccountPageTest extends BaseTest {
     private final Boolean isEmpty = true;
 
     @BeforeClass
-    public void accountPageSetup(){
+    public void accountPageSetup() {
         try {
             smyttenHelper.openLoginPage();
-            smyttenHelper.signUp(true,true);
+            smyttenHelper.signUp(true, true);
             smyttenHelper.checkPopUp();
             smyttenHelper.gotoAccountPage();
-        }catch (Exception e){
-            fail("accountPageSetup :"+e.getMessage());
+        } catch (Exception e) {
+            fail("accountPageSetup :" + e.getMessage());
         }
 
     }
@@ -38,7 +28,7 @@ public class AccountPageTest extends BaseTest {
     @Test(priority = 0)
     public void gotoAddressPage() {
         try {
-          AccountPageNavigation.openAddressPage(driver);
+            AccountPageNavigation.openAddressPage(driver);
         } catch (AssertionError | Exception e) {
             fail("gotoAddressPage" + "Saved address element not found." + e.getMessage());
         }
@@ -66,7 +56,7 @@ public class AccountPageTest extends BaseTest {
             }
         } catch (AssertionError | Exception e) {
             fail("verifyAddressPage" + "Address page elements not found. " + e.getMessage());
-        }finally {
+        } finally {
             androidHelper.back();
         }
     }

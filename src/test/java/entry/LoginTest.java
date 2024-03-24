@@ -33,7 +33,7 @@ public class LoginTest extends BaseTest {
     public void testOpenTermsAndPolicy() {
         try {
 
-            touchAction.tap(PointOption.point(LoginPage.PRIVACY_X_COORDINATE, LoginPage.PRIVACY_Y_COORDINATE)).perform();
+            smyttenHelper.tap(LoginPage.PRIVACY_X_COORDINATE, LoginPage.PRIVACY_Y_COORDINATE);
 
             WebElement privacyTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
             assertEquals(LoginPage.getPRIVACY_POLICY_TITLE(), privacyTitle.getText(), "Privacy policy title mismatch");
@@ -41,7 +41,7 @@ public class LoginTest extends BaseTest {
             SmyttenNavigation.closePopUp(driver);
 
 
-            touchAction.tap(PointOption.point(LoginPage.TERMS_X_COORDINATE, LoginPage.TERMS_Y_COORDINATE)).perform();
+            smyttenHelper.tap(LoginPage.TERMS_X_COORDINATE, LoginPage.TERMS_Y_COORDINATE);
 
             WebElement termsTitle = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_title"));
             assertEquals(LoginPage.getTNC_TITLE(), termsTitle.getText(), "Terms and conditions title mismatch");

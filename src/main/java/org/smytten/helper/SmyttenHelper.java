@@ -1,13 +1,12 @@
-package org.smytten.util.helper;
+package org.smytten.helper;
 
 import io.appium.java_client.AppiumBy;
-import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.clipboard.ClipboardContentType;
-import io.appium.java_client.touch.offset.ElementOption;
-import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.PointerInput;
+import org.openqa.selenium.interactions.Sequence;
 import org.smytten.pof.account.AccountPage;
 import org.smytten.pof.account.AddressPage;
 import org.smytten.pof.account.ProfileUpdatePage;
@@ -31,6 +30,7 @@ import org.smytten.pof.shopfront.ShopFrontPage;
 import org.smytten.util.Utility;
 import org.smytten.util.contants.Bank;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
@@ -40,12 +40,10 @@ import static org.testng.AssertJUnit.*;
 public class SmyttenHelper {
     AndroidDriver driver;
     AndroidHelper androidHelper;
-    TouchAction touchAction;
 
-    public SmyttenHelper(AndroidDriver driver, AndroidHelper androidHelper, TouchAction touchAction) {
+    public SmyttenHelper(AndroidDriver driver, AndroidHelper androidHelper) {
         this.androidHelper = androidHelper;
         this.driver = driver;
-        this.touchAction = touchAction;
     }
 
     public void signOut() throws AssertionError, Exception {
@@ -225,7 +223,6 @@ public class SmyttenHelper {
     }
 
     public void openLoginPage() throws AssertionError, Exception {
-        touchAction = new TouchAction<>(driver);
         WebElement startCta = LandingPage.getStartCtaElement(driver);
         assertNotNull(startCta);
         startCta.click();
@@ -240,14 +237,13 @@ public class SmyttenHelper {
 
     }
 
-    public boolean checkAutoApplyCoupon() {
+    public void checkAutoApplyCoupon() {
         try {
             if (VerifyElementHelper.isAutoApplyCouponPresent(driver)) {
-                touchAction.tap(PointOption.point(877, 877)).perform();
+                tap(877, 877);
             }
-            return true;
         } catch (Exception e) {
-            return false;
+            System.out.println(e.getMessage());
         }
     }
 
@@ -400,7 +396,7 @@ public class SmyttenHelper {
         Dimension size = driver.manage().window().getSize();
         int centerX = size.width / 2;
         int centerY = size.height / 2;
-        touchAction.press(ElementOption.element(element)).moveTo(PointOption.point(centerX, centerY)).release().perform();
+        tap(centerX, centerY);
     }
 
     public void updateUserProfile() throws AssertionError, Exception {
@@ -422,7 +418,7 @@ public class SmyttenHelper {
         List<WebElement> productList = RewardProductCard.getAllRProductCard(driver);
         assertNotNull(productList);
         for (WebElement product : productList) {
-            if (noOfProducts <= 0){
+            if (noOfProducts <= 0) {
                 return;
             }
             WebElement cartCta = RewardProductCard.getRProductAddToCartCta(product);
@@ -464,6 +460,14 @@ public class SmyttenHelper {
         } catch (AssertionError | Exception e) {
             fail("Net Banking failed" + e.getMessage());
         }
+    }
 
+    public void tap(int x, int y) {
+        PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
+        Sequence tap = new Sequence(finger, 1);
+        tap.addAction(finger.createPointerMove(Duration.ofMillis(0), PointerInput.Origin.viewport(), x, y));
+        tap.addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()));
+        tap.addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        driver.perform(List.of(tap));
     }
 }

@@ -1,4 +1,4 @@
-package org.smytten.util.payment;
+package org.smytten.helper;
 
 public class PaymentHelper {
 

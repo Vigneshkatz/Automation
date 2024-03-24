@@ -1,4 +1,4 @@
-package org.smytten.util.helper;
+package org.smytten.helper;
 
 public class DeepLinkRedirectionHelper {
 

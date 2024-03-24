@@ -1,22 +1,19 @@
 package org.smytten.naviation;
 
-import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import org.openqa.selenium.WebElement;
+import org.smytten.helper.AndroidHelper;
 import org.smytten.pof.account.AccountPage;
-import org.smytten.util.helper.AndroidHelper;
 
 import static org.testng.AssertJUnit.*;
 
 public class AccountPageNavigation {
     AndroidDriver driver;
     AndroidHelper androidHelper;
-    TouchAction touchAction;
 
-    public AccountPageNavigation(AndroidDriver driver, AndroidHelper androidHelper, TouchAction touchAction) {
+    public AccountPageNavigation(AndroidDriver driver, AndroidHelper androidHelper) {
         this.androidHelper = androidHelper;
         this.driver = driver;
-        this.touchAction = touchAction;
     }
 
     public static void openMyOrderPage(AndroidDriver driver) throws AssertionError, Exception {

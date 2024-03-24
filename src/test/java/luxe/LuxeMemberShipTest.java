@@ -162,14 +162,14 @@ public class LuxeMemberShipTest extends BaseTest {
             proceedButton.click();
             Thread.sleep(5000);
 
-            touchAction.tap(PointOption.point(625, 827)).perform();
+            smyttenHelper.tap(625, 827);
             Thread.sleep(2000);
 
             WebElement idbiBankOption = driver.findElement(AppiumBy.xpath("//android.view.View[@resource-id=\"bank-item-IBKL\"]/android.view.View"));
             idbiBankOption.click();
             Thread.sleep(1000);
 
-            touchAction.tap(PointOption.point(544, 2297)).perform();
+            smyttenHelper.tap(544, 2297);
             Thread.sleep(10000);
 
             WebElement successPage = driver.findElement(AppiumBy.xpath("//android.webkit.WebView[@text=\"Razorpay Bank\"]"));

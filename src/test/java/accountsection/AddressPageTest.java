@@ -2,25 +2,17 @@ package accountsection;
 
 import base.BaseTest;
 import io.appium.java_client.AppiumBy;
-import org.apache.commons.math3.analysis.function.Add;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.smytten.pof.account.AccountPage;
 import org.smytten.pof.account.AddressPage;
 import org.smytten.pof.common.Navigation;
 import org.smytten.pof.common.PopUp;
 import org.smytten.pof.common.VerifyElementHelper;
-import org.smytten.pof.entry.LoginPage;
-import org.smytten.pof.entry.OtpPage;
-import org.smytten.pof.entry.SignUpPage;
 import org.smytten.user.Address;
 import org.smytten.user.PinCodeDetails;
 import org.smytten.util.Utility;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.time.Duration;
 import java.util.*;
 
 import static org.testng.AssertJUnit.*;
@@ -202,9 +194,9 @@ public class AddressPageTest extends BaseTest {
             boolean isFirstAddress = true;
             for (WebElement addressCard : addressCards) {
                 try {
-                    if (isFirstAddress){
+                    if (isFirstAddress) {
                         isFirstAddress = false;
-                    }else {
+                    } else {
                         defaultCta = addressCard.findElement(AppiumBy.id("com.app.smytten.debug:id/btn_set_default"));
                         defaultAddressName = addressCard.findElement(AppiumBy.id("com.app.smytten.debug:id/tv_address_title")).getText();
                         defaultCta.click();
@@ -253,7 +245,7 @@ public class AddressPageTest extends BaseTest {
         }
     }
 
-    @Test(invocationCount = 5,priority = 5)
+    @Test(invocationCount = 5, priority = 5)
     public void addMultipleAddress() throws InterruptedException {
         this.isEmpty = false;
         if (addressEntryCount == 1) {
@@ -265,8 +257,8 @@ public class AddressPageTest extends BaseTest {
             WebElement phoneNumber = AddressPage.getMobileElement(driver);
             WebElement houseNumber = AddressPage.getHouseField(driver);
             WebElement email = null;
-            if(addressEntryCount == 1) {
-                 email = AddressPage.getEmailField(driver);
+            if (addressEntryCount == 1) {
+                email = AddressPage.getEmailField(driver);
             }
 
             WebElement streetName = AddressPage.getStreetField(driver);
@@ -283,7 +275,7 @@ public class AddressPageTest extends BaseTest {
             androidHelper.clearAndSetValueInField(streetName, addressList.get(addressEntryCount - 1).streetName);
             androidHelper.clearAndSetValueInField(pincode, addressList.get(addressEntryCount - 1).pinCode);
             androidHelper.clearAndSetValueInField(landmark, addressList.get(addressEntryCount - 1).landmark);
-            if(email != null){
+            if (email != null) {
                 androidHelper.clearAndSetValueInField(email, addressList.get(addressEntryCount - 1).email);
             }
             Random random = new Random();
@@ -302,7 +294,7 @@ public class AddressPageTest extends BaseTest {
             fail("addMultipleAddress assertion failed: " + e.getMessage());
         }
         addressEntryCount++;
-        if(addressEntryCount <= 5){
+        if (addressEntryCount <= 5) {
             WebElement addNewAddressCta = AddressPage.getAddNewAddressLayout(driver);
             addNewAddressCta.click();
         }
