@@ -177,9 +177,7 @@ public class TrialPaymentTest extends BaseTest {
         if (isAppOpen) {
             this.isAppOpen = false;
             try {
-                WebElement startCta = LandingPage.getStartCtaElement(driver);
-                assertNotNull(startCta);
-                startCta.click();
+               smyttenHelper.openLoginPage();
             } catch (AssertionError | Exception e) {
                 fail("landing page" + e.getMessage());
             }

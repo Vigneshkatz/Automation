@@ -30,9 +30,7 @@ public class TrialOrderTest extends BaseTest {
     @Test(priority = 0)
     public void initialLandingPageText() {
         try {
-            WebElement startCta = LandingPage.getStartCtaElement(driver);
-            assertNotNull(startCta);
-            startCta.click();
+          smyttenHelper.openLoginPage();
         } catch (AssertionError | Exception e) {
             fail("landing page" + e.getMessage());
         }

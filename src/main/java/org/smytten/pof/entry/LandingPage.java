@@ -1,38 +1,37 @@
 package org.smytten.pof.entry;
 
-import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
+import lombok.Getter;
+import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+@Getter
 public class LandingPage {
 
-    private AndroidDriver driver;
-    private static WebElement startCtaElement;
-
-    private static WebElement rootContent;
-    private static WebElement topBanner;
     private static final String EXPECTED_CTA_TEXT = "Get started";
+    @AndroidFindBy(className = "//android.widget.TextView[@text='Get Started']")
+    private  WebElement startCtaElement;
 
-    public LandingPage(AndroidDriver driver) {
-        this.driver = driver;
-        PageFactory.initElements(new AppiumFieldDecorator(driver), LandingPage.class);
+    @AndroidFindBy(id = "com.app.smytten.debug:id/iv_header")
+    private  WebElement rootContent;
+    @AndroidFindBy(id = "com.app.smytten.debug:id/iv_header")
+    private  WebElement topBanner;
+    private AndroidDriver driver;
+
+    public LandingPage() {
+        try {
+            PageFactory.initElements(new AppiumFieldDecorator((SearchContext) DriverManager.getDriver("http://127.0.0.1:4723/")), this);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
-
-    public static WebElement getStartCtaElement(AndroidDriver driver) {
-        return startCtaElement = driver.findElement(AppiumBy.xpath("//android.widget.TextView[@text='Get Started']"));
-    }
-
-    public static WebElement getTopBanner(AndroidDriver driver) {
-        return topBanner = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_header"));
-    }
-
-    public static WebElement getrootContent(AndroidDriver driver) {
-        return rootContent = driver.findElement(AppiumBy.id("com.app.smytten.debug:id/iv_header"));
-    }
-
     public static String getExpectedCtaText() {
         return EXPECTED_CTA_TEXT;
     }

@@ -174,8 +174,9 @@ public class SmyttenHelper {
     }
 
     public void signUp(boolean isSignup, boolean isAppOpen) throws AssertionError, Exception {
-
-        // Enter mobile number and proceed to OTP
+        if(isAppOpen){
+            openLoginPage();
+        }
         WebElement mobileInput = LoginPage.getMobileNumberInput(driver);
         assertNotNull("Mobile number input field not found", mobileInput);
         mobileInput.click();
@@ -223,7 +224,8 @@ public class SmyttenHelper {
     }
 
     public void openLoginPage() throws AssertionError, Exception {
-        WebElement startCta = LandingPage.getStartCtaElement(driver);
+        LandingPage landingPage  = new LandingPage();
+        WebElement startCta = landingPage.getStartCtaElement();
         assertNotNull(startCta);
         startCta.click();
 
@@ -455,8 +457,6 @@ public class SmyttenHelper {
             Thread.sleep(5000);
             RazorpayPaymentStatusPage.getSuccessButton(driver).click();
             Thread.sleep(5000);
-
-
         } catch (AssertionError | Exception e) {
             fail("Net Banking failed" + e.getMessage());
         }

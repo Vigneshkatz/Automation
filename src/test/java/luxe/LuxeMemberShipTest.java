@@ -25,9 +25,7 @@ public class LuxeMemberShipTest extends BaseTest {
     @Test(priority = 0)
     public void verifyStartCtaOnInitialLandingPage() {
         try {
-            WebElement startCta = LandingPage.getStartCtaElement(driver);
-            assertNotNull("Start CTA element not found", startCta);
-            startCta.click();
+           smyttenHelper.openLoginPage();
         } catch (AssertionError | Exception e) {
             fail("verifyStartCtaOnInitialLandingPage " + e.getMessage());
         }

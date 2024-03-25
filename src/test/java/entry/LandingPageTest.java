@@ -3,35 +3,42 @@ package entry;
 import base.BaseTest;
 import org.openqa.selenium.WebElement;
 import org.smytten.pof.entry.LandingPage;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.*;
 
 public class LandingPageTest extends BaseTest {
+    LandingPage landingPage;
+    
+    @BeforeClass
+    public void initialSetUp(){
+        landingPage = new LandingPage();
+    }
 
     @Test(priority = 1)
-    public void testInitialLandingPageText() {
+    public void testInitiallandingPageText() {
         try {
-            WebElement startCta = LandingPage.getStartCtaElement(driver);
+            WebElement startCta = landingPage.getStartCtaElement();
             assertNotNull(startCta);
-            assertTrue(LandingPage.getExpectedCtaText().equalsIgnoreCase(startCta.getText()),"Start CTA text mismatch");
+            assertTrue(landingPage.getExpectedCtaText().equalsIgnoreCase(startCta.getText()),"Start CTA text mismatch");
             startCta.click();
         } catch (AssertionError | Exception e) {
-            fail("initialLandingPageText", e);
+            fail("initiallandingPageText", e);
         }
     }
 
     @Test
-    public void testVerifyLandingPageElements() {
+    public void testVerifylandingPageElements() {
         try {
-            WebElement topBanner = LandingPage.getTopBanner(driver);
+            WebElement topBanner = landingPage.getTopBanner();
             assertNotNull(topBanner, "Top banner element not found");
-            WebElement rootElement = LandingPage.getrootContent(driver);
+            WebElement rootElement = landingPage.getRootContent();
             assertNotNull(rootElement, "Root content element not found");
-            WebElement startCta = LandingPage.getStartCtaElement(driver);
+            WebElement startCta = landingPage.getStartCtaElement();
             assertNotNull(startCta, "Start CTA element not found");
         } catch (AssertionError | Exception e) {
-            fail("verifyLandingPage", e);
+            fail("verifylandingPage", e);
         }
     }
 }
